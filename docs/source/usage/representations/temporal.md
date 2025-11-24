@@ -1,3 +1,0 @@
-# Temporal
-
-(Content coming soon...)

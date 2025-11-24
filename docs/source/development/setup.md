@@ -1,6 +1,6 @@
 # Development Setup
 
-Guide for setting up your development environment for PolyglotMol.
+Guide for setting up your development environment for MolBlender.
 
 ## Prerequisites
 
@@ -14,8 +14,8 @@ Guide for setting up your development environment for PolyglotMol.
 
 ```bash
 # Fork on GitHub first, then:
-git clone https://github.com/YOUR_USERNAME/PolyglotMol.git
-cd PolyglotMol
+git clone https://github.com/YOUR_USERNAME/MolBlender.git
+cd MolBlender
 ```
 
 ### 2. Create Virtual Environment
@@ -26,8 +26,8 @@ python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Or using conda
-conda create -n polyglotmol python=3.9
-conda activate polyglotmol
+conda create -n molblender python=3.9
+conda activate molblender
 ```
 
 ### 3. Install in Editable Mode
@@ -82,7 +82,7 @@ pytest
 black --check src/
 
 # Run type checker
-mypy src/polyglotmol
+mypy src/molblender
 ```
 
 ## Next Steps

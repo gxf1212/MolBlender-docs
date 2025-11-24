@@ -1,10 +1,10 @@
-# PolyglotMol Documentation
+# MolBlender Documentation
 
-This repository contains the public documentation for **PolyglotMol**, a universal multi-modal molecular representation generator.
+This repository contains the public documentation for **MolBlender**, a universal multi-modal molecular representation generator.
 
-## About PolyglotMol
+## About MolBlender
 
-PolyglotMol provides a unified interface for generating various molecular representations including:
+MolBlender provides a unified interface for generating various molecular representations including:
 - Fingerprints (RDKit, CDK, DeepChem)
 - 2D/3D descriptors
 - Sequential representations (SMILES, SELFIES)
@@ -14,11 +14,11 @@ PolyglotMol provides a unified interface for generating various molecular repres
 
 ## Documentation
 
-The full documentation is available at: [Read the Docs](https://polyglotmol-docs.readthedocs.io/) *(coming soon)*
+The full documentation is available at: [Read the Docs](https://molblender-docs.readthedocs.io/) *(coming soon)*
 
 ## Source Code Access
 
-The source code for PolyglotMol is currently in private development. This repository only contains the documentation files to provide public access to the project documentation.
+The source code for MolBlender is currently in private development. This repository only contains the documentation files to provide public access to the project documentation.
 
 ## Contributing
 
@@ -29,4 +29,4 @@ We welcome contributions to the documentation! Please feel free to:
 
 ## License
 
-This documentation is licensed under the same terms as the main PolyglotMol project.
+This documentation is licensed under the same terms as the main MolBlender project.

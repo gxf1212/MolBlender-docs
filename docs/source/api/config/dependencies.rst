@@ -3,7 +3,7 @@ Dependencies
 
 Unified dependency management system.
 
-.. currentmodule:: polyglotmol.config.dependencies
+.. currentmodule:: molblender.config.dependencies
 
 Overview
 --------
@@ -48,7 +48,7 @@ All dependency functions follow the same pattern:
 
 .. code-block:: python
 
-   from polyglotmol.config import dependencies as deps
+   from molblender.config import dependencies as deps
    
    # Check if available (doesn't raise error)
    if deps.is_rdkit_available():

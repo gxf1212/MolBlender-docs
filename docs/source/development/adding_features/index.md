@@ -1,6 +1,6 @@
 # Adding Features
 
-Guides for extending PolyglotMol with new capabilities.
+Guides for extending MolBlender with new capabilities.
 
 ## Quick Navigation
 
@@ -29,7 +29,7 @@ Add data types
 
 ## Overview
 
-PolyglotMol's modular architecture makes it easy to extend with new:
+MolBlender's modular architecture makes it easy to extend with new:
 - **Featurizers**: Molecular representation methods
 - **Models**: Machine learning algorithms
 - **Modalities**: Data format types
@@ -56,7 +56,7 @@ modalities
 
 ### Registration Pattern
 
-Most PolyglotMol features use the registry pattern:
+Most MolBlender features use the registry pattern:
 
 ```python
 @register_featurizer("my_feature", category="fingerprints", shape=(1024,))
@@ -69,7 +69,7 @@ class MyFeaturizer(BaseFeaturizer):
 Use the unified dependency system:
 
 ```python
-from polyglotmol.config import dependencies as deps
+from molblender.config import dependencies as deps
 
 def _featurize(self, mol):
     rdkit = deps.get_rdkit()  # Raises clear error if missing
@@ -81,7 +81,7 @@ def _featurize(self, mol):
 Use custom exceptions:
 
 ```python
-from polyglotmol.representations.utils.exceptions import (
+from molblender.representations.utils.exceptions import (
     FeaturizationError,
     InvalidInputError
 )

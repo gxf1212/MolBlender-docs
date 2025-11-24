@@ -3,12 +3,12 @@ Utilities
 
 Utility functions for model screening and result management.
 
-.. currentmodule:: polyglotmol.models.api.utils
+.. currentmodule:: molblender.models.api.utils
 
 Database Management
 -------------------
 
-.. automodule:: polyglotmol.models.api.utils.results_db
+.. automodule:: molblender.models.api.utils.results_db
    :members:
    :undoc-members:
    :show-inheritance:
@@ -16,7 +16,7 @@ Database Management
 Validation
 ----------
 
-.. automodule:: polyglotmol.models.api.utils.validation
+.. automodule:: molblender.models.api.utils.validation
    :members:
    :undoc-members:
    :show-inheritance:
@@ -24,7 +24,7 @@ Validation
 Caching
 -------
 
-.. automodule:: polyglotmol.models.api.utils.caching
+.. automodule:: molblender.models.api.utils.caching
    :members:
    :undoc-members:
    :show-inheritance:
@@ -32,7 +32,7 @@ Caching
 GPU Management
 --------------
 
-.. automodule:: polyglotmol.models.api.utils.gpu_manager
+.. automodule:: molblender.models.api.utils.gpu_manager
    :members:
    :undoc-members:
    :show-inheritance:
@@ -40,7 +40,7 @@ GPU Management
 Resource Scheduling
 -------------------
 
-.. automodule:: polyglotmol.models.api.utils.resource_scheduler
+.. automodule:: molblender.models.api.utils.resource_scheduler
    :members:
    :undoc-members:
    :show-inheritance:
@@ -48,7 +48,7 @@ Resource Scheduling
 Helpers
 -------
 
-.. automodule:: polyglotmol.models.api.utils.helpers
+.. automodule:: molblender.models.api.utils.helpers
    :members:
    :undoc-members:
    :show-inheritance:
@@ -56,7 +56,7 @@ Helpers
 Session Merging
 ---------------
 
-.. automodule:: polyglotmol.models.api.utils.session_merger
+.. automodule:: molblender.models.api.utils.session_merger
    :members:
    :undoc-members:
    :show-inheritance:

@@ -1,6 +1,6 @@
 # Sequential Representations
 
-This guide provides an overview of sequential representations in PolyglotMol. Sequential representations treat molecules as strings or sequences of tokens, applying techniques from natural language processing to chemical structures.
+This guide provides an overview of sequential representations in MolBlender. Sequential representations treat molecules as strings or sequences of tokens, applying techniques from natural language processing to chemical structures.
 
 ## Overview
 
@@ -12,7 +12,7 @@ Sequential representations are based on the idea that molecules can be described
 
 ## Types of Sequential Representations
 
-PolyglotMol provides three main types of sequential representations:
+MolBlender provides three main types of sequential representations:
 
 | Type | Description | Example |
 |:-----|:------------|:--------|
@@ -37,7 +37,7 @@ Sequential representations are particularly useful for:
 Simple string processing for SMILES:
 
 ```python
-from polyglotmol.representations.utils.mol_strings import (
+from molblender.representations.utils.mol_strings import (
     standardize_smiles,
     canonical_smiles,
     randomize_smiles
@@ -58,7 +58,7 @@ randomized = randomize_smiles("CC=O")  # "O=CC" or other valid variant
 Breaking SMILES into tokens:
 
 ```python
-from polyglotmol.representations import get_featurizer
+from molblender.representations import get_featurizer
 
 # Basic SMILES tokenizer
 tokenizer = get_featurizer("DeepChem-BasicSmilesTokenizer")
@@ -74,7 +74,7 @@ token_ids = vocab_tokenizer.featurize("CC=O")  # [12, 12, 22, 19]
 SMILES language models for embedding generation:
 
 ```python
-from polyglotmol.representations import get_featurizer
+from molblender.representations import get_featurizer
 
 # Load a ChemBERTa model
 model = get_featurizer("smiles-lm-chemberta")
@@ -93,7 +93,7 @@ Sequential representations can be combined with other types:
 
 ## Submodules
 
-PolyglotMol organizes sequential representations into several key submodules:
+MolBlender organizes sequential representations into several key submodules:
 
 - **strings**: Basic SMILES string manipulation and normalization
 - **tokenizer**: SMILES tokenization and vocabulary handling

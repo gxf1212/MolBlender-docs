@@ -1,6 +1,6 @@
 # Adding New Models
 
-Guide for adding new machine learning models to PolyglotMol.
+Guide for adding new machine learning models to MolBlender.
 
 (Content to be expanded)
 

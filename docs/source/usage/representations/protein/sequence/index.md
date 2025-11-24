@@ -1,6 +1,6 @@
 # Sequence Representations
 
-The `sequence` submodule of `polyglotmol.representations.protein` provides utilities to convert protein sequences into numerical representations using pretrained protein language models (PLMs).
+The `sequence` submodule of `molblender.representations.protein` provides utilities to convert protein sequences into numerical representations using pretrained protein language models (PLMs).
 
 Currently supported models:
 

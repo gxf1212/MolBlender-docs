@@ -1,8 +1,8 @@
 ###############################################################
-Dataset Management API (`polyglotmol.data.dataset`)
+Dataset Management API (`molblender.data.dataset`)
 ###############################################################
 
-.. automodule:: polyglotmol.data.dataset
+.. automodule:: molblender.data.dataset
    :members:
    :undoc-members:
    :show-inheritance:

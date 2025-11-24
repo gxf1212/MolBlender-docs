@@ -1,10 +1,10 @@
 # Evaluation Methodology
 
-Complete guide to PolyglotMol's data splitting, cross-validation, and model evaluation protocols.
+Complete guide to MolBlender's data splitting, cross-validation, and model evaluation protocols.
 
 ## Overview
 
-PolyglotMol follows rigorous machine learning best practices to ensure fair model comparison and reproducible results. This document provides a detailed explanation of:
+MolBlender follows rigorous machine learning best practices to ensure fair model comparison and reproducible results. This document provides a detailed explanation of:
 
 - How training and test sets are created
 - How 5-fold cross-validation is performed
@@ -28,7 +28,7 @@ This section covers the **internal train/test splitting** used during model scre
 
 ### Train/Test Split
 
-PolyglotMol uses sklearn's `train_test_split` to divide your dataset into training and test sets.
+MolBlender uses sklearn's `train_test_split` to divide your dataset into training and test sets.
 
 #### Default Configuration
 
@@ -41,7 +41,7 @@ random_state: int = 42       # Random seed for reproducibility
 
 #### Implementation Details
 
-**Code Location**: `src/polyglotmol/models/api/core/data_handler.py:120-125`
+**Code Location**: `src/molblender/models/api/core/data_handler.py:120-125`
 
 ```python
 def split_data(self, X: np.ndarray, y: np.ndarray):
@@ -74,7 +74,7 @@ split_data(test_size=0.2, random_state=42)
 
 #### Stratified Splitting for Classification
 
-For classification tasks, PolyglotMol automatically uses **stratified sampling** to maintain class balance:
+For classification tasks, MolBlender automatically uses **stratified sampling** to maintain class balance:
 
 **Code Location**: `data_handler.py:108-117`
 
@@ -116,7 +116,7 @@ Cross-validation is performed **only on the training set** to estimate model per
 
 #### Implementation Details
 
-**Code Location**: `src/polyglotmol/models/api/core/evaluation/evaluator.py:285-327`
+**Code Location**: `src/molblender/models/api/core/evaluation/evaluator.py:285-327`
 
 ```python
 def _cross_validate(self, model: Any, X: np.ndarray, y: np.ndarray):
@@ -164,7 +164,7 @@ When you call `cross_val_score(model, X_train, y_train, cv=cv_splitter)`, sklear
 
 ```python
 # Pseudo-code for sklearn's internal logic
-# PolyglotMol creates KFold with fixed random_state
+# MolBlender creates KFold with fixed random_state
 kfold = KFold(n_splits=5, shuffle=True, random_state=42)  # ✅ Fixed random_state
 
 for fold_idx, (train_idx, val_idx) in enumerate(kfold.split(X_train, y_train)):
@@ -204,7 +204,7 @@ Std CV Score = 0.015
 ```{admonition} Reproducibility
 :class: tip
 
-PolyglotMol now uses `KFold(random_state=42)` for cross-validation, ensuring **complete reproducibility** of both CV scores and test scores across different runs.
+MolBlender now uses `KFold(random_state=42)` for cross-validation, ensuring **complete reproducibility** of both CV scores and test scores across different runs.
 ```
 
 ## Model Training and Evaluation
@@ -244,7 +244,7 @@ test_metrics = compute_metrics(y_test, test_pred)
 
 ### Metrics Explained
 
-PolyglotMol reports **two types of metrics**:
+MolBlender reports **two types of metrics**:
 
 | Metric Type | Source | Purpose | Dashboard Display |
 |------------|--------|---------|-------------------|
@@ -439,7 +439,7 @@ for repr_name, X in prepared_data['representations'].items():
 
 **Previous Issue**: sklearn's `cross_val_score` didn't fix `random_state` for KFold splitting.
 
-**Status**: ✅ **FIXED** - PolyglotMol now creates `KFold`/`StratifiedKFold` objects with `random_state=42` before passing to `cross_val_score`.
+**Status**: ✅ **FIXED** - MolBlender now creates `KFold`/`StratifiedKFold` objects with `random_state=42` before passing to `cross_val_score`.
 
 **Implementation**: `evaluator.py:301-323`
 
@@ -493,4 +493,4 @@ Quick reference to implementation details:
 7. **Known Issues**: Per-representation splitting (planned fix in future release)
 ```
 
-For questions or issues about the evaluation methodology, please [open an issue on GitHub](https://github.com/gxf1212/PolyglotMol/issues).
+For questions or issues about the evaluation methodology, please [open an issue on GitHub](https://github.com/gxf1212/MolBlender/issues).

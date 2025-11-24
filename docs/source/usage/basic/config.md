@@ -5,19 +5,19 @@
 :hidden:
 ```
 
-PolyglotMol automatically manages model caching for pre-trained models used by advanced featurizers (PLMs, UniMol, etc.). Models are downloaded once and reused from local cache.
+MolBlender automatically manages model caching for pre-trained models used by advanced featurizers (PLMs, UniMol, etc.). Models are downloaded once and reused from local cache.
 
 ## Cache Priority
 
-PolyglotMol determines cache locations in this order:
+MolBlender determines cache locations in this order:
 
 1. **Environment variables** (highest priority)
-2. **API settings** via {func}`~polyglotmol.config.set_cache_dir`  
-3. **Default paths** under `~/.cache/polyglotmol/`
+2. **API settings** via {func}`~molblender.config.set_cache_dir`  
+3. **Default paths** under `~/.cache/molblender/`
 
 ## Environment Variables
 
-Set these before importing PolyglotMol:
+Set these before importing MolBlender:
 
 ```bash
 # PyTorch Hub models (ESM, CARP)
@@ -32,14 +32,14 @@ export HF_ENDPOINT=https://hf-mirror.com
 
 ## Default Paths
 
-If environment variables aren't set, PolyglotMol uses:
-- `~/.cache/polyglotmol/torch_hub/` for PyTorch Hub
-- `~/.cache/polyglotmol/huggingface_hub/` for Hugging Face
+If environment variables aren't set, MolBlender uses:
+- `~/.cache/molblender/torch_hub/` for PyTorch Hub
+- `~/.cache/molblender/huggingface_hub/` for Hugging Face
 
 ## Programmatic Control
 
 ```python
-from polyglotmol.config import set_cache_dir, get_cache_dir
+from molblender.config import set_cache_dir, get_cache_dir
 
 # Set custom cache directories
 set_cache_dir("torch", "/data/models/torch")
@@ -54,19 +54,19 @@ print(f"HuggingFace cache: {get_cache_dir('hf')}")
 
 ## Verifying Settings
 
-PolyglotMol logs effective paths on import:
+MolBlender logs effective paths on import:
 
 ```python
-import polyglotmol
-# INFO: [PolyglotMol Settings] Effective TORCH_HOME: /home/user/.cache/polyglotmol/torch_hub
-# INFO: [PolyglotMol Settings] Effective HF_HOME: /home/user/.cache/polyglotmol/huggingface_hub
-# INFO: [PolyglotMol Settings] Using HF_ENDPOINT (mirror): https://hf-mirror.com (if set)
+import molblender
+# INFO: [MolBlender Settings] Effective TORCH_HOME: /home/user/.cache/molblender/torch_hub
+# INFO: [MolBlender Settings] Effective HF_HOME: /home/user/.cache/molblender/huggingface_hub
+# INFO: [MolBlender Settings] Using HF_ENDPOINT (mirror): https://hf-mirror.com (if set)
 ```
 
 ## Model Loading Example
 
 ```python
-from polyglotmol.representations.protein.sequence.plm import ProteinLanguageModelFeaturizer
+from molblender.representations.protein.sequence.plm import ProteinLanguageModelFeaturizer
 
 # Models are automatically downloaded to configured cache
 featurizer = ProteinLanguageModelFeaturizer(
@@ -92,11 +92,11 @@ Common model sizes:
 
 ## Offline Usage
 
-Once models are cached, PolyglotMol works offline:
+Once models are cached, MolBlender works offline:
 
 ```python
 # After initial download, this works without internet
-from polyglotmol.representations.spatial.unimol import UniMolFeaturizer
+from molblender.representations.spatial.unimol import UniMolFeaturizer
 
 unimol = UniMolFeaturizer()
 # Loads from local cache at TORCH_HOME or HF_HOME
@@ -104,10 +104,10 @@ unimol = UniMolFeaturizer()
 
 ## API Reference
 
-- {func}`~polyglotmol.config.set_cache_dir` - Set cache directory
-- {func}`~polyglotmol.config.get_cache_dir` - Get current cache path
-- {attr}`~polyglotmol.config.EFFECTIVE_TORCH_HOME` - Active PyTorch cache
-- {attr}`~polyglotmol.config.EFFECTIVE_HF_HOME` - Active HuggingFace cache
+- {func}`~molblender.config.set_cache_dir` - Set cache directory
+- {func}`~molblender.config.get_cache_dir` - Get current cache path
+- {attr}`~molblender.config.EFFECTIVE_TORCH_HOME` - Active PyTorch cache
+- {attr}`~molblender.config.EFFECTIVE_HF_HOME` - Active HuggingFace cache
 
 ## Related Links
 

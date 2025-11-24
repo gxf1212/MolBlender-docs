@@ -4,7 +4,7 @@ Comprehensive guide to all 42 evaluation metrics supported by the dashboard - wh
 
 ## Overview
 
-The PolyglotMol dashboard supports **42 performance metrics** across regression, classification, and cross-validation tasks.
+The MolBlender dashboard supports **42 performance metrics** across regression, classification, and cross-validation tasks.
 
 **Metric Categories:**
 - **Regression** (15 metrics) - Continuous value prediction

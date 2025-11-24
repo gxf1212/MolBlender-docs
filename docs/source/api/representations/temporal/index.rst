@@ -2,7 +2,7 @@
 Sequential Representations API (`...sequential`)
 ################################################
 
-.. automodule:: polyglotmol.representations.sequential
+.. automodule:: molblender.representations.sequential
    :members:
    :undoc-members:
    :show-inheritance:

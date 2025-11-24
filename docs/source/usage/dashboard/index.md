@@ -1,14 +1,14 @@
 # Interactive Dashboard
 
-Professional web-based visualization for exploring PolyglotMol screening results with interactive charts, dynamic filtering, and comprehensive analysis tools.
+Professional web-based visualization for exploring MolBlender screening results with interactive charts, dynamic filtering, and comprehensive analysis tools.
 
 ## Overview
 
-The PolyglotMol dashboard replaces static PDF reports with a modern, interactive interface built on Streamlit and Plotly. Launch with a single command and explore your results through dynamic visualizations, sortable tables, and real-time metric switching.
+The MolBlender dashboard replaces static PDF reports with a modern, interactive interface built on Streamlit and Plotly. Launch with a single command and explore your results through dynamic visualizations, sortable tables, and real-time metric switching.
 
 ```bash
 # Launch dashboard
-polyglotmol view /path/to/results
+molblender view /path/to/results
 
 # Opens at http://localhost:8502
 ```
@@ -50,7 +50,7 @@ Download filtered CSV data, high-res charts, and reproduction code.
 
 ```bash
 # Install with dashboard extras
-pip install polyglotmol[dashboard]
+pip install molblender[dashboard]
 
 # Or install manually
 pip install streamlit plotly scipy
@@ -59,7 +59,7 @@ pip install streamlit plotly scipy
 ### 2. Run Screening
 
 ```python
-from polyglotmol.models.api import universal_screen
+from molblender.models.api import universal_screen
 
 results = universal_screen(
     dataset=dataset,
@@ -73,13 +73,13 @@ results = universal_screen(
 
 ```bash
 # From database file
-polyglotmol view ./screening_results.db
+molblender view ./screening_results.db
 
 # From results directory
-polyglotmol view ./screening_results_20250115
+molblender view ./screening_results_20250115
 
 # Custom port
-polyglotmol view ./results --port 8503
+molblender view ./results --port 8503
 ```
 
 The dashboard automatically opens in your browser at `http://localhost:8502`.
@@ -166,7 +166,7 @@ The dashboard loads results from multiple sources:
 
 **SQLite Database** (Recommended)
 ```bash
-polyglotmol view ./screening_results.db
+molblender view ./screening_results.db
 ```
 - Fastest loading
 - Supports multiple sessions
@@ -174,7 +174,7 @@ polyglotmol view ./screening_results.db
 
 **JSON Files**
 ```bash
-polyglotmol view ./screening_results.json
+molblender view ./screening_results.json
 ```
 - Backward compatibility
 - Easy sharing
@@ -182,7 +182,7 @@ polyglotmol view ./screening_results.json
 
 **Results Directory**
 ```bash
-polyglotmol view ./results_folder
+molblender view ./results_folder
 ```
 - Auto-detects .db or .json files
 - Loads first found
@@ -298,7 +298,7 @@ The dashboard is optimized for large result sets (1000+ models):
 
 ### Finding the Best Model
 
-1. Launch dashboard: `polyglotmol view results.db`
+1. Launch dashboard: `molblender view results.db`
 2. Check **Performance Analysis** tab → Overview cards
 3. Look at **Model Comparison** chart → Identify top models
 4. Switch to **Model Inspection** tab → Search for best model
@@ -330,7 +330,7 @@ The dashboard is optimized for large result sets (1000+ models):
 pip install streamlit plotly scipy
 
 # Try specific port
-polyglotmol view results.db --port 8503
+molblender view results.db --port 8503
 
 # Check file exists
 ls -lh results.db
@@ -339,7 +339,7 @@ ls -lh results.db
 **No results displayed:**
 - Verify file contains data: `sqlite3 results.db "SELECT COUNT(*) FROM model_results;"`
 - Check browser console for errors (F12)
-- Try loading from JSON: `polyglotmol view results.json`
+- Try loading from JSON: `molblender view results.json`
 
 **Slow performance:**
 - Reduce displayed results with filters
@@ -353,24 +353,24 @@ ls -lh results.db
 lsof -ti:8502 | xargs kill -9
 
 # Or use different port
-polyglotmol view results.db --port 8504
+molblender view results.db --port 8504
 ```
 
 ## CLI Reference
 
 ```bash
 # Basic usage
-polyglotmol view <path>
+molblender view <path>
 
 # Options
-polyglotmol view <path> --port 8503  # Custom port
-polyglotmol info                      # Package info
-polyglotmol --help                    # Full help
+molblender view <path> --port 8503  # Custom port
+molblender info                      # Package info
+molblender --help                    # Full help
 
 # Examples
-polyglotmol view ./results.db
-polyglotmol view ./screening_results_20250115
-polyglotmol view ../experiments/run1/results.json --port 8505
+molblender view ./results.db
+molblender view ./screening_results_20250115
+molblender view ../experiments/run1/results.json --port 8505
 ```
 
 ## Detailed Guides

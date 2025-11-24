@@ -1,10 +1,10 @@
 # Working with Results
 
-Learn how to access, analyze, and export screening results from PolyglotMol's SQLite database storage.
+Learn how to access, analyze, and export screening results from MolBlender's SQLite database storage.
 
 ## Result Storage
 
-PolyglotMol uses **SQLite databases** as the primary storage format for screening results, replacing older JSON-only approaches.
+MolBlender uses **SQLite databases** as the primary storage format for screening results, replacing older JSON-only approaches.
 
 ###Benefits of SQLite Storage
 
@@ -17,7 +17,7 @@ PolyglotMol uses **SQLite databases** as the primary storage format for screenin
 ### Enabling Database Storage
 
 ```python
-from polyglotmol.models.api import universal_screen
+from molblender.models.api import universal_screen
 
 results = universal_screen(
     dataset=dataset,
@@ -29,7 +29,7 @@ results = universal_screen(
 
 ## Database Schema
 
-PolyglotMol creates three tables to store screening results:
+MolBlender creates three tables to store screening results:
 
 ### 1. screening_sessions
 
@@ -118,7 +118,7 @@ for result in results['results'][:5]:  # Top 5
 ### Loading from Database
 
 ```python
-from polyglotmol.models.api.utils import load_results_from_database
+from molblender.models.api.utils import load_results_from_database
 
 # Load all sessions from database
 results = load_results_from_database("./my_screening.db")
@@ -180,7 +180,7 @@ conn.close()
 ### Export to JSON
 
 ```python
-from polyglotmol.models.api.utils import export_to_json
+from molblender.models.api.utils import export_to_json
 
 # Export database results to JSON format
 export_to_json(
@@ -193,7 +193,7 @@ export_to_json(
 ### Export to CSV
 
 ```python
-from polyglotmol.models.api.utils import export_results_csv
+from molblender.models.api.utils import export_results_csv
 
 # Export results table to CSV
 export_results_csv(
@@ -307,7 +307,7 @@ predictions = loaded_model.predict(new_data)
 
 ### Automatic Caching
 
-With `enable_db_storage=True`, PolyglotMol automatically:
+With `enable_db_storage=True`, MolBlender automatically:
 
 1. **Checks existing results** before training
 2. **Skips completed combinations** (same model + representation)
@@ -337,7 +337,7 @@ results = universal_screen(
 ### Manual Cache Management
 
 ```python
-from polyglotmol.models.api.utils import get_cache_info, clear_cache
+from molblender.models.api.utils import get_cache_info, clear_cache
 
 # Check cache contents
 cache_info = get_cache_info("./cache.db")
@@ -357,13 +357,13 @@ The easiest way to explore results is through the interactive dashboard:
 
 ```bash
 # View results from database
-polyglotmol view ./my_screening.db
+molblender view ./my_screening.db
 
 # View results from output directory
-polyglotmol view ./screening_results_20250115_103045
+molblender view ./screening_results_20250115_103045
 
 # Custom port
-polyglotmol view ./my_screening.db --port 8503
+molblender view ./my_screening.db --port 8503
 ```
 
 The dashboard automatically:

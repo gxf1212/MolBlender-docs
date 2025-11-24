@@ -4,7 +4,7 @@ Extract geometric and structural embeddings from Boltz-2 AI-predicted protein-li
 
 ## Introduction
 
-Boltz-2 is a state-of-the-art AI model for protein-ligand structure prediction. This module enables extraction of three types of embeddings from Boltz-2 predictions: global geometric features, token-level atomic features, and pairwise distance matrices. The implementation uses intelligent caching and isolated conda environment execution to provide seamless integration with PolyglotMol's ML pipeline.
+Boltz-2 is a state-of-the-art AI model for protein-ligand structure prediction. This module enables extraction of three types of embeddings from Boltz-2 predictions: global geometric features, token-level atomic features, and pairwise distance matrices. The implementation uses intelligent caching and isolated conda environment execution to provide seamless integration with MolBlender's ML pipeline.
 
 ::::{grid} 1 1 2 2
 :gutter: 3
@@ -47,7 +47,7 @@ pip install biopython
 ## Quick Start
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 from rdkit import Chem
 
 # Create Boltz-2 embedder
@@ -148,7 +148,7 @@ The global embedding captures comprehensive geometric properties:
   - Name of conda environment with Boltz-2 installed
 * - `cache_dir`
   - None
-  - Custom cache directory (default: ~/.cache/polyglotmol/boltz2/structures/)
+  - Custom cache directory (default: ~/.cache/molblender/boltz2/structures/)
 * - `timeout`
   - 600
   - Timeout in seconds for Boltz-2 prediction
@@ -229,7 +229,7 @@ for i, (emb1, emb2) in enumerate(zip(embeddings_first, embeddings_second)):
 ### Binding Affinity Prediction
 
 ```python
-from polyglotmol.data import MolecularDataset
+from molblender.data import MolecularDataset
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
@@ -312,7 +312,7 @@ plt.show()
 If you already have Boltz-2 CIF structure files, extract embeddings directly:
 
 ```python
-from polyglotmol.representations.AI_fold.boltz2.embedding_extractor import Boltz2EmbeddingExtractor
+from molblender.representations.AI_fold.boltz2.embedding_extractor import Boltz2EmbeddingExtractor
 from pathlib import Path
 
 extractor = Boltz2EmbeddingExtractor()
@@ -362,7 +362,7 @@ print(f"New prediction: {structure_file}")
 ### How It Works
 
 1. **Cache Key Generation**: MD5 hash of `(ligand_SMILES, protein_sequence)` tuple
-2. **Cache Location**: `~/.cache/polyglotmol/boltz2/structures/<hash>.cif`
+2. **Cache Location**: `~/.cache/molblender/boltz2/structures/<hash>.cif`
 3. **Cache Hit**: If CIF exists, skip 3-5 minute GPU prediction
 4. **Cache Miss**: Run Boltz-2 prediction and save CIF for future use
 
@@ -537,7 +537,7 @@ If predictions fail without errors, use pre-computed CIF files:
 
 ```python
 # Extract from existing CIF instead of predicting
-from polyglotmol.representations.AI_fold.boltz2.embedding_extractor import Boltz2EmbeddingExtractor
+from molblender.representations.AI_fold.boltz2.embedding_extractor import Boltz2EmbeddingExtractor
 
 extractor = Boltz2EmbeddingExtractor()
 embedding = extractor.extract_embedding("my_structure.cif", "global")

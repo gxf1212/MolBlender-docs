@@ -1,6 +1,6 @@
 # Representations
 
-This section details how to generate various molecular representations using PolyglotMol.
+This section details how to generate various molecular representations using MolBlender.
 
 Choose a representation type below:
 

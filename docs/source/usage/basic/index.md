@@ -1,10 +1,10 @@
 # Basics
 
-Fundamental concepts and usage patterns for working with PolyglotMol.
+Fundamental concepts and usage patterns for working with MolBlender.
 
 ## Introduction
 
-This section covers the essential building blocks you need to understand before diving into specific components of PolyglotMol. Whether you're just starting out or need a reference for core concepts, you'll find practical guides on the featurizer system, configuration management, and data representation formats.
+This section covers the essential building blocks you need to understand before diving into specific components of MolBlender. Whether you're just starting out or need a reference for core concepts, you'll find practical guides on the featurizer system, configuration management, and data representation formats.
 
 Key topics include:
 - **Featurizer System**: Understanding how to discover, instantiate, and use molecular and protein featurizers
@@ -40,7 +40,7 @@ Understanding modalities and tensor dimensions
 ## Quick Start
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 # List available featurizers
 featurizers = pm.list_available_featurizers()

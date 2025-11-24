@@ -2,7 +2,7 @@
 Descriptors API (`...descriptors`)
 ################################################
 
-.. automodule:: polyglotmol.representations.descriptors
+.. automodule:: molblender.representations.descriptors
    :members:
    :undoc-members:
    :show-inheritance:

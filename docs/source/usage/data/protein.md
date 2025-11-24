@@ -4,7 +4,7 @@ Comprehensive protein data management with support for sequences, structures, an
 
 ## Overview
 
-The `Protein` class provides a unified interface for working with protein data in PolyglotMol. It handles:
+The `Protein` class provides a unified interface for working with protein data in MolBlender. It handles:
 
 - **Multiple input formats** (FASTA, PDB, mmCIF, sequences)
 - **Database retrieval** (RCSB PDB, AlphaFold, UniProt)
@@ -27,7 +27,7 @@ The `Protein` class provides a unified interface for working with protein data i
 ### Creating Protein Objects
 
 ```python
-from polyglotmol.data.protein import Protein
+from molblender.data.protein import Protein
 
 # From amino acid sequence
 protein = Protein.from_sequence("MKTIIALSYIFCLVFA")
@@ -136,7 +136,7 @@ print(protein.metadata)
 protein = Protein.from_fasta_file("protein.fasta")
 
 # Multi-sequence FASTA (returns list)
-from polyglotmol.data.protein import proteins_from_fasta
+from molblender.data.protein import proteins_from_fasta
 
 proteins = proteins_from_fasta("multi_protein.fasta")
 print(f"Loaded {len(proteins)} proteins")
@@ -218,7 +218,7 @@ protein = Protein.from_pdb_id("1ABC")  # Instant!
 #### Batch Download
 
 ```python
-from polyglotmol.data.protein import fetch_multiple_from_pdb
+from molblender.data.protein import fetch_multiple_from_pdb
 
 pdb_ids = ["1ABC", "2XYZ", "3DEF"]
 proteins = fetch_multiple_from_pdb(pdb_ids)
@@ -278,7 +278,7 @@ protein = Protein.from_input("1ABC")                       # Detects: PDB ID
 protein = Protein.from_input(">sp|P12345\nMKTII...")       # Detects: FASTA string
 
 # Manual type specification (optional)
-from polyglotmol.data import InputType
+from molblender.data import InputType
 
 protein = Protein.from_input(
     "1ABC",
@@ -368,10 +368,10 @@ All downloads and structure predictions are automatically cached.
 ### Default Cache Location
 
 ```python
-# Default: .polyglotmol_cache/proteins/ in current directory
+# Default: .molblender_cache/proteins/ in current directory
 protein = Protein.from_pdb_id("1ABC")
 print(protein.cache_dir)
-# Output: /path/to/cwd/.polyglotmol_cache/proteins/
+# Output: /path/to/cwd/.molblender_cache/proteins/
 ```
 
 ### Custom Cache Directory
@@ -405,7 +405,7 @@ Protein data integrates seamlessly with molecular datasets for protein-ligand mo
 ### Loading Protein-Ligand Datasets
 
 ```python
-from polyglotmol.data import MolecularDataset
+from molblender.data import MolecularDataset
 
 # Load dataset with protein information
 dataset = MolecularDataset.from_csv(
@@ -469,7 +469,7 @@ with open("protein.fasta", "w") as f:
 protein = Protein.from_input("protein_file.xxx")
 
 # Explicitly specify format
-from polyglotmol.data import InputType
+from molblender.data import InputType
 
 protein = Protein.from_input(
     "ambiguous_file",
@@ -521,7 +521,7 @@ print(metadata)
 ### Custom Sequence Processing
 
 ```python
-from polyglotmol.data.protein import (
+from molblender.data.protein import (
     STANDARD_AMINO_ACIDS,
     validate_sequence
 )
@@ -559,7 +559,7 @@ if protein.structure is None:
 
 ```python
 # Sequence validation with detailed errors
-from polyglotmol.representations.utils.exceptions import InvalidInputError
+from molblender.representations.utils.exceptions import InvalidInputError
 
 try:
     protein = Protein.from_sequence("")  # Empty sequence
@@ -600,7 +600,7 @@ if protein.structure and protein.has_missing_atoms():
 ### Example 1: Protein-Ligand Dataset
 
 ```python
-from polyglotmol.data import MolecularDataset
+from molblender.data import MolecularDataset
 
 # Load protein-ligand binding data
 dataset = MolecularDataset.from_csv(
@@ -617,7 +617,7 @@ dataset.add_features([
 ])
 
 # Train model (example)
-from polyglotmol.models import universal_screen
+from molblender.models import universal_screen
 
 results = universal_screen(
     dataset=dataset,
@@ -641,7 +641,7 @@ protein.write_structure("cleaned_1ABC.pdb")
 fasta = protein.to_fasta()
 
 # Use in featurization
-from polyglotmol.representations.protein.structure import MaSIFFeaturizer
+from molblender.representations.protein.structure import MaSIFFeaturizer
 
 featurizer = MaSIFFeaturizer()
 features = featurizer.featurize([protein])
@@ -694,5 +694,5 @@ For detailed API documentation, see:
 4. **Smart Caching**: Automatic caching of downloads and predictions
 5. **BioPython Compatible**: Full integration with BioPython ecosystem
 6. **Validation**: Automatic sequence validation and structure repair
-7. **ML Ready**: Seamless integration with PolyglotMol featurizers
+7. **ML Ready**: Seamless integration with MolBlender featurizers
 ```

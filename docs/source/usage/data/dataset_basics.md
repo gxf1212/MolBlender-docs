@@ -9,7 +9,7 @@ This guide covers the fundamental operations for creating and manipulating molec
 ### From SMILES Strings
 
 ```python
-from polyglotmol.data import MolecularDataset, InputType
+from molblender.data import MolecularDataset, InputType
 
 # Create a dataset from SMILES strings
 smiles_list = ["CCO", "c1ccccc1", "CC(=O)O"]  # Ethanol, Benzene, Acetic acid
@@ -33,7 +33,7 @@ print(f"Labels: {dataset.label_names}")
 ### From CSV File
 
 ```python
-from polyglotmol.data import MolecularDataset, InputType
+from molblender.data import MolecularDataset, InputType
 
 # Create a dataset from a CSV file containing SMILES
 dataset = MolecularDataset.from_csv(
@@ -59,7 +59,7 @@ print(labels_with_errors.head())
 ### From CSV with Both SMILES and Structure Files
 
 ```python
-from polyglotmol.data import MolecularDataset, InputType
+from molblender.data import MolecularDataset, InputType
 
 # Create a dataset that handles both SMILES and structure files
 dataset = MolecularDataset.from_dual_input_csv(
@@ -81,7 +81,7 @@ print(f"Structure file: {mol.get_property('FilePath')}")
 ### From SDF File
 
 ```python
-from polyglotmol.data import MolecularDataset
+from molblender.data import MolecularDataset
 
 # Create a dataset from an SDF file
 dataset = MolecularDataset.from_sdf(
@@ -150,8 +150,8 @@ for mol_id, molecule, labels, features, weights in dataset.itersamples():
 ## Adding Features
 
 ```python
-import polyglotmol as pm
-from polyglotmol.data import MolecularDataset
+import molblender as pm
+from molblender.data import MolecularDataset
 
 # List available featurizers
 available_featurizers = pm.list_available_featurizers()

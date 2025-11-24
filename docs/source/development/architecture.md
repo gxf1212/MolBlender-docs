@@ -1,10 +1,10 @@
 # Architecture Overview
 
-This document provides a high-level overview of PolyglotMol's architecture and design principles.
+This document provides a high-level overview of MolBlender's architecture and design principles.
 
 ## System Design Philosophy
 
-PolyglotMol is built around four core principles:
+MolBlender is built around four core principles:
 
 1. **Modularity**: Components are independent and interchangeable
 2. **Registry-Based**: Dynamic registration of featurizers and models
@@ -81,7 +81,7 @@ Unified system for handling optional dependencies.
 
 **Pattern:**
 ```python
-from polyglotmol.config import dependencies as deps
+from molblender.config import dependencies as deps
 
 def featurize(self, mol):
     rdkit = deps.get_rdkit()  # Auto-raises error if missing
@@ -174,7 +174,7 @@ See {doc}`adding_features/modalities` for details.
 **Feature Caching:**
 - Representations cached after first computation
 - Invalidated on parameter changes
-- Stored in `.pgm_cache/` directory
+- Stored in `.mbl_cache/` directory
 
 **Model Results:**
 - SQLite database stores all results
@@ -184,7 +184,7 @@ See {doc}`adding_features/modalities` for details.
 ## Code Organization
 
 ```
-src/polyglotmol/
+src/molblender/
 ├── representations/     # Feature generators
 │   ├── fingerprints/   # Traditional fingerprints
 │   ├── descriptors/    # Molecular descriptors
@@ -223,6 +223,6 @@ Features computed only when accessed, with automatic caching.
 
 ## See Also
 
-- {doc}`adding_features/index` - Extend PolyglotMol
+- {doc}`adding_features/index` - Extend MolBlender
 - {doc}`style` - Code conventions
 - {doc}`testing` - Testing guidelines

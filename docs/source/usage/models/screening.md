@@ -1,10 +1,10 @@
 # Screening Functions
 
-Complete reference for PolyglotMol's screening functions - from quick evaluation to comprehensive multimodal screening.
+Complete reference for MolBlender's screening functions - from quick evaluation to comprehensive multimodal screening.
 
 ## Overview
 
-PolyglotMol provides multiple screening functions optimized for different use cases:
+MolBlender provides multiple screening functions optimized for different use cases:
 
 | **Function** | **Purpose** | **Models** | **Time** | **Use Case** |
 |-------------|------------|-----------|---------|-------------|
@@ -21,7 +21,7 @@ PolyglotMol provides multiple screening functions optimized for different use ca
 ### Basic Usage
 
 ```python
-from polyglotmol.models.api import universal_screen
+from molblender.models.api import universal_screen
 
 results = universal_screen(
     dataset=dataset,
@@ -136,6 +136,28 @@ For a complete explanation of data splitting, cross-validation, and evaluation m
 `db_path`: `str`, optional
 : Path to SQLite database file (default: `"screening_results.db"`)
 
+**Hyperparameter Optimization (HPO)**
+
+`enable_hpo`: `bool`, default=`False`
+: Enable two-stage hyperparameter optimization for top performers
+
+`hpo_stage`: `str`, default=`"coarse"`
+: HPO granularity level
+  - `"coarse"` - Fast grid search (3-5 values per parameter)
+  - `"fine"` - Detailed grid search (5-10 values per parameter)
+  - `"custom"` - User-defined grid from parameter_grids.py
+
+`hpo_method`: `str`, default=`"grid"`
+: Search algorithm for hyperparameter optimization
+  - `"grid"` - Exhaustive grid search (recommended)
+  - `"random"` - Random search (faster for large grids)
+
+`top_n_for_hpo`: `int`, default=`5`
+: Number of top-performing models to optimize in Stage 2
+
+`hpo_cv_folds`: `int`, default=`None`
+: Cross-validation folds for HPO (defaults to `cv_folds` if not specified)
+
 **Other Options**
 
 `enable_feature_selection`: `bool`, default=`True`
@@ -245,9 +267,24 @@ results = universal_screen(
 )
 ```
 
+#### Pattern 6: Two-Stage HPO for Top Performers
+
+```python
+# Automatic hyperparameter optimization for best models
+results = universal_screen(
+    dataset=dataset,
+    target_column="binding_affinity",
+    enable_hpo=True,
+    hpo_stage="coarse",     # Fast grid search
+    top_n_for_hpo=3,        # Optimize top 3 models
+    hpo_cv_folds=3,         # Use 3-fold CV for HPO
+    enable_db_storage=True  # Track optimization progress
+)
+```
+
 ### Modality Auto-Detection
 
-PolyglotMol automatically detects available modalities from your dataset:
+MolBlender automatically detects available modalities from your dataset:
 
 ```python
 # Dataset with SMILES only → AUTO detects STRING modality
@@ -271,7 +308,7 @@ Fast screening with essential models for initial exploration.
 ### Basic Usage
 
 ```python
-from polyglotmol.models.api import quick_screen
+from molblender.models.api import quick_screen
 
 results = quick_screen(
     dataset=dataset,
@@ -320,7 +357,7 @@ Test a single model quickly without comprehensive screening.
 ### Basic Usage
 
 ```python
-from polyglotmol.models.api import simple_evaluate
+from molblender.models.api import simple_evaluate
 
 result = simple_evaluate(
     dataset=dataset,
@@ -359,7 +396,7 @@ Compare multiple models on the same representation.
 ### Basic Usage
 
 ```python
-from polyglotmol.models.api import compare_models
+from molblender.models.api import compare_models
 
 results = compare_models(
     dataset=dataset,
@@ -405,7 +442,7 @@ Compare multiple representations on the same model.
 ### Basic Usage
 
 ```python
-from polyglotmol.models.api import compare_representations
+from molblender.models.api import compare_representations
 
 results = compare_representations(
     dataset=dataset,
@@ -440,8 +477,8 @@ def compare_representations(
 For fine-grained control, use `Combination` objects:
 
 ```python
-from polyglotmol.models.api import universal_screen
-from polyglotmol.models.api.core import Combination
+from molblender.models.api import universal_screen
+from molblender.models.api.core import Combination
 
 custom_combinations = [
     Combination(
@@ -482,6 +519,103 @@ else:
 - `MemoryError` - Reduce cv_folds, use execution_preference="memory"
 - `TimeoutError` - Individual model timeout (auto-skipped, doesn't halt screening)
 
+## Hyperparameter Optimization (HPO)
+
+MolBlender implements a **two-stage HPO system** for efficient model tuning:
+
+### Two-Stage Workflow
+
+**Stage 1**: Screen all model-representation combinations with **default parameters**
+- Quickly identifies promising models (~10-30 minutes)
+- Establishes baseline performance ranking
+- Results stored with `stage=1` in database
+
+**Stage 2**: Optimize **top-N performers** with **GridSearchCV**
+- Only runs if `enable_hpo=True`
+- Automatically tests hyperparameter grids for top-N models
+- Results stored with `stage=2` and optimized parameters
+
+### Configuration Options
+
+```python
+results = universal_screen(
+    dataset=dataset,
+    target_column="activity",
+    enable_hpo=True,           # Enable Stage 2 optimization
+    hpo_stage="coarse",        # "coarse" | "fine" | "custom"
+    hpo_method="grid",         # "grid" | "random"
+    top_n_for_hpo=5,           # Optimize top 5 models
+    hpo_cv_folds=3,            # Use 3-fold CV for HPO (faster)
+    enable_db_storage=True     # Track all stages in database
+)
+```
+
+### HPO Granularity Levels
+
+| Stage | Grid Size | Example | Use Case |
+|-------|-----------|---------|----------|
+| **coarse** | 3-5 values/param | `n_estimators: [50, 100, 200]` | Fast exploration |
+| **fine** | 5-10 values/param | `n_estimators: [50, 100, 150, 200, 300]` | Detailed tuning |
+| **custom** | User-defined | Edit `parameter_grids.py` | Expert control |
+
+### Supported Models
+
+HPO works with all model types:
+- **Traditional ML**: Random Forest, XGBoost, SVM, Ridge, Lasso, etc.
+- **Deep Learning**: VAE models, CNN models
+- **3D Representations**: Spatial matrices, UniMol embeddings, 3D fingerprints
+
+### Database Integration
+
+When `enable_db_storage=True`, HPO progress is tracked:
+
+```python
+# Resume interrupted HPO runs
+db = ScreeningResultsDB("screening_results.db")
+previous_results = db.load_comprehensive_results()
+
+# Stage 1 results have default parameters
+stage1_models = [r for r in results if r.get('stage') == 1]
+
+# Stage 2 results have optimized parameters
+stage2_models = [r for r in results if r.get('stage') == 2]
+```
+
+### Performance Considerations
+
+```{admonition} HPO Best Practices
+:class: tip
+
+1. **Use `hpo_cv_folds=3`** for Stage 2 - faster with minimal accuracy loss
+2. **Start with `hpo_stage="coarse"`** - quick exploration before fine-tuning
+3. **Set `top_n_for_hpo=3`** for large grids - reduce total optimization time
+4. **Enable database storage** - track all optimization attempts
+5. **Monitor verbose output** - watch for Stage 2 progression messages
+```
+
+Example HPO workflow:
+
+```python
+# Step 1: Quick screening with default parameters
+results = universal_screen(
+    dataset=dataset,
+    target_column="activity",
+    cv_folds=3,              # Fast Stage 1
+    enable_db_storage=True
+)
+
+# Step 2: Optimize top performers
+optimized = universal_screen(
+    dataset=dataset,
+    target_column="activity",
+    enable_hpo=True,
+    hpo_stage="coarse",
+    top_n_for_hpo=3,
+    hpo_cv_folds=3,
+    db_path="screening_results.db"  # Reuse same database
+)
+```
+
 ## Performance Tips
 
 ```{admonition} Best Practices
@@ -492,6 +626,7 @@ else:
 3. **Use 3 CV folds for large datasets** (>10K molecules) - faster with minimal accuracy loss
 4. **Monitor with `verbose=2`** when debugging - detailed progress logging
 5. **Leave 2 cores free** for system - `max_cpu_cores=-2`
+6. **Enable HPO for final models** - `enable_hpo=True` after initial screening
 ```
 
 ## Next Steps

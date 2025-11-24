@@ -14,8 +14,8 @@ The models module provides comprehensive machine learning capabilities:
 ## Quick Example
 
 ```python
-from polyglotmol.models.api import universal_screen
-from polyglotmol.data import MolecularDataset
+from molblender.models.api import universal_screen
+from molblender.data import MolecularDataset
 
 # Load dataset
 dataset = MolecularDataset.from_csv("data.csv",
@@ -26,7 +26,7 @@ dataset = MolecularDataset.from_csv("data.csv",
 results = universal_screen(dataset, target_column="activity")
 
 # View results
-# polyglotmol view ./results_folder
+# molblender view ./results_folder
 ```
 
 ## API Documentation

@@ -1,6 +1,6 @@
 # Testing Guidelines
 
-Comprehensive testing ensures PolyglotMol reliability and maintainability.
+Comprehensive testing ensures MolBlender reliability and maintainability.
 
 ## Test Structure
 
@@ -28,7 +28,7 @@ pytest
 pytest tests/test_representations/test_fingerprints.py
 
 # Run with coverage
-pytest --cov=polyglotmol --cov-report=html
+pytest --cov=molblender --cov-report=html
 
 # Run specific test
 pytest tests/test_molecule.py::test_smiles_validation
@@ -110,7 +110,7 @@ def test_invalid_input_raises():
 
 Check coverage:
 ```bash
-pytest --cov=polyglotmol --cov-report=term-missing
+pytest --cov=molblender --cov-report=term-missing
 ```
 
 ## Best Practices

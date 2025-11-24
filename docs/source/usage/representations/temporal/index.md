@@ -12,7 +12,7 @@ Temporal representations capture the dynamic aspects of molecular systems that s
 - Ensemble-averaged molecular properties
 - Time-dependent chemical reactions
 
-PolyglotMol provides tools to analyze both molecular dynamics trajectories and multi-conformer ensembles, extracting statistical features that characterize dynamic behavior.
+MolBlender provides tools to analyze both molecular dynamics trajectories and multi-conformer ensembles, extracting statistical features that characterize dynamic behavior.
 
 ::::{grid} 1 1 2 3
 :gutter: 3
@@ -37,7 +37,7 @@ Handle large trajectories with memory efficiency
 ## Quick Start
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 # Conformational ensemble analysis
 ensemble = pm.get_featurizer("conformer_ensemble")
@@ -59,7 +59,7 @@ except FileNotFoundError:
 
 ### Loading Trajectories
 
-PolyglotMol integrates with MDAnalysis for trajectory processing:
+MolBlender integrates with MDAnalysis for trajectory processing:
 
 ```bash
 # Install MD analysis dependencies
@@ -67,7 +67,7 @@ pip install MDAnalysis
 ```
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 # Initialize trajectory analyzer
 md_analyzer = pm.get_featurizer("md_trajectory_features", 
@@ -489,7 +489,7 @@ for i, (smiles, features) in enumerate(zip(molecules, parallel_results)):
 ## Integration with Dataset
 
 ```python
-from polyglotmol.data import MolecularDataset
+from molblender.data import MolecularDataset
 
 # Create dataset with temporal features
 molecules = ["CCCCCCCC", "c1ccccc1", "CCc1ccccc1"] 

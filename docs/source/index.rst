@@ -1,47 +1,47 @@
 .. _main-index:
 
 #################
-PolyglotMol Docs
+MolBlender Docs
 #################
 
-**PolyglotMol**: A Multi-Modal Molecular Representation Toolkit.
+**MolBlender**: A Multi-Modal Molecular Representation Toolkit.
 
 .. image:: https://img.shields.io/badge/python-3.9+-blue.svg
    :target: https://www.python.org/downloads/
    :alt: Python Version
 
 .. image:: https://img.shields.io/badge/docs-latest-brightgreen.svg
-   :target: https://polyglotmol.readthedocs.io/
+   :target: https://molblender.readthedocs.io/
    :alt: Documentation Status
 
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg
-   :target: https://github.com/gxf1212/PolyglotMol/blob/main/LICENSE
+   :target: https://github.com/gxf1212/MolBlender/blob/main/LICENSE
    :alt: License
 
-Welcome to the documentation for PolyglotMol!
+Welcome to the documentation for MolBlender!
 
 Quick Links
 ===========
 
-.. button-link:: https://github.com/gxf1212/PolyglotMol
+.. button-link:: https://github.com/gxf1212/MolBlender
    :color: primary
    :outline:
 
    :octicon:`mark-github` GitHub Repository
 
-.. button-link:: https://github.com/gxf1212/PolyglotMol-docs
+.. button-link:: https://github.com/gxf1212/MolBlender-docs
    :color: primary
    :outline:
 
    :octicon:`book` Documentation Source
 
-.. button-link:: https://github.com/gxf1212/PolyglotMol/issues
+.. button-link:: https://github.com/gxf1212/MolBlender/issues
    :color: secondary
    :outline:
 
    :octicon:`issue-opened` Report Issues
 
-.. button-link:: https://github.com/gxf1212/PolyglotMol/discussions
+.. button-link:: https://github.com/gxf1212/MolBlender/discussions
    :color: secondary
    :outline:
 
@@ -54,7 +54,7 @@ Quick Links
       :link: introduction
       :link-type: doc
 
-      New to PolyglotMol? Start here to understand the core concepts and install the package.
+      New to MolBlender? Start here to understand the core concepts and install the package.
       ^^^
       * :doc:`introduction`
       * :doc:`installation`

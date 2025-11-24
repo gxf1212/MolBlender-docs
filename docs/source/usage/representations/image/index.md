@@ -13,7 +13,7 @@ conda install -c conda-forge pymol-open-source  # For high-quality 3D rendering
 ## Quick Start
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 import numpy as np
 
 # Generate 2D molecular image
@@ -122,7 +122,7 @@ images = featurizer.featurize(molecules, n_workers=4)
 print(f"Generated {len(images)} images, each with shape {images[0].shape}")
 
 # Combine with dataset
-from polyglotmol.data import MolecularDataset, Molecule
+from molblender.data import MolecularDataset, Molecule
 dataset = MolecularDataset([Molecule(smi) for smi in molecules])
 dataset.add_features("rdkit_2d_image")
 dataset.add_features("cnn_features_resnet") 

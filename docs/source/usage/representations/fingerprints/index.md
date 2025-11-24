@@ -2,7 +2,7 @@
 
 Molecular fingerprints are one of the most widely used representations in cheminformatics and machine learning for molecules. They encode molecular structures into fixed-length vectors, often binary or count-based, that can be compared efficiently for similarity or fed into machine learning models.
 
-PolyglotMol supports several widely-used fingerprinting toolkits, each with its own algorithm and applications. This guide introduces how to generate and use fingerprints from each supported backend. Whether you're working on molecular similarity search, QSAR modeling, or feature engineering for deep learning, these tools provide a unified and modular way to get started.
+MolBlender supports several widely-used fingerprinting toolkits, each with its own algorithm and applications. This guide introduces how to generate and use fingerprints from each supported backend. Whether you're working on molecular similarity search, QSAR modeling, or feature engineering for deep learning, these tools provide a unified and modular way to get started.
 
 ## Available Fingerprint Backends
 

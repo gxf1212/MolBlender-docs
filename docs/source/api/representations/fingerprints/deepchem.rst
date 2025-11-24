@@ -2,7 +2,7 @@
 API Reference
 #############
 
-.. automodule:: polyglotmol.representations.fingerprints.deepchem
+.. automodule:: molblender.representations.fingerprints.deepchem
    :members:
    :undoc-members:
    :show-inheritance:

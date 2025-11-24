@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Advanced Molecular Splitting Strategies** (`src/polyglotmol/data/dataset/splitting/`)
+- **Advanced Molecular Splitting Strategies** (`src/molblender/data/dataset/splitting/`)
   - **4 Advanced Splitters from splito package** (Apache 2.0 License):
     - **PerimeterSplit**: Extrapolation-oriented split placing most dissimilar molecules in test set
     - **MolecularWeightSplit**: Tests generalization across different molecular sizes
@@ -64,7 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - 28 unit tests total (12 new custom split tests)
     - Tests for functional API and MolecularDataset integration
     - Edge case testing: NaN values, invalid formats, missing columns
-- **Two-Stage Hyperparameter Optimization System** (`src/polyglotmol/models/api/`)
+- **Two-Stage Hyperparameter Optimization System** (`src/molblender/models/api/`)
   - **Stage 1**: Model screening with default parameters for rapid baseline performance assessment
   - **Stage 2**: Automated hyperparameter optimization (HPO) for top-N performers from Stage 1
   - **Configuration via ScreeningConfig**:
@@ -86,7 +86,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - High-level: TRADITIONAL_ML vs DEEP_LEARNING (using ModelCorpus enum from model registry)
     - Fine-grained: LINEAR, TREE, BOOSTING, KERNEL, VAE, TRANSFORMER, CNN subtypes
     - Automatic classification based on model registry metadata and categories
-  - **Parameter Grid System** (`src/polyglotmol/models/corpus/parameter_grids.py`):
+  - **Parameter Grid System** (`src/molblender/models/corpus/parameter_grids.py`):
     - Comprehensive coarse grids for all model types (tree, boosting, SVM, linear, neural, VAE, CNN)
     - Model-specific parameter ranges based on best practices
     - CNN grids: learning_rate, batch_size, epochs (matrix_cnn, image_cnn variants)
@@ -124,7 +124,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - 3D representations (spatial matrices, UniMol embeddings, 3D fingerprints)
     - Multiple fingerprint categories (RDKit, CDK, Datamol)
 
-- **VAE (Variational Autoencoder) Integration for Molecular Fingerprints** (`src/polyglotmol/models/`)
+- **VAE (Variational Autoencoder) Integration for Molecular Fingerprints** (`src/molblender/models/`)
   - **Complete VAE Implementation** (`modality_models/vae_models.py`):
     - MolecularFingerprintVAE class with encoder-decoder architecture
     - Integrated predictor network for direct property prediction from latent space
@@ -150,7 +150,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - GPU acceleration when available, graceful CPU fallback
   - **Current Status**: Fully integrated and tested, VAE models accessible but showing 0.0 scores (model performance issue, not integration bug)
 
-- **DNR Diagnostics Module** (`src/polyglotmol/data/diagnostics/`)
+- **DNR Diagnostics Module** (`src/molblender/data/diagnostics/`)
   - Complete implementation of DNR (Different Neighbor Ratio) analysis for dataset quality assessment
   - Paper-accurate parameters from "Upgrading Reliability in Molecular Property Prediction" (similarity threshold 0.5, property diff 1.0 log unit)
   - Activity cliff detection for identifying similar molecules with large property differences
@@ -161,15 +161,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Integration with MolecularDataset API via `DatasetDiagnostics` class
   - Comprehensive markdown report generation with interpretation guidelines
   - Submodules: `core.py` (main diagnostics), `similarity.py` (fingerprint utilities), `visualization.py` (plotting functions)
-  - **Interactive Streamlit Dashboard** (`src/polyglotmol/data/diagnostics/dashboard/`)
+  - **Interactive Streamlit Dashboard** (`src/molblender/data/diagnostics/dashboard/`)
     - Integrated into package as proper module
-    - Console script entry point: `polyglotmol-diagnostics` command
+    - Console script entry point: `molblender-diagnostics` command
     - Built-in comprehensive documentation and interpretation guide
     - Adjustable thresholds with real-time recomputation
     - CSV export functionality for results
     - Support for file upload or command-line file path
   - Successfully tested on 120-molecule head.csv dataset with complete output generation
-  - Comprehensive module documentation in `src/polyglotmol/data/diagnostics/CLAUDE.md`
+  - Comprehensive module documentation in `src/molblender/data/diagnostics/CLAUDE.md`
 
 - **Protein Data Handling Documentation** (`docs/source/usage/data/protein.md`)
   - Comprehensive guide to Protein class and multi-format support
@@ -183,7 +183,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Sequence validation and cleaning utilities
   - Best practices for high-throughput protein processing
 
-- **Scaffold-Based Splitting Implementation** (`src/polyglotmol/models/api/core/splitting/scaffold.py`)
+- **Scaffold-Based Splitting Implementation** (`src/molblender/models/api/core/splitting/scaffold.py`)
   - Complete scaffold-based train/test splitting for drug discovery applications
   - Two scaffold generation methods: Bemis-Murcko and Generic (topology-only)
   - Two split strategies: Balanced (greedy size matching) and Random (random assignment)
@@ -193,7 +193,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Comprehensive unit tests with 18 test cases covering all functionality
   - Documentation added to `docs/source/usage/data/splitting.md` with examples and use cases
 
-- **DNR-Based Splitting Strategy** (`src/polyglotmol/models/api/core/splitting/dnr.py`)
+- **DNR-Based Splitting Strategy** (`src/molblender/models/api/core/splitting/dnr.py`)
   - Systematically tests model performance on rough SAR regions and challenging molecules
   - Three split modes:
     - **Threshold mode**: Split by DNR threshold (high vs low DNR molecules)
@@ -205,7 +205,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Leverages existing DNR calculation infrastructure from diagnostics module
   - Provides detailed split statistics including mean DNR, high-DNR counts, no-neighbor counts
 
-- **MaxMinPicker Diversity Splitting** (`src/polyglotmol/models/api/core/splitting/diversity.py`)
+- **MaxMinPicker Diversity Splitting** (`src/molblender/models/api/core/splitting/diversity.py`)
   - Diversity-based splitting using RDKit's MaxMinPicker algorithm
   - Two operational modes:
     - **Friendly mode**: Diverse training set ensures broad chemical space coverage for learning
@@ -217,7 +217,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Integration with `DataSplitter` class via `strategy="maxmin"` parameter
   - Addresses diversity sampling requirements from molecular ML literature
 
-- **Butina Clustering-Based Splitting** (`src/polyglotmol/models/api/core/splitting/butina.py`)
+- **Butina Clustering-Based Splitting** (`src/molblender/models/api/core/splitting/butina.py`)
   - Leave-cluster-out cross-validation based on Tanimoto similarity clustering
   - Uses Butina's sphere exclusion algorithm (Butina 1999, J. Chem. Inf. Comput. Sci.)
   - Ensures chemically similar molecules stay together in either training or test set
@@ -232,7 +232,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - More fine-grained than scaffold splitting (considers full molecular topology vs core structure only)
   - Suitable for evaluating generalization to similar but unseen chemical combinations
 
-- **Feature Clustering-Based Splitting** (`src/polyglotmol/models/api/core/splitting/feature_clustering.py`)
+- **Feature Clustering-Based Splitting** (`src/molblender/models/api/core/splitting/feature_clustering.py`)
   - General-purpose clustering split supporting arbitrary molecular representations (not limited to fingerprints)
   - Three clustering algorithms:
     - **K-means++**: Fast spherical clustering with smart initialization
@@ -256,7 +256,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Ideal for non-fingerprint representations (3D structures, quantum features, embeddings)
   - Comprehensive test suite (14 passed, 2 DBSCAN skipped due to numpy compatibility)
 
-- **Shared Splitting Utilities** (`src/polyglotmol/models/api/core/splitting/utils.py`)
+- **Shared Splitting Utilities** (`src/molblender/models/api/core/splitting/utils.py`)
   - Centralized utility functions to eliminate code duplication across splitting strategies
   - `compute_fingerprints()`: Unified fingerprint generation (Morgan, RDKit, MACCS)
   - `compute_avg_similarity()`: Average pairwise Tanimoto similarity within a set
@@ -281,7 +281,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Cross-validation protocol details with StratifiedKFold for classification
   - Decision tree for choosing the right splitting strategy
   - Performance considerations and memory efficiency comparisons
-- **Boltz-2 AI Structure Prediction Integration** (`src/polyglotmol/representations/AI_fold/boltz2/`)
+- **Boltz-2 AI Structure Prediction Integration** (`src/molblender/representations/AI_fold/boltz2/`)
   - Complete module for extracting embeddings from Boltz-2 protein-ligand complex predictions
   - Support for three embedding types: global (29-33 dim), token-level (4-dim pooled), pairwise distance matrices
   - Intelligent caching system to avoid redundant structure predictions (saves hours of GPU time)
@@ -293,31 +293,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Complete test suite with unit tests and integration tests
   - **Note**: Structure prediction via subprocess currently has limitations; users can provide pre-computed CIF files for embedding extraction
 
-- **Protein-Ligand Dataset Support** (`src/polyglotmol/data/`)
+- **Protein-Ligand Dataset Support** (`src/molblender/data/`)
   - Extended `Molecule` class with `protein_sequence` and `protein_pdb_path` attributes for protein-ligand complexes
   - New parameters in `MolecularDataset.from_csv()`: `protein_sequence_column` and `protein_pdb_column`
   - Automatic storage of protein information in molecule properties for CSV round-tripping
   - Seamless integration with existing featurization pipeline via kwargs passing
-- **Dynamic Metric Resolution System** (`src/polyglotmol/dashboard/metrics/central.py`)
+- **Dynamic Metric Resolution System** (`src/molblender/dashboard/metrics/central.py`)
   - Single source of truth for all metric definitions and display names
   - Automatic resolution of `primary_metric` to actual metric names (e.g., "Pearson R²", "MAE")
   - Consistent metric naming across all dashboard components
   - Eliminated hardcoded "Primary Metric" references throughout the interface
   - Enhanced `format_metric_name()` utility with DataFrame context for proper resolution
 
-- **Professional Chart Styling Framework** (`src/polyglotmol/dashboard/components/utils/chart_fonts.py`)
+- **Professional Chart Styling Framework** (`src/molblender/dashboard/components/utils/chart_fonts.py`)
   - Unified font sizing system across all dashboard visualizations
   - Professional color scheme (light blue #6BAED6, light green #74C476, light orange #FD8D3C)
   - Consistent axis styling and formatting for research-quality charts
   - Global font size control via `AXIS_TITLE_FONT_SIZE`, `TICK_LABEL_FONT_SIZE`, `CHART_TITLE_FONT_SIZE`
 
-- **Interactive Table System** (`src/polyglotmol/dashboard/components/tables.py`)
+- **Interactive Table System** (`src/molblender/dashboard/components/tables.py`)
   - Complete replacement of HTML tables with native `st.dataframe()` components
   - Dynamic metric column names with proper formatting
   - Sorting, filtering, and export capabilities
   - Responsive design with container width optimization
 
-- **Comprehensive Distribution Analysis Charts** (`src/polyglotmol/dashboard/components/distribution/charts.py`)
+- **Comprehensive Distribution Analysis Charts** (`src/molblender/dashboard/components/distribution/charts.py`)
   - Five chart types: Box Plot, Violin Plot, Histogram, Density Plot, Raincloud Plot
   - Unified chart rendering system with consistent styling
   - Professional axis labeling with dynamic metric names
@@ -334,7 +334,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added CHANGELOG to documentation TOC
 
 ### Fixed
-- **Boltz-2 Test Failures and Registration** (`src/polyglotmol/representations/AI_fold/boltz2/`)
+- **Boltz-2 Test Failures and Registration** (`src/molblender/representations/AI_fold/boltz2/`)
   - Fixed ligand_id truncation issue: Changed from 16-character cache_key to short ID 'L' to prevent Boltz-2 KeyError (`structure_predictor.py:157`)
   - Added AI_fold module import to `representations/__init__.py` to trigger Boltz2Embedder registration
   - Fixed test_registration: Corrected assertion to check instance instead of class (registry returns instances by design)
@@ -343,19 +343,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Test results: 12 passed (up from 9), 1 skipped (GPU-dependent test validated manually with pre-computed CIF files)
   - All 4 originally failing tests now pass: `test_structure_prediction`, `test_caching_works`, `test_registration`, `test_full_workflow`
 
-- **Dynamic Metric Resolution** (`src/polyglotmol/dashboard/components/`)
+- **Dynamic Metric Resolution** (`src/molblender/dashboard/components/`)
   - Fixed "Primary Metric" displaying in Outlier Details table - now shows actual metric name
   - Fixed "Primary Metric" displaying in Distribution Overview charts - now shows formatted axis titles
   - Eliminated "undefined" chart titles across all dashboard visualizations
   - Fixed NameError with undefined 'df' variable in modality comparison charts
   - Resolved duplicate column names in results tables
 
-- **Modality Filter Functionality** (`src/polyglotmol/dashboard/components/charts/performance.py`)
+- **Modality Filter Functionality** (`src/molblender/dashboard/components/charts/performance.py`)
   - Fixed non-responsive modality filter in Representation Analysis section
   - Added debug output for troubleshooting filter behavior
   - Enhanced modality mapping with proper error handling
 
-- **Cross-Validation Reproducibility** (`src/polyglotmol/models/api/core/evaluation/evaluator.py`)
+- **Cross-Validation Reproducibility** (`src/molblender/models/api/core/evaluation/evaluator.py`)
   - Fixed CV random_state issue: Now uses `KFold(random_state=42)` and `StratifiedKFold(random_state=42)` objects
   - Ensures complete reproducibility of both CV scores and test scores across different runs
   - Automatically selects StratifiedKFold for classification tasks to maintain class balance
@@ -369,14 +369,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Verified MaxMinPicker diversity splitting with friendly/unfriendly modes
   - Confirmed DataSplitter integration for both new strategies
 
-- **Dashboard Distribution Charts Column Name Errors** (`src/polyglotmol/dashboard/components/distribution/charts.py`)
+- **Dashboard Distribution Charts Column Name Errors** (`src/molblender/dashboard/components/distribution/charts.py`)
   - Fixed ValueError: "Value of 'x' is not the name of a column in 'data_frame'" in 6 chart rendering functions
   - Root cause: Chart functions incorrectly used metric parameter (e.g., 'pearson_r') as dataframe column names
   - Solution: Dashboard always uses 'score' column for metric values; metric names are for labeling only
   - Fixed functions: `render_box_plot()`, `render_violin_plot()`, `render_histogram()`, `render_density_plot()`, `render_raincloud_plot()`, `render_quick_distribution()`
   - Pattern: Changed from `df[metric]` to `df['score']` while keeping `format_metric_name(metric)` for axis labels
 
-- **Dashboard Usage Analysis pd.crosstab Error** (`src/polyglotmol/dashboard/components/distribution/usage_analysis.py`)
+- **Dashboard Usage Analysis pd.crosstab Error** (`src/molblender/dashboard/components/distribution/usage_analysis.py`)
   - Fixed ValueError: "aggfunc cannot be used without values" in representation-model combination heatmap
   - Simplified `pd.crosstab()` call to show combination counts only (removed conditional aggfunc logic)
   - Removed conflicting parameters: `values=df[selected_metric]` and `aggfunc='count'/'mean'`
@@ -387,7 +387,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Migrated basic statistics and molecular weight calculations to `diagnostics/core.py`
   - Enhanced with DNR analysis and activity cliff detection capabilities
   - Improved visualization quality with publication-ready SVG output
-  - Updated `src/polyglotmol/data/__init__.py` to export `DatasetDiagnostics` instead of `generate_dataset_report`
+  - Updated `src/molblender/data/__init__.py` to export `DatasetDiagnostics` instead of `generate_dataset_report`
 
 - **Dashboard UI Reorganization**: Improved navigation and logical grouping of analysis components
   - Performance vs Training Time chart now colored by modality category (fingerprints, language-model, spatial, image, string) instead of individual models for clearer pattern recognition
@@ -423,7 +423,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2025-01-XX
 
 ### Added
-- Initial release of PolyglotMol
+- Initial release of MolBlender
 - Multi-modal molecular representation generation
 - Automated ML model screening system
 - Interactive Streamlit dashboard for results visualization

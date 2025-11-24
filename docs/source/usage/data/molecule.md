@@ -7,7 +7,7 @@
 
 ## Overview
 
-The `Molecule` class is a core abstraction in PolyglotMol for handling chemical entities in a flexible and representation-agnostic way. It wraps various input types (SMILES, RDKit Mol objects, coordinate files, etc.) and provides access to commonly used molecular representations, with caching and error tracking.
+The `Molecule` class is a core abstraction in MolBlender for handling chemical entities in a flexible and representation-agnostic way. It wraps various input types (SMILES, RDKit Mol objects, coordinate files, etc.) and provides access to commonly used molecular representations, with caching and error tracking.
 
 This class is designed for use in molecular datasets and feature pipelines, ensuring reproducibility and clarity when managing molecular data.
 
@@ -79,8 +79,8 @@ If a representation fails to generate (e.g., due to a malformed SMILES or file),
 ## Example
 
 ```python
-from polyglotmol.data import Molecule
-from polyglotmol.data.io import InputType
+from molblender.data import Molecule
+from molblender.data.io import InputType
 
 mol = Molecule("CCO", input_type=InputType.SMILES)
 print(mol.get_smiles())        # -> 'CCO'
@@ -96,4 +96,4 @@ print(mol.get_coordinates())   # -> numpy array or None
 
 ---
 
-This class plays a foundational role in building chemically aware applications using PolyglotMol. Downstream featurizers and dataset containers depend on its unified interface.
+This class plays a foundational role in building chemically aware applications using MolBlender. Downstream featurizers and dataset containers depend on its unified interface.

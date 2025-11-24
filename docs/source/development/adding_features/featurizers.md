@@ -1,15 +1,15 @@
 # Adding New Featurizers
 
-Guide for adding new molecular representation methods to PolyglotMol.
+Guide for adding new molecular representation methods to MolBlender.
 
 (Content to be expanded - see development/adding_features/index for overview)
 
 ## Quick Template
 
 ```python
-from polyglotmol.representations.utils.base import BaseFeaturizer
-from polyglotmol.representations.utils.registry import register_featurizer
-from polyglotmol.data.io import InputType
+from molblender.representations.utils.base import BaseFeaturizer
+from molblender.representations.utils.registry import register_featurizer
+from molblender.data.io import InputType
 import numpy as np
 
 @register_featurizer(

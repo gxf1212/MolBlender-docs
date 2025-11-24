@@ -11,7 +11,7 @@ Molecular descriptors are numerical representations that encode specific physico
 - Chemical space analysis and similarity searching
 - Feature selection and mechanistic understanding
 
-PolyglotMol provides access to comprehensive descriptor collections from RDKit and Mordred, with intelligent handling of missing values and 3D conformer requirements.
+MolBlender provides access to comprehensive descriptor collections from RDKit and Mordred, with intelligent handling of missing values and 3D conformer requirements.
 
 ::::{grid} 1 1 2 3
 :gutter: 3
@@ -36,7 +36,7 @@ Robust handling of calculation failures
 ## Quick Start
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 # Get molecular descriptor featurizers
 rdkit_desc = pm.get_featurizer("rdkit_all_descriptors")
@@ -74,7 +74,7 @@ print(f"Batch shape: {len(batch_descriptors)} molecules")
 Start with the most important physicochemical properties:
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 import numpy as np
 
 # Get essential descriptors (most interpretable)
@@ -459,7 +459,7 @@ print(f"\nReduced from {X.shape[1]} to {X_selected.shape[1]} features")
 ### Dataset Integration
 
 ```python
-from polyglotmol.data import MolecularDataset
+from molblender.data import MolecularDataset
 
 # Create dataset with descriptor features
 molecules = ["CCO", "CCN", "CCC", "c1ccccc1"]

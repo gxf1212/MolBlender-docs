@@ -1,7 +1,7 @@
 DeepChem Graph Representations
 ==============================
 
-.. automodule:: polyglotmol.representations.graph.deepchem
+.. automodule:: molblender.representations.graph.deepchem
    :members:
    :undoc-members:
    :show-inheritance:

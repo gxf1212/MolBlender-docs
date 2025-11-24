@@ -4,7 +4,7 @@ Generate molecular fingerprints using RDKit's comprehensive fingerprinting algor
 
 ## Introduction
 
-RDKit fingerprints encode molecular structure as fixed-length bit vectors or count vectors. PolyglotMol provides a unified interface to all major RDKit fingerprint types with consistent API, flexible input handling, and optimized batch processing.
+RDKit fingerprints encode molecular structure as fixed-length bit vectors or count vectors. MolBlender provides a unified interface to all major RDKit fingerprint types with consistent API, flexible input handling, and optimized batch processing.
 
 ::::{grid} 1 1 2 3
 :gutter: 3
@@ -37,7 +37,7 @@ Parallel computation support
 ## Quick Start
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 import numpy as np
 
 # Three ways to provide molecular input
@@ -47,7 +47,7 @@ fp_smiles = featurizer.featurize('CCO')
 print(fp_smiles.shape)  # (2048,)
 print(fp_smiles.dtype)  # uint8
 
-# Method 2: PolyglotMol Molecule object
+# Method 2: MolBlender Molecule object
 mol = pm.Molecule.from_smiles('CCO')
 fp_mol = featurizer.featurize(mol)
 print(np.array_equal(fp_smiles, fp_mol))  # True
@@ -168,7 +168,7 @@ print(f"Max count: {np.max(fp_count)}")  # Some features may appear multiple tim
 
 :::{tab-item} Custom Parameters
 ```python
-from polyglotmol.representations.fingerprints.rdkit import MorganBitFP, MorganCountFP
+from molblender.representations.fingerprints.rdkit import MorganBitFP, MorganCountFP
 
 # Custom binary Morgan with chirality
 custom_morgan = MorganBitFP(

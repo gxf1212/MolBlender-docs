@@ -1,6 +1,6 @@
 # Language Models for SMILES
 
-This guide covers using pre-trained language models to generate embeddings from SMILES strings in PolyglotMol.
+This guide covers using pre-trained language models to generate embeddings from SMILES strings in MolBlender.
 
 ## Overview
 
@@ -13,7 +13,7 @@ Language models trained on SMILES strings can capture chemical patterns and gene
 ChemBERTa is a BERT-like model pre-trained on large collections of SMILES strings:
 
 ```python
-from polyglotmol.representations import get_featurizer
+from molblender.representations import get_featurizer
 
 # Load ChemBERTa model
 model = get_featurizer("smiles-lm-chemberta")
@@ -44,7 +44,7 @@ chemberta_finetuned = get_featurizer("smiles-lm-chemberta-finetuned")
 ### Single Molecule Embedding
 
 ```python
-from polyglotmol.representations import get_featurizer
+from molblender.representations import get_featurizer
 
 model = get_featurizer("smiles-lm-chemberta")
 
@@ -77,7 +77,7 @@ for i, emb in enumerate(embeddings):
 ### Integration with Datasets
 
 ```python
-from polyglotmol.data import MolecularDataset
+from molblender.data import MolecularDataset
 
 # Load dataset
 dataset = MolecularDataset.from_csv(

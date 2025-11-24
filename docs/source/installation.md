@@ -1,6 +1,6 @@
 # Installation
 
-PolyglotMol is designed to be a modular toolkit. You can install a lightweight core and then add optional dependencies to enable specific functionalities like protein analysis, advanced machine learning models, or molecular dynamics.
+MolBlender is designed to be a modular toolkit. You can install a lightweight core and then add optional dependencies to enable specific functionalities like protein analysis, advanced machine learning models, or molecular dynamics.
 
 The package requires **Python \>= 3.9**.
 
@@ -16,31 +16,31 @@ Using `conda` is the most reliable way to install the core cheminformatics backe
 
 ```bash
 # 1. Create and activate a new conda environment (recommended)
-conda create -n polyglotmol_env python=3.9 -y
-conda activate polyglotmol_env
+conda create -n molblender_env python=3.9 -y
+conda activate molblender_env
 
 # 2. Install the core RDKit backend from conda-forge
 conda install -c conda-forge rdkit -y
 
-# 3. Install PolyglotMol using pip
+# 3. Install MolBlender using pip
 # This will install the core package and its essential dependencies (numpy, pandas).
-pip install polyglotmol
+pip install molblender
 
 # 4. Install optional functionalities as needed
 # For example, to add support for protein featurizers and ML models:
-pip install polyglotmol[protein,models]
+pip install molblender[protein,models]
 ```
 
 ### Method 2: pip
 
-You can install PolyglotMol directly from PyPI.
+You can install MolBlender directly from PyPI.
 
 #### Basic Installation
 
 This installs the core package with its minimal dependencies (`numpy`, `pandas`, `rdkit-pypi`).
 
 ```bash
-pip install polyglotmol
+pip install molblender
 ```
 
 #### Installation with Extras
@@ -49,16 +49,16 @@ To use advanced features, you need to install "extras." This is done by adding b
 
 ```bash
 # Install with a single optional group (e.g., for ML models)
-pip install polyglotmol[models]
+pip install molblender[models]
 
 # Install multiple groups at once
-pip install polyglotmol[deepchem,md]
+pip install molblender[deepchem,md]
 
 # Install a convenience group that includes several related packages
-pip install polyglotmol[cheminformatics_base]
+pip install molblender[cheminformatics_base]
 
 # Install all optional dependencies
-pip install polyglotmol[all]
+pip install molblender[all]
 ```
 
 -----
@@ -67,7 +67,7 @@ pip install polyglotmol[all]
 
 ### Core Dependencies
 
-These are installed automatically with `pip install polyglotmol`:
+These are installed automatically with `pip install molblender`:
 
   - [NumPy](https://numpy.org/)
   - [Pandas](https://pandas.pydata.org/)
@@ -79,32 +79,32 @@ The following table lists the main optional groups and the key functionalities t
 
 | Installation Command                     | Key Libraries Installed                               | Functionality Enabled                                      |
 | :--------------------------------------- | :---------------------------------------------------- | :--------------------------------------------------------- |
-| `pip install polyglotmol[models]`        | `scikit-learn`, `xgboost`, `lightgbm`, `catboost`       | Standard and gradient-boosted models for QSAR/ML tasks.    |
-| `pip install polyglotmol[protein]`       | `biopython`, `fair-esm`, `transformers`, `tokenizers` | Protein featurizers (PLMs) and structural biology tools.   |
-| `pip install polyglotmol[cheminformatics_ml]` | `chemprop`, `mol2vec`                            | Advanced ML models like Chemprop and Mol2Vec embeddings.   |
-| `pip install polyglotmol[deepchem]`      | `deepchem`                                            | Featurizers and models from the DeepChem library.          |
-| `pip install polyglotmol[mordred]`       | `mordred`                                             | Calculation of a large set of 2D & 3D molecular descriptors. |
-| `pip install polyglotmol[spatial]`       | `unimol-tools`, `dscribe`, `ase`                      | 3D spatial representations like Coulomb Matrices and Uni-Mol. |
-| `pip install polyglotmol[md]`            | `mdanalysis`                                          | Analysis of molecular dynamics trajectories.               |
-| `pip install polyglotmol[cdk]`           | `CDK-pywrapper`                                       | CDK-based fingerprints (requires **Java \>= 11**).          |
-| `pip install polyglotmol[molfeat]`       | `molfeat`                                             | Various fingerprints and representations via Molfeat.      |
-| `pip install polyglotmol[drawing]`       | `matplotlib`, `seaborn`                               | Molecule and data visualization utilities.                 |
-| `pip install polyglotmol[openbabel]`     | `openbabel-wheel`                                     | Support for Open Babel via Pybel.                          |
+| `pip install molblender[models]`        | `scikit-learn`, `xgboost`, `lightgbm`, `catboost`       | Standard and gradient-boosted models for QSAR/ML tasks.    |
+| `pip install molblender[protein]`       | `biopython`, `fair-esm`, `transformers`, `tokenizers` | Protein featurizers (PLMs) and structural biology tools.   |
+| `pip install molblender[cheminformatics_ml]` | `chemprop`, `mol2vec`                            | Advanced ML models like Chemprop and Mol2Vec embeddings.   |
+| `pip install molblender[deepchem]`      | `deepchem`                                            | Featurizers and models from the DeepChem library.          |
+| `pip install molblender[mordred]`       | `mordred`                                             | Calculation of a large set of 2D & 3D molecular descriptors. |
+| `pip install molblender[spatial]`       | `unimol-tools`, `dscribe`, `ase`                      | 3D spatial representations like Coulomb Matrices and Uni-Mol. |
+| `pip install molblender[md]`            | `mdanalysis`                                          | Analysis of molecular dynamics trajectories.               |
+| `pip install molblender[cdk]`           | `CDK-pywrapper`                                       | CDK-based fingerprints (requires **Java \>= 11**).          |
+| `pip install molblender[molfeat]`       | `molfeat`                                             | Various fingerprints and representations via Molfeat.      |
+| `pip install molblender[drawing]`       | `matplotlib`, `seaborn`                               | Molecule and data visualization utilities.                 |
+| `pip install molblender[openbabel]`     | `openbabel-wheel`                                     | Support for Open Babel via Pybel.                          |
 
 -----
 
 ## Developer Installation
 
-If you want to contribute to PolyglotMol, you should clone the repository and install it in editable mode with the development dependencies.
+If you want to contribute to MolBlender, you should clone the repository and install it in editable mode with the development dependencies.
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/gxf1212/polyglotmol.git
-cd polyglotmol
+git clone https://github.com/gxf1212/molblender.git
+cd molblender
 
 # 2. Create and activate a conda environment (recommended)
-conda create -n polyglotmol_dev python=3.9 -y
-conda activate polyglotmol_dev
+conda create -n molblender_dev python=3.9 -y
+conda activate molblender_dev
 conda install -c conda-forge rdkit -y # Install base dependencies
 
 # 3. Install the package in editable mode with all development extras

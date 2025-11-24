@@ -5,13 +5,13 @@
 :hidden:
 ```
 
-Molecular Language Models (MLMs) are transformer-based models pre-trained on millions of chemical structures to learn meaningful molecular representations. PolyglotMol provides a unified interface to state-of-the-art MLMs for efficient molecular featurization.
+Molecular Language Models (MLMs) are transformer-based models pre-trained on millions of chemical structures to learn meaningful molecular representations. MolBlender provides a unified interface to state-of-the-art MLMs for efficient molecular featurization.
 
 ## Quick Start
 
 ```python
-import polyglotmol as pm
-from polyglotmol.data import Molecule
+import molblender as pm
+from molblender.data import Molecule
 
 # List available molecular language models
 mlm_featurizers = [f for f in pm.list_available_featurizers() 
@@ -75,7 +75,7 @@ print(f"Processed {len(embeddings)} molecules")
 ### Core Dependencies
 ```bash
 # Basic installation
-pip install polyglotmol
+pip install molblender
 
 # Required for molecular language models
 pip install transformers torch>=2.6
@@ -161,7 +161,7 @@ for i, (mol, emb) in enumerate(zip(molecules, embeddings)):
 ### Working with Molecular Datasets
 
 ```python
-from polyglotmol.data import MolecularDataset
+from molblender.data import MolecularDataset
 
 # Load dataset
 dataset = MolecularDataset.from_csv(

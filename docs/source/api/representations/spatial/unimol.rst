@@ -1,5 +1,5 @@
 .. default-role:: py:obj
-.. automodule:: polyglotmol.representations.spatial.unimol
+.. automodule:: molblender.representations.spatial.unimol
    :members: UniMolCLSFeaturizer, UniMolAtomicCoordsFeaturizer, UniMolAtomicReprsFeaturizer, UNIMOL_BASE_CONFIGS
    :undoc-members:
    :show-inheritance:
@@ -31,7 +31,7 @@ Available Configurations
 
    A dictionary defining pre-registered Uni-Mol model configurations. Each key is a registered name
    (e.g., ``"UniMol-V2-84M"``) that can be used with
-   :py:func:`~polyglotmol.representations.get_featurizer`. The values are dictionaries specifying
+   :py:func:`~molblender.representations.get_featurizer`. The values are dictionaries specifying
    parameters like `data_type`, `unimol_tools_model_name`, `remove_hs`, and `output_dim`.
 
    **Example structure:**

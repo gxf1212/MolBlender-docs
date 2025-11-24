@@ -1,6 +1,6 @@
 # Machine Learning Models
 
-PolyglotMol provides intelligent automated machine learning for molecular property prediction with multimodal support, comprehensive model screening, and interactive result visualization.
+MolBlender provides intelligent automated machine learning for molecular property prediction with multimodal support, comprehensive model screening, and interactive result visualization.
 
 ## Overview
 
@@ -10,15 +10,15 @@ The models module automates the entire ML pipeline from data preprocessing to mo
 - **28 ML Models**: From linear regression to deep neural networks
 - **Multi-Modal Support**: VECTOR, STRING, MATRIX, IMAGE data types
 - **SQLite Storage**: Incremental result saving with crash recovery
-- **Interactive Dashboard**: Professional visualization with `polyglotmol view`
+- **Interactive Dashboard**: Professional visualization with `molblender view`
 
 ## Quick Start
 
 ### One-Command Screening
 
 ```python
-from polyglotmol.data import MolecularDataset
-from polyglotmol.models.api import universal_screen
+from molblender.data import MolecularDataset
+from molblender.models.api import universal_screen
 
 # Load dataset
 dataset = MolecularDataset.from_csv(
@@ -35,7 +35,7 @@ results = universal_screen(
 )
 
 # View results interactively
-# polyglotmol view ./results_folder
+# molblender view ./results_folder
 ```
 
 ### Access Best Model
@@ -84,7 +84,7 @@ Data splitting, cross-validation protocol, and metrics explained
 
 ## Supported Input Modalities
 
-PolyglotMol automatically detects and processes five data modalities:
+MolBlender automatically detects and processes five data modalities:
 
 | **Modality** | **Data Types** | **Compatible Models** | **Example** |
 |-------------|---------------|----------------------|------------|
@@ -96,7 +96,7 @@ PolyglotMol automatically detects and processes five data modalities:
 
 ```{admonition} Automatic Detection
 :class: tip
-You don't need to specify modalities manually. PolyglotMol automatically detects available modalities from your dataset and selects compatible models.
+You don't need to specify modalities manually. MolBlender automatically detects available modalities from your dataset and selects compatible models.
 ```
 
 ## Workflow Overview
@@ -108,7 +108,7 @@ graph LR
     C --> D[Select Compatible Models]
     D --> E[Parallel Execution]
     E --> F[SQLite Storage]
-    F --> G[polyglotmol view]
+    F --> G[molblender view]
     G --> H[Interactive Dashboard]
 ```
 
@@ -116,7 +116,7 @@ graph LR
 1. Load molecular dataset with `MolecularDataset`
 2. Run `universal_screen()` with target column
 3. Results automatically saved to SQLite database
-4. Launch dashboard: `polyglotmol view results_folder`
+4. Launch dashboard: `molblender view results_folder`
 5. Explore performance, select best model
 6. Export model for production use
 
@@ -162,7 +162,7 @@ results = universal_screen(
 
 ```{admonition} Resource Management
 :class: note
-PolyglotMol intelligently manages CPU/GPU resources:
+MolBlender intelligently manages CPU/GPU resources:
 - **LIGHT tasks** (fingerprints + ML): Parallel combinations across all cores
 - **HEAVY tasks** (CNN, Transformers): Sequential with internal parallelism
 ```
@@ -170,8 +170,8 @@ PolyglotMol intelligently manages CPU/GPU resources:
 ## Example: Complete Pipeline
 
 ```python
-from polyglotmol.data import MolecularDataset
-from polyglotmol.models.api import universal_screen
+from molblender.data import MolecularDataset
+from molblender.models.api import universal_screen
 import pandas as pd
 
 # 1. Prepare data
@@ -198,7 +198,7 @@ print(f"Models tested: {results['n_models_evaluated']}")
 print(f"Results saved to: {results['database_path']}")
 
 # 4. Launch interactive dashboard
-# $ polyglotmol view ./screening_results.db
+# $ molblender view ./screening_results.db
 
 # 5. Export best model
 best_estimator = results['best_estimator']
@@ -247,7 +247,7 @@ A: Start with `universal_screen()` with `combinations="auto"`. It provides the b
 A: The dashboard shows performance comparisons. Consider: (1) Predictive accuracy (2) Training speed (3) Interpretability (4) Deployment requirements.
 
 **Q: Can I resume interrupted screenings?**
-A: Yes! With `enable_db_storage=True`, PolyglotMol automatically caches results and skips completed combinations.
+A: Yes! With `enable_db_storage=True`, MolBlender automatically caches results and skips completed combinations.
 
 **Q: How do I use custom models?**
 A: See {doc}`screening` for `combinations` parameter - you can pass custom model lists or Combination objects.

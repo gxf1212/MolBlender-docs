@@ -22,7 +22,7 @@ Example
 
 .. code-block:: python
 
-   from polyglotmol.config import dependencies as deps
+   from molblender.config import dependencies as deps
    
    # Check availability
    if deps.is_rdkit_available():
@@ -30,7 +30,7 @@ Example
        Chem = rdkit['Chem']
    
    # Get settings
-   from polyglotmol.config import settings
+   from molblender.config import settings
    print(settings.CACHE_DIR)
 
 See Also

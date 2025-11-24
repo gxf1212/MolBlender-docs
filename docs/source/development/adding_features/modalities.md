@@ -1,6 +1,6 @@
 # Adding New Modalities
 
-Guide for adding new data modality types to PolyglotMol.
+Guide for adding new data modality types to MolBlender.
 
 (Content to be expanded)
 

@@ -30,7 +30,7 @@ Count-based encoding preserving interaction frequency information
 ## Quick Start
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 import numpy as np
 
 # Basic pharmacophore interaction analysis
@@ -188,7 +188,7 @@ for profile in sorted_profiles:
 ### Structure-Activity Relationship Analysis
 
 ```python
-from polyglotmol.data import MolecularDataset
+from molblender.data import MolecularDataset
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.feature_selection import SelectKBest, f_regression
 

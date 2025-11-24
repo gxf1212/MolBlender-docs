@@ -2,7 +2,7 @@
 Graph Representations API (`...graph`)
 ######################################
 
-.. automodule:: polyglotmol.representations.graph
+.. automodule:: molblender.representations.graph
    :members:
    :undoc-members:
    :show-inheritance:

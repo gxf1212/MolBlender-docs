@@ -1,6 +1,6 @@
 # Protein Representations
 
-This section describes how protein-level representations are handled in PolyglotMol. It is divided into two main submodules: `sequence` and `structure`. These handle features derived from the amino acid sequence and 3D structural data, respectively.
+This section describes how protein-level representations are handled in MolBlender. It is divided into two main submodules: `sequence` and `structure`. These handle features derived from the amino acid sequence and 3D structural data, respectively.
 
 For now, only sequence-level features are implemented.
 

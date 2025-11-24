@@ -30,7 +30,7 @@ Separate analysis for C, N, O, S, P atomic groups
 ## Quick Start
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 # Basic usage
 featurizer = pm.get_featurizer('topology_net_3d')
@@ -148,7 +148,7 @@ print(f"Diverse topological features: {diverse_features}")
 ### Integration with Machine Learning
 
 ```python
-from polyglotmol.data import MolecularDataset
+from molblender.data import MolecularDataset
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import cross_val_score
 

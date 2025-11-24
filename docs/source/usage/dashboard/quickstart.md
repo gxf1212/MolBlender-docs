@@ -1,6 +1,6 @@
 # Getting Started
 
-Install, launch, and navigate the PolyglotMol dashboard with this comprehensive getting started guide.
+Install, launch, and navigate the MolBlender dashboard with this comprehensive getting started guide.
 
 ## System Requirements
 
@@ -24,8 +24,8 @@ Install, launch, and navigate the PolyglotMol dashboard with this comprehensive 
 ### Method 1: Install with Dashboard Extras (Recommended)
 
 ```bash
-# Install PolyglotMol with dashboard dependencies
-pip install polyglotmol[dashboard]
+# Install MolBlender with dashboard dependencies
+pip install molblender[dashboard]
 ```
 
 This installs:
@@ -38,8 +38,8 @@ This installs:
 ### Method 2: Manual Installation
 
 ```bash
-# Install core PolyglotMol
-pip install polyglotmol
+# Install core MolBlender
+pip install molblender
 
 # Install dashboard dependencies manually
 pip install streamlit plotly scipy
@@ -52,8 +52,8 @@ pip install scikit-learn matplotlib seaborn
 
 ```bash
 # Clone repository (if developing)
-git clone https://github.com/your-org/polyglotmol.git
-cd polyglotmol
+git clone https://github.com/your-org/molblender.git
+cd molblender
 
 # Install in development mode
 pip install -e ".[dashboard]"
@@ -62,11 +62,11 @@ pip install -e ".[dashboard]"
 ### Verify Installation
 
 ```bash
-# Check if polyglotmol command is available
-polyglotmol --help
+# Check if molblender command is available
+molblender --help
 
 # Expected output:
-usage: polyglotmol view [-h] [--port PORT] [--verbose] path
+usage: molblender view [-h] [--port PORT] [--verbose] path
 positional arguments:
   path                  Path to results file or directory
 options:
@@ -82,8 +82,8 @@ Create your first screening results to explore in the dashboard.
 ### Example: Quick Screening
 
 ```python
-from polyglotmol.data import MolecularDataset
-from polyglotmol.models.api import quick_screen
+from molblender.data import MolecularDataset
+from molblender.models.api import quick_screen
 
 # 1. Prepare sample dataset (or use your own)
 sample_data = """SMILES,logP
@@ -118,7 +118,7 @@ print(f"Screening completed! Best R²: {results['best_score']:.3f}")
 ### Example: Universal Screening (Recommended)
 
 ```python
-from polyglotmol.models.api import universal_screen
+from molblender.models.api import universal_screen
 
 # Run comprehensive screening
 results = universal_screen(
@@ -137,30 +137,30 @@ print(f"Results saved to: {results['database_path']}")
 
 ```bash
 # From SQLite database (recommended)
-polyglotmol view ./screening_results.db
+molblender view ./screening_results.db
 
 # From JSON file (backward compatibility)
-polyglotmol view ./screening_results.json
+molblender view ./screening_results.json
 
 # From directory (auto-detects .db or .json)
-polyglotmol view ./results_folder
+molblender view ./results_folder
 ```
 
 ### Custom Port Configuration
 
 ```bash
 # Use custom port (when default 8502 is occupied)
-polyglotmol view ./screening_results.db --port 8503
+molblender view ./screening_results.db --port 8503
 
 # Try multiple ports if needed
-polyglotmol view ./results --port 8504 --verbose
+molblender view ./results --port 8504 --verbose
 ```
 
 ### Verbose Mode
 
 ```bash
 # Enable detailed logging for troubleshooting
-polyglotmol view ./results.db --verbose
+molblender view ./results.db --verbose
 ```
 
 ## What to Expect
@@ -174,7 +174,7 @@ URL: http://localhost:8502
 
 Example view in browser:
 
-🧪 PolyglotMol Results Dashboard
+🧪 MolBlender Results Dashboard
 ========================================
 
 [ Performance Analysis ] [ Distribution Analysis ] [ Model Inspection ] [ Detailed Results ]
@@ -332,20 +332,20 @@ joblib.dump(best_model, 'my_best_model.pkl')
 
 **Problem:**
 ```bash
-polyglotmol view results.db
+molblender view results.db
 # Error: command not found
 ```
 
 **Solutions:**
 ```bash
-# Check if polyglotmol is installed
-pip show polyglotmol
+# Check if molblender is installed
+pip show molblender
 
 # If not installed
-pip install polyglotmol[dashboard]
+pip install molblender[dashboard]
 
 # If installed but not in PATH
-python -m polyglotmol.view results.db
+python -m molblender.view results.db
 ```
 
 **Problem:**
@@ -368,7 +368,7 @@ Error: Port 8502 is already in use
 **Solutions:**
 ```bash
 # Use different port
-polyglotmol view results.db --port 8503
+molblender view results.db --port 8503
 
 # Kill existing process (Linux/Mac)
 lsof -ti:8502 | xargs kill -9
@@ -392,7 +392,7 @@ ls -lh results.db
 sqlite3 results.db "SELECT COUNT(*) FROM model_results;"
 
 # If file is empty, run screening first:
-from polyglotmol.models.api import quick_screen
+from molblender.models.api import quick_screen
 # ... your screening code ...
 ```
 
@@ -487,18 +487,18 @@ If you have 1000+ models:
 
 ```bash
 # Quick commands
-polyglotmol view ./results.db                    # Launch dashboard
-polyglotmol view ./results --port 8503        # Custom port
-polyglotmol view ./results --verbose             # Debug mode
+molblender view ./results.db                    # Launch dashboard
+molblender view ./results --port 8503        # Custom port
+molblender view ./results --verbose             # Debug mode
 
 # Python essentials
-from polyglotmol.models.api import quick_screen
+from molblender.models.api import quick_screen
 results = quick_screen(dataset, target_column="logP")
 best_model = results['best_estimator']
 ```
 
 ---
 
-**Congratulations!** You now have the PolyglotMol dashboard running and can explore your screening results interactively. 🎉
+**Congratulations!** You now have the MolBlender dashboard running and can explore your screening results interactively. 🎉
 
 Next: Dive deeper into {doc}`performance` to understand your results in detail.

@@ -1,6 +1,6 @@
 # Graph Representations
 
-Graph-based representations are essential for leveraging the power of Graph Neural Networks (GNNs) in molecular machine learning. In PolyglotMol, molecules can be converted into graph structures where atoms are nodes and bonds are edges, enriched with chemical features.
+Graph-based representations are essential for leveraging the power of Graph Neural Networks (GNNs) in molecular machine learning. In MolBlender, molecules can be converted into graph structures where atoms are nodes and bonds are edges, enriched with chemical features.
 
 This guide will walk you through the core concepts of graph construction and how to use built-in utilities to work with graph representations. Future content will include support for:
 

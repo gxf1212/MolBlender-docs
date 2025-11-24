@@ -1,6 +1,6 @@
 # Available Models
 
-PolyglotMol provides 28 machine learning models spanning traditional ML to deep learning, automatically matched to your data modality.
+MolBlender provides 28 machine learning models spanning traditional ML to deep learning, automatically matched to your data modality.
 
 ## Model Categories
 
@@ -29,7 +29,7 @@ Different data modalities require specific model types:
 
 ```{admonition} Automatic Compatibility Checking
 :class: tip
-PolyglotMol automatically prevents invalid combinations (e.g., Ridge regression + raw SMILES strings). You don't need to manually check compatibility.
+MolBlender automatically prevents invalid combinations (e.g., Ridge regression + raw SMILES strings). You don't need to manually check compatibility.
 ```
 
 ## Complete Model Catalog

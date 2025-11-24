@@ -1,6 +1,6 @@
 # Quick Start
 
-A comprehensive end-to-end example demonstrating how to use PolyglotMol for molecular property prediction, from data loading through model deployment.
+A comprehensive end-to-end example demonstrating how to use MolBlender for molecular property prediction, from data loading through model deployment.
 
 ## Overview
 
@@ -21,10 +21,10 @@ We'll predict aqueous solubility using a public dataset of drug-like molecules.
 ```python
 import pandas as pd
 import numpy as np
-import polyglotmol as pm
-from polyglotmol.data import MolecularDataset
-from polyglotmol.models.api import thorough_screen
-from polyglotmol.drawings import plot_publication_regression
+import molblender as pm
+from molblender.data import MolecularDataset
+from molblender.models.api import thorough_screen
+from molblender.drawings import plot_publication_regression
 
 # Load solubility dataset (example data)
 # In practice, download from: https://www.moleculenet.org/datasets-1
@@ -42,7 +42,7 @@ solubility_data = pd.DataFrame({
     'solubility': [-0.77, -0.04, -2.23, -0.07, -2.25, -4.09, -7.56, -3.97]  # LogS values
 })
 
-# Create PolyglotMol dataset
+# Create MolBlender dataset
 dataset = MolecularDataset.from_dataframe(
     solubility_data,
     input_column='SMILES', 
@@ -157,7 +157,7 @@ y_true = dataset.properties['solubility'].values
 y_pred = best_estimator.predict(X)
 
 # Create publication-quality plot
-from polyglotmol.drawings import plot_publication_regression
+from molblender.drawings import plot_publication_regression
 
 fig, ax, metrics = plot_publication_regression(
     y_true=y_true,
@@ -172,7 +172,7 @@ print(f"Visualization saved: solubility_prediction.png")
 print(f"Final metrics: R² = {metrics['r2']:.3f}, RMSE = {metrics['rmse']:.3f}")
 
 # Model comparison plot
-from polyglotmol.drawings import plot_model_comparison
+from molblender.drawings import plot_model_comparison
 
 comparison_data = []
 for model_info in screening_results['top_models'][:5]:
@@ -286,7 +286,7 @@ print(f"  Error std dev: {np.std(residuals):.3f}")
 
 ## Summary and Best Practices
 
-This workflow demonstrates PolyglotMol's key capabilities:
+This workflow demonstrates MolBlender's key capabilities:
 
 ```{admonition} Key Takeaways
 :class: tip
@@ -355,4 +355,4 @@ detailed_results = pm.models.api.thorough_screen(
 - Deploy models in production environments
 - Extend to multi-task and multi-modal learning
 
-This complete workflow showcases PolyglotMol's power in automating molecular machine learning while maintaining flexibility and interpretability.
+This complete workflow showcases MolBlender's power in automating molecular machine learning while maintaining flexibility and interpretability.

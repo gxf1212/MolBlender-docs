@@ -458,8 +458,8 @@ mol_003,0.54,0.51,-0.03
 **Output:**
 ```python
 # Reproduction code for best model
-from polyglotmol.data import MolecularDataset
-from polyglotmol.representations import get_featurizer
+from molblender.data import MolecularDataset
+from molblender.representations import get_featurizer
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score

@@ -24,7 +24,7 @@ The `MolecularDataset` class provides a unified container for managing collectio
 ## Quick Start
 
 ```python
-from polyglotmol.data import MolecularDataset
+from molblender.data import MolecularDataset
 
 # Load from CSV
 dataset = MolecularDataset.from_csv(

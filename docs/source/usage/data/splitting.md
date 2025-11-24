@@ -1,10 +1,10 @@
 # Dataset Splitting Strategies
 
-Comprehensive guide to data splitting and cross-validation strategies in PolyglotMol.
+Comprehensive guide to data splitting and cross-validation strategies in MolBlender.
 
 ## Overview
 
-PolyglotMol provides flexible, professional-grade data splitting strategies for molecular machine learning. The splitting system is designed to:
+MolBlender provides flexible, professional-grade data splitting strategies for molecular machine learning. The splitting system is designed to:
 
 - **Ensure fair model comparison** through consistent random seeds
 - **Support multiple splitting strategies** for different use cases
@@ -22,8 +22,8 @@ All splitting strategies use **fixed random seeds** by default, ensuring complet
 ### Basic Usage
 
 ```python
-from polyglotmol.models import universal_screen
-from polyglotmol.data import MolecularDataset
+from molblender.models import universal_screen
+from molblender.data import MolecularDataset
 
 # Load your dataset
 dataset = MolecularDataset.from_csv("molecules.csv",
@@ -43,7 +43,7 @@ results = universal_screen(
 
 ## Supported Splitting Strategies
 
-PolyglotMol supports 10 different splitting strategies, each suited for specific scenarios:
+MolBlender supports 10 different splitting strategies, each suited for specific scenarios:
 
 | Strategy | Use Case | Train/Val/Test | Best For |
 |----------|----------|----------------|----------|
@@ -99,7 +99,7 @@ train_test_split(test_size=0.2, random_state=42)
 
 #### Implementation Details
 
-**Code Location**: `src/polyglotmol/models/api/core/splitting/strategies.py:26-84`
+**Code Location**: `src/molblender/models/api/core/splitting/strategies.py:26-84`
 
 ```python
 def split_train_test(
@@ -412,7 +412,7 @@ Assign entire scaffold groups to train or test
 Extracts the core ring system and linker atoms, removing all side chains.
 
 ```python
-from polyglotmol.models.api.core.splitting import compute_bemis_murcko_scaffolds
+from molblender.models.api.core.splitting import compute_bemis_murcko_scaffolds
 
 smiles = [
     "c1ccccc1CCO",      # Benzene + ethanol side chain
@@ -429,7 +429,7 @@ scaffolds = compute_bemis_murcko_scaffolds(smiles)
 Further abstracts by replacing all atoms with carbons and all bonds with single bonds, focusing purely on topology.
 
 ```python
-from polyglotmol.models.api.core.splitting import compute_generic_scaffolds
+from molblender.models.api.core.splitting import compute_generic_scaffolds
 
 smiles = [
     "c1ccccc1CCO",    # Aromatic benzene ring
@@ -487,8 +487,8 @@ result = scaffold_split(
 
 **Example:**
 ```python
-from polyglotmol.data import MolecularDataset
-from polyglotmol.models import universal_screen
+from molblender.data import MolecularDataset
+from molblender.models import universal_screen
 
 # Load drug-like molecules
 dataset = MolecularDataset.from_csv(
@@ -517,7 +517,7 @@ print(f"Test R²: {results['best_model']['test_r2']:.3f}")
 For more control, use the scaffold split function directly:
 
 ```python
-from polyglotmol.models.api.core.splitting import scaffold_split
+from molblender.models.api.core.splitting import scaffold_split
 import numpy as np
 
 # Your data
@@ -550,7 +550,7 @@ print(f"Scaffold overlap: {len(overlap)} scaffolds")  # Should be 0
 
 #### Implementation Details
 
-**Code Location**: `src/polyglotmol/models/api/core/splitting/scaffold.py`
+**Code Location**: `src/molblender/models/api/core/splitting/scaffold.py`
 
 ```python
 def scaffold_split(
@@ -638,7 +638,7 @@ Butina split is ideal when you want to:
 #### Configuration
 
 ```python
-from polyglotmol.models import universal_screen
+from molblender.models import universal_screen
 
 results = universal_screen(
     dataset=dataset,
@@ -685,7 +685,7 @@ Leave-cluster-out validation
 #### Direct Usage
 
 ```python
-from polyglotmol.models.api.core.splitting import butina_split
+from molblender.models.api.core.splitting import butina_split
 
 # Perform Butina clustering split
 result = butina_split(
@@ -710,7 +710,7 @@ print(f"Smallest cluster: {cluster_info['smallest_cluster_size']} molecules")
 
 #### Implementation Details
 
-**Code Location**: `src/polyglotmol/models/api/core/splitting/butina.py`
+**Code Location**: `src/molblender/models/api/core/splitting/butina.py`
 
 ```python
 def butina_split(
@@ -793,8 +793,8 @@ Feature clustering split is ideal when:
 #### Configuration
 
 ```python
-from polyglotmol.models import universal_screen
-from polyglotmol.data import MolecularDataset
+from molblender.models import universal_screen
+from molblender.data import MolecularDataset
 
 # Using RDKit descriptors with K-means
 results = universal_screen(
@@ -855,11 +855,11 @@ results = universal_screen(
 #### Direct Usage
 
 ```python
-from polyglotmol.models.api.core.splitting import feature_clustering_split
-from polyglotmol.data import MolecularDataset
+from molblender.models.api.core.splitting import feature_clustering_split
+from molblender.data import MolecularDataset
 
 # Example 1: User-provided features (3D embeddings)
-from polyglotmol.representations import SomeEmbeddingGenerator
+from molblender.representations import SomeEmbeddingGenerator
 
 generator = SomeEmbeddingGenerator()
 features = generator.generate(dataset)  # Shape: (n_molecules, n_features)
@@ -964,7 +964,7 @@ def feature_clustering_split(
 
 ```python
 # Typical workflow: Boltz-2 3D embeddings + Feature Clustering
-from polyglotmol.representations import Boltz2Embedder
+from molblender.representations import Boltz2Embedder
 
 # Generate 3D structure embeddings
 embedder = Boltz2Embedder()
@@ -1043,7 +1043,7 @@ results = universal_screen(
 
 ### Adaptive CV Configuration
 
-PolyglotMol automatically adjusts cross-validation based on dataset size and task type.
+MolBlender automatically adjusts cross-validation based on dataset size and task type.
 
 #### Automatic Fold Adjustment
 
@@ -1094,7 +1094,7 @@ else:
 
 ### Stratified Sampling
 
-For classification tasks, PolyglotMol automatically uses **stratified sampling** to maintain class balance across folds.
+For classification tasks, MolBlender automatically uses **stratified sampling** to maintain class balance across folds.
 
 #### Benefits
 
@@ -1210,7 +1210,7 @@ assert (results1['test_indices'] == results2['test_indices']).all()
 If you need specialized splitting logic not covered by the built-in strategies, use the `user_provided` strategy:
 
 ```python
-from polyglotmol.models.api.core.splitting import validate_user_splits
+from molblender.models.api.core.splitting import validate_user_splits
 
 # Your custom splitting logic
 def my_custom_split(dataset, test_ratio=0.2):
@@ -1327,7 +1327,7 @@ results = universal_screen(
 
 ## Related Topics
 
-- {doc}`methodology` - Complete evaluation methodology documentation
+- {doc}`../models/methodology` - Complete evaluation methodology documentation
 - {doc}`../models/screening` - Model screening API reference
 - {doc}`dataset` - Dataset management guide
 
@@ -1348,3 +1348,696 @@ results = universal_screen(
 4. **Adaptive Configuration**: CV folds automatically adjusted based on dataset size
 5. **Flexible Integration**: Easy to plug in custom splitting logic via `user_provided`
 ```
+
+## Advanced Molecular Splitting Strategies
+
+MolBlender provides advanced molecular-aware splitting strategies adapted from the [splito package](https://github.com/datamol-io/splito), designed specifically for rigorous out-of-distribution (OOD) evaluation in drug discovery and molecular machine learning.
+
+```{admonition} New in Version 0.3.0
+:class: note
+
+Advanced splitting methods from splito package: **PerimeterSplit**, **MolecularWeightSplit**, **MOODSplitter**, and **LoSplitter** for lead optimization.
+```
+
+### Why Advanced Splitting Matters
+
+Standard random splitting often produces **overly optimistic** performance estimates because:
+- Test molecules are too similar to training molecules
+- Model memorizes chemical patterns rather than learning generalizable rules
+- Real-world deployment involves truly novel structures
+
+Advanced splitting strategies address this by creating **realistic OOD scenarios**:
+
+| Method | OOD Challenge | Real-World Scenario |
+|--------|---------------|---------------------|
+| **Perimeter** | Test on chemical space perimeter | Virtual screening on diverse libraries |
+| **Molecular Weight** | Test on different size molecules | Generalization across MW ranges |
+| **MOOD** | Deployment-aware selection | Optimized for specific target space |
+| **Lead Optimization** | Test on similar molecule clusters | SAR exploration within chemical series |
+
+### 9. Perimeter Split (Extrapolation-Oriented)
+
+Places the most dissimilar molecule pairs in the test set, forcing the model to extrapolate to the perimeter of the chemical space.
+
+#### What is Perimeter Split?
+
+Perimeter split identifies pairs of molecules with **maximum pairwise distance** in fingerprint space and assigns them to the test set. This creates a challenging OOD scenario where the test set lies on the "edge" of the training data distribution.
+
+**Algorithm**:
+1. Compute molecular fingerprints (ECFP4 by default)
+2. Reduce to k-means cluster centers (default: 25 clusters)
+3. Compute pairwise distances between clusters
+4. Iteratively select furthest pairs for test set
+5. Assign remaining molecules to maintain test_size ratio
+
+#### MolecularDataset Integration
+
+```python
+from molblender.data import MolecularDataset
+
+# Load dataset
+dataset = MolecularDataset.from_csv(
+    "molecules.csv",
+    input_column="SMILES",
+    label_columns=["activity"]
+)
+
+# Perimeter split - most dissimilar molecules in test
+train, test = dataset.train_test_split(
+    method='perimeter',
+    test_size=0.2,
+    n_clusters=25,          # K-means clusters for speed
+    metric='euclidean',     # Distance metric
+    random_state=42
+)
+
+print(f"Train: {len(train)}, Test: {len(test)}")
+```
+
+#### Standalone Functional API
+
+```python
+from molblender.data.dataset.splitting import train_test_split
+import numpy as np
+
+# Your data
+smiles = ["CCO", "c1ccccc1", "CC(=O)O", ...]
+X = np.array([...])  # Feature matrix
+y = np.array([...])  # Target values
+
+# Perimeter split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y,
+    molecules=smiles,
+    method='perimeter',
+    test_size=0.2,
+    n_clusters=25,
+    random_state=42
+)
+```
+
+#### Class-based API
+
+```python
+from molblender.data.dataset.splitting import PerimeterSplit
+
+# Create splitter
+splitter = PerimeterSplit(
+    test_size=0.2,
+    n_clusters=25,
+    metric='euclidean',
+    random_state=42
+)
+
+# Generate splits
+train_idx, test_idx = next(splitter.split(smiles))
+
+# Apply to data
+X_train, X_test = X[train_idx], X[test_idx]
+y_train, y_test = y[train_idx], y[test_idx]
+```
+
+#### Use Cases
+
+**Virtual Screening:**
+- Test model's ability to predict activity for **structurally diverse** compounds
+- Evaluate extrapolation beyond the training chemical space
+- More realistic estimate for hit discovery on diverse libraries
+
+**Example:**
+```python
+# Drug discovery scenario
+from molblender.models import universal_screen
+
+results = universal_screen(
+    dataset=dataset,
+    target_column="pIC50",
+    split_strategy="perimeter",  # Use via models API
+    test_size=0.2,
+    n_clusters=25
+)
+
+# Test set contains most dissimilar molecules
+# → More conservative performance estimate
+```
+
+#### Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `test_size` | float | 0.2 | Fraction of data for test set |
+| `n_clusters` | int | 25 | K-means clusters (reduces computation) |
+| `metric` | str | 'euclidean' | Distance metric |
+| `random_state` | int | None | Random seed for reproducibility |
+
+```{tip}
+**Choosing n_clusters**: 
+- Larger values (50-100): More accurate distance calculation, slower
+- Smaller values (10-25): Faster, approximation via cluster centers
+- For datasets < 1000 molecules, use n_clusters = sqrt(n_samples)
+```
+
+### 10. Molecular Weight Split
+
+Splits molecules by molecular weight, testing generalization across different molecular sizes.
+
+#### How It Works
+
+```
+Dataset (1000 molecules)
+    ↓
+Compute molecular weights
+    ↓
+Sort by MW
+    ├─→ Train set: MW 100-300 Da (small molecules)
+    └─→ Test set: MW 400-600 Da (large molecules)
+       ↓
+    Test generalization to larger/smaller molecules
+```
+
+#### Configuration
+
+```python
+# Generalize from small to large molecules
+train, test = dataset.train_test_split(
+    method='molecular_weight',
+    test_size=0.2,
+    generalize_to_larger=True,    # Train on small, test on large
+    random_state=42
+)
+
+# Or vice versa (train on large, test on small)
+train, test = dataset.train_test_split(
+    method='molecular_weight',
+    generalize_to_larger=False,   # Train on large, test on small
+    test_size=0.2
+)
+```
+
+#### Functional API
+
+```python
+from molblender.data.dataset.splitting import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y,
+    molecules=smiles,
+    method='molecular_weight',
+    generalize_to_larger=True,
+    test_size=0.2
+)
+
+# Verify MW distribution
+from molblender.data.dataset.splitting import compute_molecular_weights
+train_mws = compute_molecular_weights([smiles[i] for i in range(len(X_train))])
+test_mws = compute_molecular_weights([smiles[i] for i in range(len(X_test))])
+
+print(f"Train MW range: {train_mws.min():.1f} - {train_mws.max():.1f}")
+print(f"Test MW range: {test_mws.min():.1f} - {test_mws.max():.1f}")
+```
+
+#### Use Cases
+
+**Peptide Drug Discovery:**
+- Train on small molecule fragments
+- Test on larger peptide-like structures
+
+**Fragment-to-Lead Optimization:**
+- Evaluate model's ability to predict activity as molecules grow in size
+- Test generalization from fragments to drug-like molecules
+
+**Example:**
+```python
+# Fragment-based drug discovery
+dataset = MolecularDataset.from_csv(
+    "fragments_and_leads.csv",
+    input_column="SMILES",
+    label_columns=["binding_affinity"]
+)
+
+# Train on fragments (MW < 300), test on leads (MW > 300)
+train, test = dataset.train_test_split(
+    method='molecular_weight',
+    generalize_to_larger=True,
+    test_size=0.3
+)
+
+# Results reflect generalization from fragments to leads
+```
+
+### 11. MOOD Split (Model-Optimized Out-of-Distribution)
+
+Automatically selects the best splitting strategy based on similarity to deployment data.
+
+#### What is MOOD?
+
+MOOD (Model-Optimized Out-of-Distribution) splitter evaluates multiple candidate splitting strategies and selects the one whose **test set is most similar** to your expected deployment distribution.
+
+**Algorithm**:
+1. Provide deployment molecules (expected real-world data)
+2. MOOD evaluates candidate splitters (e.g., perimeter + MW)
+3. Compute test set similarity to deployment set
+4. Select splitter with highest similarity
+5. Use prescribed splitter for final train/test split
+
+#### Configuration
+
+```python
+# Deployment molecules (what you'll actually predict on)
+deployment_smiles = [
+    "c1ccc(O)cc1",    # Phenolic compounds
+    "CCCCCO",         # Aliphatic alcohols
+    "CC(=O)OC"        # Esters
+]
+
+# MOOD automatically chooses best split strategy
+train, test = dataset.train_test_split(
+    method='mood',
+    deployment_smiles=deployment_smiles,
+    test_size=0.2,
+    n_clusters=25,
+    random_state=42
+)
+```
+
+#### Functional API with Custom Candidates
+
+```python
+from molblender.data.dataset.splitting import (
+    train_test_split,
+    PerimeterSplit,
+    MolecularWeightSplit
+)
+
+# Define candidate splitters
+candidates = {
+    'perimeter': PerimeterSplit(test_size=0.2, n_clusters=25),
+    'molecular_weight': MolecularWeightSplit(
+        test_size=0.2,
+        generalize_to_larger=True,
+        smiles=smiles
+    ),
+}
+
+# MOOD selects best one
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y,
+    molecules=smiles,
+    deployment_molecules=deployment_smiles,
+    method='mood',
+    test_size=0.2,
+    candidate_methods=candidates,  # Custom candidates
+    random_state=42
+)
+```
+
+#### Class-based API
+
+```python
+from molblender.data.dataset.splitting import MOODSplitter
+
+# Create splitter with candidates
+splitter = MOODSplitter(
+    candidate_splitters=candidates,
+    metric='euclidean'
+)
+
+# Fit to determine best strategy
+splitter.fit(training_smiles, deployment_smiles)
+
+# Check which was selected
+print(f"Prescribed splitter: {splitter._prescribed_splitter_label}")
+
+# Generate splits using best strategy
+train_idx, test_idx = next(splitter.split(smiles))
+```
+
+#### Use Cases
+
+**Deployment-Aware Validation:**
+- You have a specific target chemical space for deployment
+- Want test set to mimic real-world distribution
+- Optimize split strategy for your use case
+
+**Example:**
+```python
+# Virtual screening for kinase inhibitors
+# Deployment: ATP-competitive inhibitors
+
+# Fetch representative ATP-competitive structures
+deployment_smiles = [
+    "c1ccc2c(c1)nc(nc2N)N",  # Representative kinase inhibitor
+    # ... more deployment structures
+]
+
+train, test = dataset.train_test_split(
+    method='mood',
+    deployment_smiles=deployment_smiles,
+    test_size=0.2
+)
+
+# Test set now resembles ATP-competitive inhibitor space
+# → More realistic validation for deployment
+```
+
+### 12. Lead Optimization Split (LoSplitter)
+
+Creates test clusters of structurally similar molecules, ideal for SAR (Structure-Activity Relationship) exploration.
+
+#### What is Lead Optimization Split?
+
+Unlike standard splits, LoSplitter returns:
+- **Training set**: Diverse molecules
+- **Test clusters**: Multiple clusters of similar molecules (not a single test set)
+
+Each test cluster represents a **chemical series** for SAR analysis.
+
+**Algorithm**:
+1. Cluster molecules by Tanimoto similarity
+2. Filter clusters by:
+   - Minimum size (e.g., ≥5 molecules)
+   - Activity variance (std > threshold)
+3. Select top N diverse clusters
+4. Return training set + list of test clusters
+
+#### Configuration
+
+```python
+# Lead optimization split
+train_dataset, test_clusters, y_train, y_test_clusters = dataset.train_test_split(
+    method='lead_opt',
+    lo_threshold=0.4,           # Tanimoto similarity threshold
+    lo_min_cluster_size=5,      # Minimum molecules per cluster
+    lo_max_clusters=10,         # Maximum test clusters
+    lo_std_threshold=0.60       # Activity variance threshold
+)
+
+# test_clusters is a list of MolecularDataset objects
+print(f"Number of test clusters: {len(test_clusters)}")
+for i, cluster in enumerate(test_clusters):
+    print(f"Cluster {i+1}: {len(cluster)} molecules")
+```
+
+#### Functional API
+
+```python
+from molblender.data.dataset.splitting import train_test_split
+
+X_train, X_clusters, y_train, y_clusters = train_test_split(
+    X, y,
+    molecules=smiles,
+    method='lead_opt',
+    lo_threshold=0.5,
+    lo_min_cluster_size=5,
+    lo_max_clusters=10,
+    lo_std_threshold=0.60
+)
+
+# X_clusters and y_clusters are lists of numpy arrays
+print(f"Training set: {len(X_train)} molecules")
+print(f"Test clusters: {len(X_clusters)}")
+for i, cluster_X in enumerate(X_clusters):
+    print(f"  Cluster {i+1}: {len(cluster_X)} molecules")
+```
+
+#### Class-based API
+
+```python
+from molblender.data.dataset.splitting import LoSplitter
+
+splitter = LoSplitter(
+    threshold=0.5,
+    min_cluster_size=5,
+    max_clusters=10,
+    std_threshold=0.60
+)
+
+train_idx, cluster_idx_list = splitter.split(
+    smiles=smiles,
+    values=activity_values.tolist()
+)
+
+# train_idx: training set indices
+# cluster_idx_list: list of test cluster indices
+print(f"Train: {len(train_idx)}, Clusters: {len(cluster_idx_list)}")
+```
+
+#### Use Cases
+
+**SAR Exploration:**
+- Evaluate model's ability to predict activity within chemical series
+- Test interpolation within local chemical space
+- Identify SAR-consistent vs SAR-inconsistent predictions
+
+**Lead Optimization Campaigns:**
+- Each test cluster = potential lead series
+- Predict activity for new analogs within series
+- Prioritize series with confident predictions
+
+**Scaffold Hopping Scenarios:**
+A real-world pharmaceutical use case from the meeting discussion:
+
+```{admonition} Scaffold Hopping Example
+:class: note
+
+A medicinal chemistry team exhaustively explores **Scaffold 1** with many functional group variations but hits a ceiling (e.g., can't achieve <100 nM potency). They then perform **scaffold hopping** to explore Scaffolds 2, 3, 4 with limited compounds each.
+
+One of the new scaffolds shows promising results. The team wants to predict activity for additional untested compounds in that scaffold series.
+
+**LoSplitter addresses this scenario:**
+1. **Training set**: Scaffold 1 data + 1-2 compounds from each new scaffold (known leads)
+2. **Test clusters**: Remaining compounds from each new scaffold series
+3. **Evaluation**: Can the model generalize within a scaffold family based on functional group variations learned from other scaffolds?
+
+This validates whether a model can successfully:
+- Learn from extensive data on one scaffold
+- Transfer that knowledge to predict activity in related but different scaffolds
+- Guide which new scaffold series to prioritize for further exploration
+```
+
+**Example:**
+```python
+# Medicinal chemistry campaign
+dataset = MolecularDataset.from_csv(
+    "lead_series.csv",
+    input_column="SMILES",
+    label_columns=["IC50"]
+)
+
+# Get test clusters
+train, test_clusters, y_train, y_clusters = dataset.train_test_split(
+    method='lead_opt',
+    lo_threshold=0.4,
+    lo_min_cluster_size=5
+)
+
+# Evaluate model on each cluster independently
+for i, cluster in enumerate(test_clusters):
+    # Train model
+    model.fit(train.features.values, y_train)
+    
+    # Predict on cluster
+    cluster_preds = model.predict(cluster.features.values)
+    cluster_true = y_clusters[i]
+    
+    # Compute cluster-specific metrics
+    from sklearn.metrics import r2_score
+    r2 = r2_score(cluster_true, cluster_preds)
+    print(f"Cluster {i+1} R²: {r2:.3f}")
+```
+
+#### Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `lo_threshold` | float | 0.4 | Tanimoto similarity for clustering |
+| `lo_min_cluster_size` | int | 5 | Minimum molecules per cluster |
+| `lo_max_clusters` | int | 50 | Maximum test clusters to return |
+| `lo_std_threshold` | float | 0.60 | Activity std deviation threshold |
+
+```{admonition} Why Cluster-Based Validation?
+:class: tip
+
+**Traditional Split**: One test set, average performance
+**LoSplitter**: Multiple test clusters, series-specific performance
+
+Benefits:
+- Identify which chemical series are predictable
+- Detect series where model fails (SAR cliffs)
+- Guide medicinal chemistry decisions per series
+```
+
+### 13. Custom User-Provided Split
+
+When you have predefined train/test assignments from external sources or need full control over the splitting process.
+
+#### What is Custom Split?
+
+Custom split allows you to:
+- Use existing train/test assignments from benchmark datasets
+- Apply pre-computed temporal or experimental splits
+- Integrate splits from external pipelines or publications
+
+#### Configuration
+
+**Option 1: Using a split column from metadata**
+
+```python
+# Dataset with a pre-existing split column
+dataset = MolecularDataset.from_csv(
+    "benchmark_data.csv",
+    input_column="SMILES",
+    label_columns=["pIC50"]
+)
+
+# Assuming metadata has a 'split' column with 'train'/'test' values
+dataset.metadata['split'] = ['train', 'train', 'test', 'train', 'test', ...]
+
+train_ds, test_ds = dataset.train_test_split(
+    method='custom',
+    split_column='split'
+)
+```
+
+**Option 2: Using explicit indices**
+
+```python
+# Predefined indices (e.g., from temporal split, experimental batches)
+train_indices = [0, 1, 2, 5, 6, 7, 10, 11, 12]
+test_indices = [3, 4, 8, 9, 13, 14]
+
+train_ds, test_ds = dataset.train_test_split(
+    method='custom',
+    train_indices=train_indices,
+    test_indices=test_indices
+)
+```
+
+#### Functional API
+
+```python
+from molblender.data.dataset.splitting import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y,
+    method='custom',
+    train_indices=train_idx,
+    test_indices=test_idx
+)
+```
+
+#### Use Cases
+
+**Benchmark Reproduction:**
+- Use exact same train/test splits from published papers
+- Ensure fair comparison with literature results
+
+**Temporal Splits:**
+- Train on older data, test on newer data
+- Simulate real-world deployment scenarios
+
+**Experimental Design:**
+- Group experimental batches together
+- Account for batch effects in validation
+
+**External Annotations:**
+- Use expert-curated splits
+- Apply domain-specific splitting criteria
+
+#### Supported Split Column Formats
+
+| Format | Train Value | Test Value |
+|--------|-------------|------------|
+| String | 'train' | 'test' |
+| Numeric | 0 | 1 |
+| Boolean | False | True |
+
+```{admonition} When to Use Custom Split?
+:class: tip
+
+Use custom split when:
+- You need to reproduce specific benchmark results
+- Your data has inherent temporal or experimental structure
+- External experts have defined optimal splits for your domain
+- You want to use the same split across multiple experiments
+```
+
+### Advanced Splitting Summary
+
+```{admonition} Choosing Advanced Splitting Methods
+:class: tip
+
+| Method | Use When | Performance Expectation |
+|--------|----------|------------------------|
+| **Perimeter** | Testing extrapolation to diverse molecules | Most conservative (lowest R²) |
+| **Molecular Weight** | Generalizing across MW ranges | Conservative for large MW gap |
+| **MOOD** | Have deployment data, want optimized split | Deployment-realistic |
+| **Lead Optimization** | SAR exploration, multiple series | Cluster-dependent (variable R²) |
+
+**General Guidance:**
+- Use **Perimeter** for virtual screening validation
+- Use **Molecular Weight** for fragment-to-lead pipelines
+- Use **MOOD** when you know deployment distribution
+- Use **Lead Optimization** for medicinal chemistry campaigns
+```
+
+### Integration with Universal Screening
+
+All advanced splitting methods integrate seamlessly with the `universal_screen` API:
+
+```python
+from molblender.models import universal_screen
+
+# Example: MOOD split in model screening
+results = universal_screen(
+    dataset=dataset,
+    target_column="activity",
+    split_strategy="mood",           # Advanced split
+    deployment_smiles=deploy_smiles,
+    test_size=0.2,
+    random_state=42
+)
+```
+
+```{note}
+Currently, advanced splitting methods (`perimeter`, `molecular_weight`, `mood`, `lead_opt`) are available via the `MolecularDataset.train_test_split()` method and functional API, but not yet fully integrated into `universal_screen`. Full integration planned for v0.4.0.
+```
+
+### Comparison: Standard vs Advanced Splitting
+
+```python
+# Standard random split (optimistic)
+train_random, test_random = dataset.train_test_split(
+    method='random',
+    test_size=0.2
+)
+
+# Advanced perimeter split (realistic)
+train_perimeter, test_perimeter = dataset.train_test_split(
+    method='perimeter',
+    test_size=0.2,
+    n_clusters=25
+)
+
+# Typical outcome:
+# Random split R²: 0.78 (optimistic)
+# Perimeter split R²: 0.62 (realistic)
+```
+
+### API Reference
+
+See {doc}`../../api/data/splitting` for complete API documentation.
+
+### References
+
+```{admonition} Attribution
+:class: note
+
+Advanced splitting strategies adapted from the **splito package**:
+- Repository: https://github.com/datamol-io/splito
+- License: Apache 2.0
+- Copyright (c) 2024 Datamol.io
+
+All `datamol` dependencies have been replaced with direct RDKit calls for compatibility.
+```
+

@@ -1,12 +1,12 @@
 # Introduction
 
-PolyglotMol is a Python toolkit designed for generating diverse molecular representations suitable for various machine learning tasks. It aims to provide a unified, user-friendly, and extensible framework for handling multi-modal molecular data.
+MolBlender is a Python toolkit designed for generating diverse molecular representations suitable for various machine learning tasks. It aims to provide a unified, user-friendly, and extensible framework for handling multi-modal molecular data.
 
 ## Motivation
 
 Molecular representation learning is crucial for drug discovery, materials science, and chemical research. Numerous excellent packages like RDKit, DeepChem, and Chemprop exist, each with its strengths in specific representation types or modeling approaches. However, integrating features from different modalities (e.g., 2D topology, 3D conformation, sequence information, dynamic properties) often requires significant effort and boilerplate code.
 
-PolyglotMol addresses this by:
+MolBlender addresses this by:
 
 * **Providing a unified API:** Accessing different types of fingerprints, graph embeddings, descriptors, and other representations follows a consistent pattern.
 * **Supporting multi-modal inputs:** Handling SMILES, molecular files (SDF, PDB), and potentially sequence or trajectory data through a clear interface.

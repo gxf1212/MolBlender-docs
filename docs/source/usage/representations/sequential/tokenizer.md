@@ -1,13 +1,13 @@
 
 # Tokenizers
 
-This guide describes how to use molecular tokenizer featurizers in **PolyglotMol**.
+This guide describes how to use molecular tokenizer featurizers in **MolBlender**.
 
-Tokenization converts SMILES strings or molecules into sequences of token IDs, enabling the application of natural language processing (NLP) techniques to chemical structures. PolyglotMol provides a unified interface for various tokenization approaches through DeepChem's tokenizers.
+Tokenization converts SMILES strings or molecules into sequences of token IDs, enabling the application of natural language processing (NLP) techniques to chemical structures. MolBlender provides a unified interface for various tokenization approaches through DeepChem's tokenizers.
 
 ## Available Tokenizers
 
-PolyglotMol currently supports the following tokenizer types:
+MolBlender currently supports the following tokenizer types:
 
 | Featurizer Name                   | Description                                       | Return Type      |
 | --------------------------------- | ------------------------------------------------- | ---------------- |
@@ -20,8 +20,8 @@ PolyglotMol currently supports the following tokenizer types:
 ## Quick Example
 
 ```python
-# 1. Import PolyglotMol
-import polyglotmol as pm
+# 1. Import MolBlender
+import molblender as pm
 
 # 2. Set up a basic tokenizer
 featurizer = pm.get_featurizer('DeepChem-BasicSmilesTokenizer')
@@ -64,7 +64,7 @@ For more advanced tokenization options, you can use Hugging Face tokenizers:
 
 ```python
 from transformers import AutoTokenizer
-from polyglotmol.representations import get_featurizer
+from molblender.representations import get_featurizer
 
 # Load a pre-trained SMILES tokenizer
 hf_tokenizer = AutoTokenizer.from_pretrained("seyonec/PubChem10M_SMILES_BPE_4k")
@@ -104,7 +104,7 @@ vocab_builder.build(dataset)
 vocab_file = "atom_vocab.json"
 vocab_builder.save(vocab_file)
 
-# Use with PolyglotMol
+# Use with MolBlender
 atom_tokenizer = get_featurizer('DeepChem-GroverAtomTokenizer', 
                                 vocab_file=vocab_file)
 ```

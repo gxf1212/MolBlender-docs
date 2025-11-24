@@ -4,7 +4,7 @@ Efficient molecular data handling and dataset management with integrated featuri
 
 ## Introduction
 
-The data module provides the foundational classes for managing molecular datasets throughout the PolyglotMol workflow. It handles the complexity of different input formats, molecular representations, and feature computation while providing a clean, intuitive API.
+The data module provides the foundational classes for managing molecular datasets throughout the MolBlender workflow. It handles the complexity of different input formats, molecular representations, and feature computation while providing a clean, intuitive API.
 
 Key capabilities include:
 - **Unified Data Loading**: Support for SMILES, SDF, CSV, Excel, and more
@@ -29,9 +29,9 @@ Efficient collection handling with batch operations
 :::
 
 :::{grid-item-card} 🔀 **Data Splitting**
-:link: splitting
+:link: splitting/index
 :link-type: doc
-Professional splitting strategies and cross-validation
+14 professional splitting strategies and cross-validation methods
 :::
 
 :::{grid-item-card} 🧬 **Protein Handling**
@@ -58,8 +58,8 @@ Intelligent feature caching and storage
 ### Creating Datasets
 
 ```python
-import polyglotmol as pm
-from polyglotmol.data import MolecularDataset
+import molblender as pm
+from molblender.data import MolecularDataset
 
 # From SMILES list
 molecules = ["CCO", "CCN", "CCC", "c1ccccc1"]
@@ -555,10 +555,17 @@ feature_results = robust_featurization(
 - [SDF Format Specification](http://help.accelryds.com/ulm/onelab/1.0/content/ulm_pdfs/direct/reference/ctfileformats2016.pdf) - Chemical file format details
 
 ```{toctree}
-:maxdepth: 1
+:maxdepth: 2
 :hidden:
 
 molecule
 protein
 dataset
+splitting/index
+splitting/basic_strategies
+splitting/chemical_strategies
+splitting/property_strategies
+splitting/advanced_strategies
+splitting/custom_splits
+splitting/best_practices
 ```

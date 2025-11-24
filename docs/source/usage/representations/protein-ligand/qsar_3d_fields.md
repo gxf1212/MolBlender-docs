@@ -38,7 +38,7 @@ Field values suitable for PLS regression
 ## Quick Start
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 import numpy as np
 
 # Basic 3D field calculation
@@ -189,7 +189,7 @@ print(f"Fast calculation: {fast_features.shape}")
 ### 3D-QSAR Model Building
 
 ```python
-from polyglotmol.data import MolecularDataset
+from molblender.data import MolecularDataset
 from sklearn.cross_decomposition import PLSRegression
 from sklearn.model_selection import cross_val_score
 from sklearn.preprocessing import StandardScaler

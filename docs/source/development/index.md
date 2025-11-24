@@ -1,6 +1,6 @@
 # Developer Guide
 
-Welcome to the PolyglotMol Developer Guide! This section contains comprehensive information for contributors, maintainers, and anyone interested in extending PolyglotMol.
+Welcome to the MolBlender Developer Guide! This section contains comprehensive information for contributors, maintainers, and anyone interested in extending MolBlender.
 
 ## Quick Links
 
@@ -35,7 +35,7 @@ Testing guidelines and best practices
 
 ## Overview
 
-PolyglotMol is designed with modularity, extensibility, and ease of use in mind. The codebase follows several key design principles:
+MolBlender is designed with modularity, extensibility, and ease of use in mind. The codebase follows several key design principles:
 
 - **Registry-Based Architecture**: Featurizers and models are registered dynamically
 - **Lazy Loading**: Dependencies loaded only when needed
@@ -70,7 +70,7 @@ If you're new to contributing, start here:
 
 ## Adding Features
 
-Detailed guides for extending PolyglotMol:
+Detailed guides for extending MolBlender:
 
 - {doc}`adding_features/featurizers` - Add new molecular representations
 - {doc}`adding_features/models` - Add new ML models
@@ -114,4 +114,4 @@ If you're stuck or have questions:
 3. Ask in GitHub Discussions
 4. Reach out to maintainers
 
-Thank you for contributing to PolyglotMol! 🎉
+Thank you for contributing to MolBlender! 🎉

@@ -1,11 +1,11 @@
 .. _api-representations-fingerprints:
 
-Fingerprints API (`polyglotmol.representations.fingerprints`)
+Fingerprints API (`molblender.representations.fingerprints`)
 =============================================================
 
 This submodule provides various fingerprint generation capabilities.
 
-.. automodule:: polyglotmol.representations.fingerprints
+.. automodule:: molblender.representations.fingerprints
    :noindex:
 
 .. toctree::

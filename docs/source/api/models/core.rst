@@ -3,12 +3,12 @@ Core Types
 
 Core classes and types used throughout the models module.
 
-.. currentmodule:: polyglotmol.models.api.core
+.. currentmodule:: molblender.models.api.core
 
 Base Classes
 ------------
 
-.. automodule:: polyglotmol.models.api.core.base
+.. automodule:: molblender.models.api.core.base
    :members:
    :undoc-members:
    :show-inheritance:
@@ -16,7 +16,7 @@ Base Classes
 Data Handling
 -------------
 
-.. automodule:: polyglotmol.models.api.core.data_handler
+.. automodule:: molblender.models.api.core.data_handler
    :members:
    :undoc-members:
    :show-inheritance:
@@ -24,7 +24,7 @@ Data Handling
 Model Registry
 --------------
 
-.. automodule:: polyglotmol.models.api.core.model_registry
+.. automodule:: molblender.models.api.core.model_registry
    :members:
    :undoc-members:
    :show-inheritance:
@@ -32,7 +32,7 @@ Model Registry
 Result Processing
 -----------------
 
-.. automodule:: polyglotmol.models.api.core.result_processor
+.. automodule:: molblender.models.api.core.result_processor
    :members:
    :undoc-members:
    :show-inheritance:
@@ -40,7 +40,7 @@ Result Processing
 Metrics
 -------
 
-.. automodule:: polyglotmol.models.api.core.metrics
+.. automodule:: molblender.models.api.core.metrics
    :members:
    :undoc-members:
    :show-inheritance:
@@ -48,7 +48,7 @@ Metrics
 Evaluation
 ----------
 
-.. automodule:: polyglotmol.models.api.core.evaluation
+.. automodule:: molblender.models.api.core.evaluation
    :members:
    :undoc-members:
    :show-inheritance:

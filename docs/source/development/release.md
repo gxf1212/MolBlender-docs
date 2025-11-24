@@ -1,6 +1,6 @@
 # Release Process
 
-Guidelines for maintainers releasing new PolyglotMol versions.
+Guidelines for maintainers releasing new MolBlender versions.
 
 ## Version Numbering
 
@@ -47,7 +47,7 @@ git push origin vX.Y.Z
 
 ```bash
 python -m build
-# Creates dist/polyglotmol-X.Y.Z.tar.gz and .whl
+# Creates dist/molblender-X.Y.Z.tar.gz and .whl
 ```
 
 ### 4. Upload to PyPI

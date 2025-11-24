@@ -1,6 +1,6 @@
-# Contributing to PolyglotMol
+# Contributing to MolBlender
 
-Thank you for your interest in contributing to PolyglotMol! This guide will help you get started.
+Thank you for your interest in contributing to MolBlender! This guide will help you get started.
 
 ## Code of Conduct
 
@@ -15,7 +15,7 @@ Found a bug or have a feature request?
 **Bug Reports:**
 - Check if the issue already exists
 - Use the bug report template
-- Include: OS, Python version, PolyglotMol version
+- Include: OS, Python version, MolBlender version
 - Provide minimal reproducible example
 - Include error messages and stack traces
 
@@ -44,11 +44,11 @@ See detailed workflow below.
 ```bash
 # Fork the repository on GitHub
 # Then clone your fork
-git clone https://github.com/YOUR_USERNAME/PolyglotMol.git
-cd PolyglotMol
+git clone https://github.com/YOUR_USERNAME/MolBlender.git
+cd MolBlender
 
 # Add upstream remote
-git remote add upstream https://github.com/gxf1212/PolyglotMol.git
+git remote add upstream https://github.com/gxf1212/MolBlender.git
 ```
 
 ### 2. Create a Branch
@@ -111,7 +111,7 @@ pytest
 pytest tests/test_your_feature.py
 
 # Run with coverage
-pytest --cov=polyglotmol --cov-report=html
+pytest --cov=molblender --cov-report=html
 ```
 
 ### 6. Commit Changes
@@ -159,4 +159,4 @@ git push origin feat/your-feature-name
 - [ ] CHANGELOG.md updated
 - [ ] Branch is up-to-date with main
 
-Thank you for making PolyglotMol better! 🚀
+Thank you for making MolBlender better! 🚀

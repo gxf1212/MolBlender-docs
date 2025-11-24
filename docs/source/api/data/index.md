@@ -4,7 +4,7 @@
 Data Module
 ===============================
 
-This section covers the **PolyglotMol** Data module, including classes and functions for input parsing, molecule representation, dataset management, and overview reporting.
+This section covers the **MolBlender** Data module, including classes and functions for input parsing, molecule representation, dataset management, advanced splitting strategies, and overview reporting.
 
 .. toctree::
    :maxdepth: 1
@@ -12,32 +12,32 @@ This section covers the **PolyglotMol** Data module, including classes and funct
    io
    molecule
    dataset
-   overview
+   splitting
 
 ```
 
 ## Module Hierarchy
 
 ```{eval-rst}
-.. automodule:: polyglotmol.data.io
+.. automodule:: molblender.data.io
    :members:
    :undoc-members:
    :show-inheritance:
    :no-index:
 
-.. automodule:: polyglotmol.data.molecule
+.. automodule:: molblender.data.molecule
    :members:
    :undoc-members:
    :show-inheritance:
    :no-index:
 
-.. automodule:: polyglotmol.data.dataset
+.. automodule:: molblender.data.dataset
    :members:
    :undoc-members:
    :show-inheritance:
    :no-index:
 
-.. automodule:: polyglotmol.data.overview
+.. automodule:: molblender.data.dataset.splitting
    :members:
    :undoc-members:
    :show-inheritance:

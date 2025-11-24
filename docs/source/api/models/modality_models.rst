@@ -3,7 +3,7 @@ Modality Models
 
 Modality-specific model wrappers and detection.
 
-.. currentmodule:: polyglotmol.models.modality_models
+.. currentmodule:: molblender.models.modality_models
 
 Overview
 --------
@@ -13,7 +13,7 @@ This module provides wrappers for models that handle specific data modalities (S
 Modality Detector
 -----------------
 
-.. automodule:: polyglotmol.models.modality_models.modality_detector
+.. automodule:: molblender.models.modality_models.modality_detector
    :members:
    :undoc-members:
    :show-inheritance:
@@ -21,7 +21,7 @@ Modality Detector
 CNN Models
 ----------
 
-.. automodule:: polyglotmol.models.modality_models.cnn_models
+.. automodule:: molblender.models.modality_models.cnn_models
    :members:
    :undoc-members:
    :show-inheritance:
@@ -29,7 +29,7 @@ CNN Models
 VAE Models
 ----------
 
-.. automodule:: polyglotmol.models.modality_models.vae_models
+.. automodule:: molblender.models.modality_models.vae_models
    :members:
    :undoc-members:
    :show-inheritance:
@@ -37,7 +37,7 @@ VAE Models
 String Models
 -------------
 
-.. automodule:: polyglotmol.models.modality_models.string_models
+.. automodule:: molblender.models.modality_models.string_models
    :members:
    :undoc-members:
    :show-inheritance:
@@ -45,7 +45,7 @@ String Models
 Base Classes
 ------------
 
-.. automodule:: polyglotmol.models.modality_models.base
+.. automodule:: molblender.models.modality_models.base
    :members:
    :undoc-members:
    :show-inheritance:

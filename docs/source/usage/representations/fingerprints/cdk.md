@@ -1,6 +1,6 @@
 # CDK Fingerprints
 
-This guide describes how to use the CDK (Chemistry Development Kit) fingerprint featurizers in PolyglotMol. These featurizers leverage the Java-based CDK library via the `CDK-pywrapper` Python package to generate a diverse range of molecular fingerprints.
+This guide describes how to use the CDK (Chemistry Development Kit) fingerprint featurizers in MolBlender. These featurizers leverage the Java-based CDK library via the `CDK-pywrapper` Python package to generate a diverse range of molecular fingerprints.
 
 ## Overview
 
@@ -31,7 +31,7 @@ conda install -c conda-forge rdkit
 
 ## Available CDK Fingerprints
 
-PolyglotMol provides access to the following CDK fingerprints:
+MolBlender provides access to the following CDK fingerprints:
 
 | Featurizer Name | Description | Bit Length | Use Case |
 |:----------------|:------------|:-----------|:---------|
@@ -58,7 +58,7 @@ PolyglotMol provides access to the following CDK fingerprints:
 ## Basic Usage
 
 ```python
-from polyglotmol.representations import get_featurizer
+from molblender.representations import get_featurizer
 from rdkit import Chem
 
 # 1. Create a featurizer using the registry
@@ -96,7 +96,7 @@ fps = featurizer.featurize(smiles_list, n_workers=4)  # Uses threading
 The CDK featurizers accept both SMILES strings and RDKit Mol objects:
 
 ```python
-from polyglotmol.representations import get_featurizer
+from molblender.representations import get_featurizer
 
 featurizer = get_featurizer("cdk_pubchem")
 
@@ -115,7 +115,7 @@ print(f"PubChem fingerprint shape: {fps[0].shape}")  # (881,)
 ### Comparing CDK and RDKit Fingerprints
 
 ```python
-from polyglotmol.representations import get_featurizer
+from molblender.representations import get_featurizer
 import numpy as np
 from rdkit import Chem
 

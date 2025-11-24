@@ -1,10 +1,10 @@
 # Datamol Fingerprint
 
-This guide explains how to use the Datamol/Molfeat fingerprint featurizers implemented in PolyglotMol. These featurizers wrap the `molfeat.calc.FPCalculator` class and provide consistent access to a range of popular molecular fingerprints.
+This guide explains how to use the Datamol/Molfeat fingerprint featurizers implemented in MolBlender. These featurizers wrap the `molfeat.calc.FPCalculator` class and provide consistent access to a range of popular molecular fingerprints.
 
 ## Background
 
-`molfeat.calc.FPCalculator` is a unified interface to compute molecular fingerprints from SMILES strings or RDKit `Mol` objects. PolyglotMol integrates this through `BaseDatamolFPCalculator`, enabling standardized use and registry-based loading of featurizers.
+`molfeat.calc.FPCalculator` is a unified interface to compute molecular fingerprints from SMILES strings or RDKit `Mol` objects. MolBlender integrates this through `BaseDatamolFPCalculator`, enabling standardized use and registry-based loading of featurizers.
 
 Each featurizer is registered under a specific name (e.g., `datamol_maccs`, `datamol_ecfp4_2048`), making it easy to plug into existing workflows using the featurizer registry.
 
@@ -47,7 +47,7 @@ The following fingerprints are registered and usable if `molfeat` is available:
 ### Simple Example
 
 ```python
-from polyglotmol.representations import get_featurizer
+from molblender.representations import get_featurizer
 
 # Example SMILES input
 smiles = "CN1C=NC2=C1C(=O)N(C(=O)N2C)C"  # Caffeine
@@ -108,7 +108,7 @@ custom_featurizer = get_featurizer(
 To list all available Datamol fingerprints:
 
 ```python
-from polyglotmol.representations.fingerprints.datamol import list_datamol_fingerprints
+from molblender.representations.fingerprints.datamol import list_datamol_fingerprints
 
 # Print info about all available datamol fingerprints
 list_datamol_fingerprints()
@@ -119,7 +119,7 @@ list_datamol_fingerprints()
 When working with fingerprints that might have dependency issues:
 
 ```python
-from polyglotmol.representations import get_featurizer
+from molblender.representations import get_featurizer
 
 smiles = "CN1C=NC2=C1C(=O)N(C(=O)N2C)C"
 

@@ -5,12 +5,12 @@
 :hidden:
 ```
 
-Protein Language Models (PLMs) are deep learning models trained on vast protein sequence databases to learn meaningful representations of proteins. PolyglotMol provides a unified interface to various state-of-the-art PLMs for efficient protein featurization.
+Protein Language Models (PLMs) are deep learning models trained on vast protein sequence databases to learn meaningful representations of proteins. MolBlender provides a unified interface to various state-of-the-art PLMs for efficient protein featurization.
 
 ## Quick Start
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 # List available protein featurizers
 print(pm.list_available_protein_featurizers())
@@ -87,7 +87,7 @@ Character-level models that handle special amino acids:
 
 ### Core Library
 ```bash
-pip install polyglotmol
+pip install molblender
 ```
 
 ### Model-Specific Dependencies
@@ -237,7 +237,7 @@ def process_fasta_file(fasta_path: str,
 For more control, use the featurizer classes directly:
 
 ```python
-from polyglotmol.representations.protein.sequence.plm import (
+from molblender.representations.protein.sequence.plm import (
     ESM2Featurizer, ESMCFeaturizer, ProtT5Featurizer
 )
 

@@ -1,10 +1,10 @@
 # DeepChem Fingerprints
 
-This guide describes how to use DeepChem-based fingerprint featurizers in PolyglotMol. These featurizers provide a bridge to the molecular fingerprinting capabilities in the DeepChem library, with consistent interfaces and integration with PolyglotMol's featurizer registry.
+This guide describes how to use DeepChem-based fingerprint featurizers in MolBlender. These featurizers provide a bridge to the molecular fingerprinting capabilities in the DeepChem library, with consistent interfaces and integration with MolBlender's featurizer registry.
 
 ## Overview
 
-DeepChem is a powerful library for deep learning in drug discovery, materials science, and quantum chemistry. It provides a variety of fingerprinting techniques that PolyglotMol makes available through a consistent interface. These include standard molecular fingerprints (MACCS, Morgan/ECFP), as well as more advanced representations like Mol2Vec and MAT.
+DeepChem is a powerful library for deep learning in drug discovery, materials science, and quantum chemistry. It provides a variety of fingerprinting techniques that MolBlender makes available through a consistent interface. These include standard molecular fingerprints (MACCS, Morgan/ECFP), as well as more advanced representations like Mol2Vec and MAT.
 
 ## Installation Requirements
 
@@ -29,7 +29,7 @@ conda install -c conda-forge deepchem
 
 ## Available DeepChem Fingerprints
 
-PolyglotMol provides access to the following DeepChem fingerprints:
+MolBlender provides access to the following DeepChem fingerprints:
 
 | Featurizer Name | Description | Output Format | Dependencies |
 |:----------------|:------------|:--------------|:-------------|
@@ -44,7 +44,7 @@ PolyglotMol provides access to the following DeepChem fingerprints:
 ## Basic Usage
 
 ```python
-from polyglotmol.representations import get_featurizer
+from molblender.representations import get_featurizer
 
 # 1. Create a DeepChem fingerprint featurizer
 featurizer = get_featurizer("deepchem_maccs")
@@ -67,7 +67,7 @@ print(f"Number of fingerprints: {len(fps)}")  # 3
 You can list all available DeepChem fingerprints:
 
 ```python
-from polyglotmol.representations.fingerprints.deepchem import list_deepchem_fingerprints
+from molblender.representations.fingerprints.deepchem import list_deepchem_fingerprints
 
 # Print information about all available DeepChem fingerprints
 list_deepchem_fingerprints()

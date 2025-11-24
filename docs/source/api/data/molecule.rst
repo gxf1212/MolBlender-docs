@@ -1,8 +1,8 @@
 ###############################################################
-Molecule Class API (`polyglotmol.data.molecule`)
+Molecule Class API (`molblender.data.molecule`)
 ###############################################################
 
-.. automodule:: polyglotmol.data.molecule
+.. automodule:: molblender.data.molecule
    :members:
    :undoc-members:
    :show-inheritance:

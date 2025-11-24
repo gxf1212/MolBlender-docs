@@ -1,8 +1,8 @@
 ###############################################################
-Input/Output Utilities API (`polyglotmol.data.io`)
+Input/Output Utilities API (`molblender.data.io`)
 ###############################################################
 
-.. automodule:: polyglotmol.data.io
+.. automodule:: molblender.data.io
    :members:
    :undoc-members:
    :show-inheritance:

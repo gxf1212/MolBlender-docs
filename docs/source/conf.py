@@ -5,7 +5,7 @@ import sys
 # sys.path.insert(0, os.path.abspath('../../src'))  # API 文档需要 - Commented out for public docs
 
 # -- Project information -----------------------------------------------------
-project = 'PolyglotMol'
+project = 'MolBlender'
 copyright = '2025, Xufan Gao'
 author = 'Xufan Gao'
 version = '0.0'
@@ -145,7 +145,7 @@ html_static_path = ['_static'] # 存放自定义 CSS, JS, 图片等
 #         "color_brand_primary": "#...",
 #         "color_brand_content": "#...",
 #     },
-#     "source_repository": "[https://github.com/your_username/PolyglotMol/](https://github.com/your_username/PolyglotMol/)",
+#     "source_repository": "[https://github.com/your_username/MolBlender/](https://github.com/your_username/MolBlender/)",
 #     "source_branch": "main",
 #     "source_directory": "docs/source/",
 # }

@@ -1,16 +1,16 @@
 # Featurizers
 
-PolyglotMol offers a comprehensive suite of tools for generating diverse molecular and protein representations. These representations, often called "features" or "embeddings," are crucial for training machine learning models in cheminformatics and bioinformatics. PolyglotMol provides a unified interface for molecular featurization, supporting both small molecules and proteins. All featurizers aim to follow a consistent API pattern, making it easy to switch between different representations.
+MolBlender offers a comprehensive suite of tools for generating diverse molecular and protein representations. These representations, often called "features" or "embeddings," are crucial for training machine learning models in cheminformatics and bioinformatics. MolBlender provides a unified interface for molecular featurization, supporting both small molecules and proteins. All featurizers aim to follow a consistent API pattern, making it easy to switch between different representations.
 
 Featurizers transform molecular structures (e.g., from SMILES strings, SDF/PDB files) or protein sequences into numerical representations suitable for machine learning. The library organizes featurizers by type and provides tools to discover, instantiate, and use them effectively.
 
 ## Core Workflow
 
-Generating representations with PolyglotMol typically involves the following steps:
+Generating representations with MolBlender typically involves the following steps:
 
-1.  **Discover Available Featurizers**: Identify the representations PolyglotMol offers for your specific data type (small molecules or proteins).
+1.  **Discover Available Featurizers**: Identify the representations MolBlender offers for your specific data type (small molecules or proteins).
 2.  **Get a Specific Featurizer**: Instantiate the desired featurizer, usually by its unique registered name, and optionally customize its parameters.
-3.  **Prepare Input Data**: Ensure your input data (like SMILES strings, RDKit Mol objects, or protein sequences) is in a format the featurizer can process. PolyglotMol featurizers often handle common input types directly.
+3.  **Prepare Input Data**: Ensure your input data (like SMILES strings, RDKit Mol objects, or protein sequences) is in a format the featurizer can process. MolBlender featurizers often handle common input types directly.
 4.  **Generate Representations**: Apply the featurizer to your molecule(s) or sequence(s) to obtain the numerical features.
 
 Let's explore each of these steps in more detail.
@@ -18,13 +18,13 @@ Let's explore each of these steps in more detail.
 ---
 ## 1. Discovering Available Featurizers
 
-PolyglotMol maintains separate registries for featurizers designed for small molecules and those for proteins.
+MolBlender maintains separate registries for featurizers designed for small molecules and those for proteins.
 
 ### Listing Featurizer Names
 You can easily get a list of registered names:
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 # List all available small molecule featurizer names
 sm_featurizer_names = pm.list_available_featurizers()
@@ -49,7 +49,7 @@ if protein_featurizer_names:
 For a more structured and user-friendly overview, especially in an interactive console, you can print a categorized tree of available featurizers:
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 # Pretty print small molecule featurizers in a categorized tree
 pm.print_available_featurizers(categorized=True, registry_type='small_molecule')
@@ -89,7 +89,7 @@ Total: 72 featurizers in 10 categories
 To learn more about a specific featurizer, including its underlying class, default parameters, output shape, and description:
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 # Get info for a small molecule featurizer
 info_morgan = pm.get_featurizer_info('morgan_fp_r2_1024')
@@ -102,7 +102,7 @@ if info_morgan:
     print(f"  description: {info_morgan['metadata']['description']}")
 # Example Output:
 # Info for 'morgan_fp_r2_1024':
-#   class: <class 'polyglotmol.representations.fingerprints.rdkit.MorganBitFP'>
+#   class: <class 'molblender.representations.fingerprints.rdkit.MorganBitFP'>
 #   shape: (1024,)
 #   shape_type: fixed
 #   default_kwargs: {'radius': 2, 'nBits': 1024}
@@ -118,7 +118,7 @@ if info_esm:
     print(f"  default_kwargs: {info_esm['default_kwargs']}")
 # Example Output:
 # Info for 'esm2_t6_8M_UR50D':
-#   class: <class 'polyglotmol.representations.protein.sequence.plm.ESM2Featurizer'>
+#   class: <class 'molblender.representations.protein.sequence.plm.ESM2Featurizer'>
 #   shape: (320,)
 #   per_residue_shape: (None, 320)
 #   default_kwargs: {'plm_key': 'esm2_t6_8M_UR50D', ...}
@@ -136,7 +136,7 @@ print(f"Count FP shape: {get_shape('ecfp4_count')}")  # 'dynamic'
 Here's how to examine the shapes of all CDK fingerprints:
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 # Get all CDK fingerprints
 cdk_fingerprints = pm.select_featurizers_by_category("fingerprints/cdk")
@@ -194,7 +194,7 @@ for shape, fps in sorted(cdk_shapes.items(), key=lambda x: str(x[0])):
 You can also search for featurizers based on their output shape:
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 # Find all 2048-bit fingerprints
 def find_by_shape(target_shape, category=None):
@@ -231,7 +231,7 @@ for feat in dynamic_feats[:3]:
 When building ensemble models, it's important to check shape compatibility:
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 # Check if multiple featurizers have compatible shapes
 featurizers_to_check = [
@@ -271,7 +271,7 @@ for shape, names in shape_groups.items():
 ```
 
 ### Overview of Featurizer Categories
-PolyglotMol groups featurizers into logical categories:
+MolBlender groups featurizers into logical categories:
 -   **Small Molecule Categories (Examples):**
     -   `fingerprints`: Various 2D fingerprints (Morgan, RDKit topological, Atom Pairs, etc.).
     -   `fingerprints/cdk`: CDK-based fingerprints (often require Java).
@@ -294,7 +294,7 @@ PolyglotMol groups featurizers into logical categories:
 Once you know the registered name of the featurizer:
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 # For a small molecule featurizer (e.g., MACCS keys)
 maccs_featurizer = pm.get_featurizer('maccs_keys')
@@ -312,9 +312,9 @@ You can often override default parameters by passing them as keyword arguments t
 
 ### Preparing Input Data
 
-PolyglotMol featurizers are designed to accept common input formats directly.
--   **Small Molecules**: Input can typically be SMILES strings or pre-processed RDKit `Mol` objects. Utilities like {py:func}`polyglotmol.data.io.mol_from_input` are used internally to standardize inputs (e.g., parse SMILES, sanitize RDKit Mols).
--   **Proteins**: Input is typically a protein sequence string. Future utilities like `polyglotmol.data.protein.protein_from_input` will handle various sources like FASTA files, PDB IDs, etc., to yield a standardized sequence.
+MolBlender featurizers are designed to accept common input formats directly.
+-   **Small Molecules**: Input can typically be SMILES strings or pre-processed RDKit `Mol` objects. Utilities like {py:func}`molblender.data.io.mol_from_input` are used internally to standardize inputs (e.g., parse SMILES, sanitize RDKit Mols).
+-   **Proteins**: Input is typically a protein sequence string. Future utilities like `molblender.data.protein.protein_from_input` will handle various sources like FASTA files, PDB IDs, etc., to yield a standardized sequence.
 
 For most use cases, you can pass your raw data (like a SMILES string or protein sequence) directly to the `featurize` method.
 
@@ -323,7 +323,7 @@ For most use cases, you can pass your raw data (like a SMILES string or protein 
 The `featurize()` method (or calling the featurizer instance directly) computes the features.
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 # Using a pre-instantiated featurizer (e.g., from the previous step)
 # For this example, let's get a MACCS keys featurizer
@@ -350,7 +350,7 @@ for i, fp_vector in enumerate(features_batch):
 ---
 ## 3. Handling Different Input Types
 
-PolyglotMol aims for flexibility in input.
+MolBlender aims for flexibility in input.
 
 ### Small Molecule Inputs
 
@@ -361,7 +361,7 @@ Most small molecule featurizers accept:
 
 ```python
 from rdkit import Chem
-import polyglotmol as pm
+import molblender as pm
 
 # Assume 'featurizer' is a small molecule featurizer instance, e.g.,
 # featurizer = pm.get_featurizer('rdkit_fp_2048') 
@@ -395,7 +395,7 @@ if featurizer:
 Protein featurizers (like PLMs) typically expect raw amino acid sequences:
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 # Assume 'protein_featurizer' is an instance, e.g.,
 # protein_featurizer = pm.get_protein_featurizer('esm2_t6_8M_UR50D')
@@ -423,12 +423,12 @@ if protein_featurizer:
 
 ### Using `mol_from_input` and `protein_from_input` Explicitly
 
-For more complex scenarios or pre-processing, you might use PolyglotMol's data input functions directly before featurization.
+For more complex scenarios or pre-processing, you might use MolBlender's data input functions directly before featurization.
 
 ```python
-import polyglotmol as pm
-from polyglotmol.data.io import mol_from_input # Assuming direct import path
-# from polyglotmol.data.protein import protein_from_input # Conceptual
+import molblender as pm
+from molblender.data.io import mol_from_input # Assuming direct import path
+# from molblender.data.protein import protein_from_input # Conceptual
 
 # Small molecule from SMILES
 ethanol_mol_obj = mol_from_input("CCO", input_type="smiles")
@@ -453,7 +453,7 @@ if ethanol_mol_obj:
 The `featurize()` method can process single items or a list of items. For multiple items, you can leverage parallel processing by setting the `n_workers` argument.
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 # Example: Featurizing a larger list of SMILES using multiple workers
 # featurizer = pm.get_featurizer('morgan_fp_r2_1024') # Ensure featurizer is defined
@@ -485,7 +485,7 @@ For very large datasets that may not fit into memory all at once, or to manage r
 
 ```python
 import numpy as np
-import polyglotmol as pm
+import molblender as pm
 
 def process_dataset_in_batches(data_list, featurizer_name='morgan_fp_r2_1024', 
                                batch_size=500, n_workers=2):
@@ -545,7 +545,7 @@ You can customize featurizers by:
 2.  Directly instantiating the featurizer class with desired parameters.
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 # Option 1: Pass parameters via get_featurizer
 # Override default radius and nBits for a Morgan fingerprint
@@ -559,7 +559,7 @@ custom_morgan1 = pm.get_featurizer(
 # Expected: MorganBitFP(name='morgan_fp_r2_1024', radius=3, nBits=512, useChirality=True, ...)
 
 # Option 2: Direct instantiation from the class
-from polyglotmol.representations.fingerprints.rdkit import MorganBitFP # Example path
+from molblender.representations.fingerprints.rdkit import MorganBitFP # Example path
 
 custom_morgan2 = MorganBitFP(radius=4, nBits=4096, useChirality=True)
 # print(custom_morgan2)
@@ -569,15 +569,15 @@ custom_morgan2 = MorganBitFP(radius=4, nBits=4096, useChirality=True)
 ---
 ## 6. Error Handling
 
-PolyglotMol's featurization system is designed to handle common issues gracefully.
+MolBlender's featurization system is designed to handle common issues gracefully.
 
 ### Missing Dependencies
-Featurizers are registered in PolyglotMol even if their underlying dependencies (like RDKit, Mordred, specific PLM libraries) are not installed. An error (typically `DependencyNotFoundError`) will only be raised when you try to *instantiate or use* such a featurizer.
+Featurizers are registered in MolBlender even if their underlying dependencies (like RDKit, Mordred, specific PLM libraries) are not installed. An error (typically `DependencyNotFoundError`) will only be raised when you try to *instantiate or use* such a featurizer.
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 
-# Listing always works, showing all featurizers PolyglotMol *knows about*
+# Listing always works, showing all featurizers MolBlender *knows about*
 all_sm_featurizers = pm.list_available_featurizers()
 print(f"Total registered small molecule featurizers: {len(all_sm_featurizers)}")
 
@@ -595,7 +595,7 @@ print(f"Total registered small molecule featurizers: {len(all_sm_featurizers)}")
 When featurizing a batch of inputs, if some inputs are invalid (e.g., unparsable SMILES strings, sequences with invalid characters for a PLM), the `featurize()` method (with default `strict=False`) will return `None` for those specific items, allowing the rest of the batch to be processed.
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 # Assume 'morgan_featurizer' is already defined (e.g., from pm.get_featurizer('morgan_fp_r2_1024'))
 # For this example, let's quickly get one if the previous block wasn't run:
@@ -622,7 +622,7 @@ if morgan_featurizer:
 #   Featurized 'CCC': shape (1024,)
 #   Featurized 'CC(C)(C)C(=O)O': shape (1024,)
 ```
-If you set `strict=True` when calling `featurize(..., strict=True)` for parallel processing (`n_workers > 1`), an *unhandled* exception in a worker process would cause the main `featurize` call to raise a {py:class}`~polyglotmol.representations.utils.exceptions.FeaturizationError` (wrapping a `WorkerError`). However, `InvalidInputError` from SMILES parsing is typically handled within the worker by returning `None`, so `strict=True` will not cause `featurize()` to raise an error for this specific handled case.
+If you set `strict=True` when calling `featurize(..., strict=True)` for parallel processing (`n_workers > 1`), an *unhandled* exception in a worker process would cause the main `featurize` call to raise a {py:class}`~molblender.representations.utils.exceptions.FeaturizationError` (wrapping a `WorkerError`). However, `InvalidInputError` from SMILES parsing is typically handled within the worker by returning `None`, so `strict=True` will not cause `featurize()` to raise an error for this specific handled case.
 
 ---
 ## 7. Further Examples
@@ -630,10 +630,10 @@ If you set `strict=True` when calling `featurize(..., strict=True)` for parallel
 ### Fingerprint Comparison
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 # Compare different types of fingerprints for the same molecule
-# Ensure these featurizer keys are registered in your PolyglotMol setup
+# Ensure these featurizer keys are registered in your MolBlender setup
 fingerprint_keys = ['morgan_fp_r2_1024', 'rdkit_fp_2048', 'maccs_keys']
 example_smiles = "Cc1ccccc1O" # o-Cresol
 
@@ -658,7 +658,7 @@ for fp_key in fingerprint_keys:
 ### Descriptor Calculation
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 # Calculate RDKit descriptors
 # Ensure 'rdkit_all_descriptors' is registered
@@ -702,17 +702,17 @@ except (pm.RegistryError, pm.DependencyNotFoundError):
 ## 9. API Reference
 
 ### Core Functions for Featurizer Access:
--   {py:func}`polyglotmol.representations.list_available_featurizers`
--   {py:func}`polyglotmol.representations.get_featurizer`
--   {py:func}`polyglotmol.representations.get_featurizer_info`
--   {py:func}`polyglotmol.representations.list_available_protein_featurizers`
--   {py:func}`polyglotmol.representations.get_protein_featurizer`
--   {py:func}`polyglotmol.representations.get_protein_featurizer_info`
--   *(Utility for printing, if exposed at top level)* `{py:func}`polyglotmol.print_available_featurizers`
+-   {py:func}`molblender.representations.list_available_featurizers`
+-   {py:func}`molblender.representations.get_featurizer`
+-   {py:func}`molblender.representations.get_featurizer_info`
+-   {py:func}`molblender.representations.list_available_protein_featurizers`
+-   {py:func}`molblender.representations.get_protein_featurizer`
+-   {py:func}`molblender.representations.get_protein_featurizer_info`
+-   *(Utility for printing, if exposed at top level)* `{py:func}`molblender.print_available_featurizers`
 
 ### Base Classes:
--   {py:class}`polyglotmol.representations.utils.base.BaseFeaturizer`
--   *(If defined and relevant)* `{py:class}`polyglotmol.representations.protein.base.BaseProteinFeaturizer`
+-   {py:class}`molblender.representations.utils.base.BaseFeaturizer`
+-   *(If defined and relevant)* `{py:class}`molblender.representations.protein.base.BaseProteinFeaturizer`
 
 ---
 ## 10. Related Links

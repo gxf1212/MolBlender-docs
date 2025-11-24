@@ -5,7 +5,7 @@ RDKit Fingerprints (`rdkit`)
 
 This module provides featurizer classes that wrap various fingerprint generation algorithms from the RDKit library. Specific configurations (e.g., fingerprint size, radius) are typically handled during instantiation or via predefined keys in the central registry.
 
-.. automodule:: polyglotmol.representations.fingerprints.rdkit
+.. automodule:: molblender.representations.fingerprints.rdkit
    :members:
    :undoc-members:
    :show-inheritance:
@@ -14,7 +14,7 @@ This module provides featurizer classes that wrap various fingerprint generation
 
    .. rubric:: Core Featurizer Classes
 
-   The following classes provide the core implementation for different RDKit fingerprint types. You typically instantiate these classes directly if you need non-default parameters, or use :func:`~polyglotmol.get_featurizer` with a registered key (like ``"morgan_fp_r2_1024"``) which handles instantiation with default parameters.
+   The following classes provide the core implementation for different RDKit fingerprint types. You typically instantiate these classes directly if you need non-default parameters, or use :func:`~molblender.get_featurizer` with a registered key (like ``"morgan_fp_r2_1024"``) which handles instantiation with default parameters.
 
    .. autoclass:: RDKitTopologicalFP
       :members: __init__

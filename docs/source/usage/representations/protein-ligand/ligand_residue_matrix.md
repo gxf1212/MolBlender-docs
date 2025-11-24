@@ -38,7 +38,7 @@ Farthest-point sampling for diverse atom selection
 ## Quick Start
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 import numpy as np
 
 # Basic atomic distance matrix
@@ -221,7 +221,7 @@ print(f"Broad interactions: {np.count_nonzero(broad_matrix)}")
 ### Structure-Activity Relationships
 
 ```python
-from polyglotmol.data import MolecularDataset
+from molblender.data import MolecularDataset
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.decomposition import PCA
 from sklearn.model_selection import cross_val_score

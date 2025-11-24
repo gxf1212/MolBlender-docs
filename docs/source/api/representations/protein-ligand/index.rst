@@ -2,7 +2,7 @@
 Protein Representations API (`...protein`)
 ##########################################
 
-.. automodule:: polyglotmol.representations.protein
+.. automodule:: molblender.representations.protein
    :members:
    :undoc-members:
    :show-inheritance:

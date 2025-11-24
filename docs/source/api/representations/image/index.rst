@@ -2,7 +2,7 @@
 Image Representations API (`...image`)
 ######################################
 
-.. automodule:: polyglotmol.representations.image
+.. automodule:: molblender.representations.image
    :members:
    :undoc-members:
    :show-inheritance:

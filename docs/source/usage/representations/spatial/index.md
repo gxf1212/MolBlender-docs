@@ -11,7 +11,7 @@ Spatial representations utilize the 3D coordinates of molecules to encode geomet
 - Conformational analysis and ensemble studies
 - 3D-QSAR modeling
 
-PolyglotMol automatically handles conformer generation when 3D coordinates are missing, ensuring your workflow continues seamlessly.
+MolBlender automatically handles conformer generation when 3D coordinates are missing, ensuring your workflow continues seamlessly.
 
 ::::{grid} 1 1 2 3
 :gutter: 3
@@ -40,7 +40,7 @@ Automatic 3D structure generation
 ## Quick Start
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 # Get spatial featurizers
 coulomb = pm.get_featurizer("coulomb_matrix")
@@ -76,7 +76,7 @@ batch_features = coulomb.featurize(molecules, n_workers=4)
 Encodes nuclear repulsion and atomic distances in a rotation-invariant matrix:
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 import numpy as np
 
 # Initialize Coulomb matrix featurizer
@@ -209,7 +209,7 @@ except ImportError:
 
 ## Conformer Handling
 
-PolyglotMol automatically generates 3D conformers when needed:
+MolBlender automatically generates 3D conformers when needed:
 
 ### Automatic Generation
 
@@ -303,7 +303,7 @@ def process_large_dataset(smiles_list, batch_size=1000):
 ## Integration with Dataset
 
 ```python
-from polyglotmol.data import MolecularDataset
+from molblender.data import MolecularDataset
 
 # Create dataset with 3D features
 molecules = ["CCO", "CCN", "CCC"]
@@ -358,7 +358,7 @@ except Exception as e:
 ```python
 # Monitor conformer generation time
 import logging
-logging.getLogger("polyglotmol.representations.spatial").setLevel(logging.INFO)
+logging.getLogger("molblender.representations.spatial").setLevel(logging.INFO)
 
 # This will show conformer generation progress
 coulomb = pm.get_featurizer("coulomb_matrix")

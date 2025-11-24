@@ -1,6 +1,6 @@
 # Protein-Ligand Representations
 
-Specialized representations for protein-ligand complexes, designed for structure-based drug design and binding affinity prediction. PolyglotMol provides both AI-powered structure prediction embeddings and traditional 3D fingerprints with consistent API and optimized batch processing.
+Specialized representations for protein-ligand complexes, designed for structure-based drug design and binding affinity prediction. MolBlender provides both AI-powered structure prediction embeddings and traditional 3D fingerprints with consistent API and optimized batch processing.
 
 ## AI Structure Prediction
 
@@ -65,7 +65,7 @@ Full atomic resolution distance matrix
 ## Quick Start
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 import numpy as np
 
 # Three ways to provide molecular input
@@ -75,7 +75,7 @@ fp_smiles = featurizer.featurize('CCO')
 print(fp_smiles.shape)  # (512,)
 print(fp_smiles.dtype)  # float64
 
-# Method 2: PolyglotMol Molecule object
+# Method 2: MolBlender Molecule object
 mol = pm.Molecule.from_smiles('CCO')
 fp_mol = featurizer.featurize(mol)
 print(np.array_equal(fp_smiles, fp_mol))  # True
@@ -177,7 +177,7 @@ print(f"Processed: {len(fps)}, Failed: {len(errors)}")
 ### Structure-Based Virtual Screening
 
 ```python
-from polyglotmol.data import MolecularDataset
+from molblender.data import MolecularDataset
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import r2_score
 

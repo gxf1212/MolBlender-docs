@@ -30,7 +30,7 @@ Load receptor once, process many ligands efficiently
 ## Quick Start
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 import numpy as np
 
 # Basic distance matrix fingerprint
@@ -166,7 +166,7 @@ print(f"Long-range features: {long_features.shape}")
 ### RdRp-Ligand Dataset Example
 
 ```python
-from polyglotmol.data import MolecularDataset
+from molblender.data import MolecularDataset
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error

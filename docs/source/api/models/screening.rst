@@ -3,7 +3,7 @@ Screening API
 
 Core screening functions for automated machine learning.
 
-.. currentmodule:: polyglotmol.models.api
+.. currentmodule:: molblender.models.api
 
 Universal Screening
 -------------------

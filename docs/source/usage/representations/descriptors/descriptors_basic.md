@@ -2,7 +2,7 @@
 
 Molecular descriptors are numerical values that characterize properties of molecules. Unlike fingerprints (which focus on structural patterns), descriptors typically represent physiochemical properties such as molecular weight, logP, and topological indices.
 
-PolyglotMol provides access to two major descriptor calculation engines:
+MolBlender provides access to two major descriptor calculation engines:
 
 1. **RDKit Descriptors**: All descriptors available through RDKit's `Descriptors.CalcMolDescriptors()` function
 2. **Mordred Descriptors**: Comprehensive descriptor set from the Mordred library
@@ -20,7 +20,7 @@ RDKit provides a wide range of molecular descriptors (200+) including physical p
 ### Basic Usage
 
 ```python
-from polyglotmol import get_featurizer
+from molblender import get_featurizer
 
 # Create a featurizer using the registry system
 featurizer = get_featurizer("rdkit_all_descriptors")
@@ -40,7 +40,7 @@ print(descriptors[:5])
 You can process multiple molecules at once:
 
 ```python
-from polyglotmol import get_featurizer
+from molblender import get_featurizer
 
 # Get a featurizer from the registry
 featurizer = get_featurizer("rdkit_all_descriptors")
@@ -56,12 +56,12 @@ print(f"Descriptors per molecule: {len(descriptors_batch[0])}")
 
 ## Mordred Descriptors
 
-The Mordred library offers 1800+ descriptors organized in various categories. PolyglotMol provides easy access through the `MordredFeaturizer`.
+The Mordred library offers 1800+ descriptors organized in various categories. MolBlender provides easy access through the `MordredFeaturizer`.
 
 ### Basic Usage
 
 ```python
-from polyglotmol import get_featurizer
+from molblender import get_featurizer
 
 # Create a featurizer for 2D descriptors only (default)
 featurizer_2d = get_featurizer("mordred_descriptors_2d")
@@ -85,7 +85,7 @@ print(f"Generated {len(descriptors_all)} total descriptors")
 You can select specific descriptors to calculate by creating custom featurizer instances:
 
 ```python
-from polyglotmol import get_featurizer
+from molblender import get_featurizer
 
 # Create a featurizer with only selected descriptors
 featurizer_subset = get_featurizer("mordred_descriptors_2d", 
@@ -98,10 +98,10 @@ print(f"Generated {len(descriptors)} selected descriptors")
 
 ### Available Mordred Featurizers
 
-PolyglotMol provides several pre-configured Mordred descriptor featurizers:
+MolBlender provides several pre-configured Mordred descriptor featurizers:
 
 ```python
-from polyglotmol import list_available_featurizers
+from molblender import list_available_featurizers
 
 # List all available descriptor featurizers
 descriptors = list_available_featurizers(categorized=True)
@@ -115,7 +115,7 @@ for name in descriptors.get("descriptors", []):
 Some descriptors might fail to calculate for certain molecules. By default, failed calculations return `np.nan`. You can customize this behavior:
 
 ```python
-from polyglotmol import get_featurizer
+from molblender import get_featurizer
 
 # Create a featurizer with custom fill value for failed calculations
 featurizer = get_featurizer("rdkit_all_descriptors", fill_value=0.0)

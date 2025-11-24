@@ -21,8 +21,8 @@ pip install dscribe ase  # Alternative backend
 ## Quick Start
 
 ```python
-import polyglotmol as pm
-from polyglotmol.data.molecule import Molecule
+import molblender as pm
+from molblender.data.molecule import Molecule
 
 # Create a molecule with 3D coordinates
 mol = Molecule.from_smiles("CCO", embed3d=True)
@@ -82,8 +82,8 @@ Where:
 
 :::{tab-item} Basic Usage
 ```python
-import polyglotmol as pm
-from polyglotmol.data.molecule import Molecule
+import molblender as pm
+from molblender.data.molecule import Molecule
 
 # Basic Coulomb Matrix
 cm = pm.get_featurizer("coulomb_matrix", 
@@ -127,7 +127,7 @@ cm_custom = pm.get_featurizer("coulomb_matrix",
 
 ```{admonition} 3D Coordinates Required
 :class: warning
-Coulomb Matrix requires 3D atomic positions. PolyglotMol automatically generates them if missing, but pre-computed coordinates are recommended for consistency.
+Coulomb Matrix requires 3D atomic positions. MolBlender automatically generates them if missing, but pre-computed coordinates are recommended for consistency.
 ```
 
 ## Coulomb Matrix Eigenvalues
@@ -165,7 +165,7 @@ Binary matrix representing molecular connectivity.
 
 :::{grid-item-card} 📊 **Example**
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 adj = pm.get_featurizer("adjacency_matrix",
     max_atoms=10,
@@ -192,7 +192,7 @@ print(matrix[:6, :6])  # 6x6 ring
 Encodes bond types as numerical values in the connectivity matrix.
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 # Edge matrix with bond orders
 edge = pm.get_featurizer("edge_matrix", 
@@ -218,7 +218,7 @@ features = edge.featurize(mol)
 Process multiple molecules efficiently:
 
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 # List of molecules
 molecules = ["CCO", "c1ccccc1", "CC(=O)O", "CCC"]

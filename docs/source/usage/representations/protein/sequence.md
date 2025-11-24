@@ -1,3 +1,0 @@
-# Sequence
-
-(Content coming soon...)

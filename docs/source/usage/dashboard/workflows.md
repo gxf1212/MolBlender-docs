@@ -1,6 +1,6 @@
 # Practical Workflows
 
-Real-world decision-making workflows using the PolyglotMol dashboard - from initial exploration to production model selection.
+Real-world decision-making workflows using the MolBlender dashboard - from initial exploration to production model selection.
 
 ## Overview
 
@@ -484,7 +484,7 @@ Transformer:              ~50ms per molecule ✗
 ```python
 # Load and test best model
 import joblib
-from polyglotmol.representations import get_featurizer
+from molblender.representations import get_featurizer
 import time
 
 model = results['best_estimator']  # RandomForest

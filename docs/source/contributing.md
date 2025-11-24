@@ -1,3 +1,0 @@
-# Contributing
-
-(Content coming soon...)

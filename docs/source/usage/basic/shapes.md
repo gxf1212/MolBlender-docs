@@ -163,7 +163,7 @@
 
 ## Usage Example
 ```python
-import polyglotmol as pm
+import molblender as pm
 
 # Quick shape lookup
 def print_shapes_for_category(category):

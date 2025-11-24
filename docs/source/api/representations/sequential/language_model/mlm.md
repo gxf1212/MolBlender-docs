@@ -11,7 +11,7 @@ This module provides masked language modeling capabilities for SMILES strings, e
 ### ChemBERTFeaturizer
 
 ```{eval-rst}
-.. autoclass:: polyglotmol.representations.sequential.language_model.mlm.ChemBERTFeaturizer
+.. autoclass:: molblender.representations.sequential.language_model.mlm.ChemBERTFeaturizer
    :members:
    :show-inheritance:
 ```
@@ -19,7 +19,7 @@ This module provides masked language modeling capabilities for SMILES strings, e
 ### ChemBERTaFeaturizer
 
 ```{eval-rst}
-.. autoclass:: polyglotmol.representations.sequential.language_model.mlm.ChemBERTaFeaturizer
+.. autoclass:: molblender.representations.sequential.language_model.mlm.ChemBERTaFeaturizer
    :members:
    :show-inheritance:
 ```
@@ -27,7 +27,7 @@ This module provides masked language modeling capabilities for SMILES strings, e
 ### BaseMolecularLM
 
 ```{eval-rst}
-.. autoclass:: polyglotmol.representations.sequential.language_model.mlm.BaseMolecularLM
+.. autoclass:: molblender.representations.sequential.language_model.mlm.BaseMolecularLM
    :members:
    :show-inheritance:
 ```
@@ -37,7 +37,7 @@ This module provides masked language modeling capabilities for SMILES strings, e
 ### MLM Training Utilities
 
 ```{eval-rst}
-.. automodule:: polyglotmol.representations.sequential.language_model.mlm
+.. automodule:: molblender.representations.sequential.language_model.mlm
    :members:
    :show-inheritance:
 ```
@@ -47,7 +47,7 @@ This module provides masked language modeling capabilities for SMILES strings, e
 ### Basic MLM Usage
 
 ```python
-from polyglotmol.representations.sequential.language_model import SmilesMLMFeaturizer
+from molblender.representations.sequential.language_model import SmilesMLMFeaturizer
 
 # Create MLM featurizer
 mlm_model = SmilesMLMFeaturizer(
@@ -63,7 +63,7 @@ masked_predictions = mlm_model.predict_masked(smiles)
 ### Fine-tuning on Custom Data
 
 ```python
-from polyglotmol.representations.sequential.language_model import ChemBERTaMLM
+from molblender.representations.sequential.language_model import ChemBERTaMLM
 
 # Initialize model for fine-tuning
 model = ChemBERTaMLM(
@@ -80,7 +80,7 @@ model.fine_tune(training_smiles, epochs=10, batch_size=32)
 ### Custom MLM Configuration
 
 ```python
-from polyglotmol.representations.sequential.language_model import SMILESBERTMLMConfig
+from molblender.representations.sequential.language_model import SMILESBERTMLMConfig
 
 # Custom configuration
 config = SMILESBERTMLMConfig(

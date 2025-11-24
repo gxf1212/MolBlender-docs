@@ -1,5 +1,5 @@
 .. default-role:: py:obj
-.. automodule:: polyglotmol.representations.spatial.matrix
+.. automodule:: molblender.representations.spatial.matrix
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ The following classes are available for generating matrix-based representations:
 
    Computes the Coulomb matrix for a molecule, representing electrostatic interactions.
    Requires 3D coordinates. Can use "deepchem" or "dscribe" as a backend.
-   Inherits from :py:class:`~polyglotmol.representations.utils.base.BaseFeaturizer`.
+   Inherits from :py:class:`~molblender.representations.utils.base.BaseFeaturizer`.
 
    .. automethod:: _featurize
    .. automethod:: get_feature_names
@@ -47,7 +47,7 @@ The following classes are available for generating matrix-based representations:
    :noindex:
 
    Generates the adjacency matrix, where an element (i,j) is 1 if atoms i and j are bonded, 0 otherwise.
-   Inherits from :py:class:`~polyglotmol.representations.utils.base.BaseFeaturizer`.
+   Inherits from :py:class:`~molblender.representations.utils.base.BaseFeaturizer`.
 
    .. automethod:: _featurize
    .. automethod:: get_output_info
@@ -57,7 +57,7 @@ The following classes are available for generating matrix-based representations:
    :noindex:
 
    Generates the edge matrix (bond order matrix), where element (i,j) represents the bond order between atoms i and j.
-   Inherits from :py:class:`~polyglotmol.representations.utils.base.BaseFeaturizer`.
+   Inherits from :py:class:`~molblender.representations.utils.base.BaseFeaturizer`.
 
    .. automethod:: _featurize
    .. automethod:: get_output_info

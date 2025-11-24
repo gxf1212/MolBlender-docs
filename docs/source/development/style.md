@@ -1,6 +1,6 @@
 # Code Style Guidelines
 
-PolyglotMol follows PEP 8 with additional conventions for scientific Python code.
+MolBlender follows PEP 8 with additional conventions for scientific Python code.
 
 ## Python Style
 
@@ -101,8 +101,8 @@ import pandas as pd
 from rdkit import Chem
 
 # Local imports
-from polyglotmol.config import dependencies as deps
-from polyglotmol.representations.utils.base import BaseFeaturizer
+from molblender.config import dependencies as deps
+from molblender.representations.utils.base import BaseFeaturizer
 ```
 
 ## Error Handling
@@ -110,7 +110,7 @@ from polyglotmol.representations.utils.base import BaseFeaturizer
 Use specific exceptions:
 
 ```python
-from polyglotmol.representations.utils.exceptions import (
+from molblender.representations.utils.exceptions import (
     FeaturizationError,
     InvalidInputError,
     DependencyNotFoundError
