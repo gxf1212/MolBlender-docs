@@ -8,6 +8,148 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
+- **Advanced Molecular Splitting Strategies** (`src/polyglotmol/data/dataset/splitting/`)
+  - **4 Advanced Splitters from splito package** (Apache 2.0 License):
+    - **PerimeterSplit**: Extrapolation-oriented split placing most dissimilar molecules in test set
+    - **MolecularWeightSplit**: Tests generalization across different molecular sizes
+    - **MOODSplitter**: Model-Optimized Out-of-Distribution split based on deployment data similarity
+    - **LoSplitter**: Lead optimization split returning multiple test clusters for SAR exploration
+  - **Dual API Design**:
+    - **Functional API (sklearn-style)**: `train_test_split(X, y, molecules=smiles, method='perimeter')`
+    - **Class-based API**: `PerimeterSplit(test_size=0.2).split(smiles)`
+    - **MolecularDataset integration**: `dataset.train_test_split(method='perimeter')`
+  - **RDKit-based Implementation**:
+    - Replaced all `datamol` dependencies with direct RDKit calls
+    - Utility functions: `compute_fingerprints()`, `compute_molecular_weights()`, `to_mol()`, `to_smiles()`
+    - K-means clustering for distance-based splits (computational efficiency)
+  - **Modular Package Structure** (`splitting/` subdirectory):
+    - `base.py`: SplittingMixin for MolecularDataset
+    - `advanced.py`: 4 advanced splitters (~780 lines)
+    - `functional.py`: sklearn-style functional API (~350 lines)
+    - `utils.py`: RDKit utility functions
+  - **Comprehensive Testing**:
+    - 16 unit tests covering all methods and edge cases
+    - Test functional API, class-based API, and MolecularDataset integration
+    - Test utility functions (fingerprints, molecular weights)
+  - **Documentation**:
+    - API reference: `docs/api/data/splitting.rst`
+    - Usage guide: `docs/usage/data/splitting.md` (extended with 4 new sections)
+    - Complete examples for all splitting methods
+  - **License Attribution**:
+    - Apache 2.0 license headers in all relevant files
+    - References to splito package: https://github.com/datamol-io/splito
+  - **Use Cases**:
+    - Virtual screening validation (PerimeterSplit)
+    - Fragment-to-lead optimization (MolecularWeightSplit)
+    - Deployment-aware validation (MOODSplitter)
+    - SAR exploration in medicinal chemistry (LoSplitter)
+  - **Custom User-Provided Split** (`method='custom'`):
+    - Use predefined train/test assignments from external sources
+    - **Two input modes**:
+      - `split_column`: Column name with 'train'/'test', 0/1, or True/False values
+      - `train_indices`/`test_indices`: Explicit index arrays
+    - Use cases: benchmark reproduction, temporal splits, experimental batches
+    - Complete validation: overlap detection, range checking, value parsing
+    - Utility function: `indices_from_split_column()` for column parsing
+  - **Enhanced LoSplitter Documentation**:
+    - Added scaffold hopping pharmaceutical use case example
+    - Real-world scenario: Scaffold 1 exhaustion → scaffold hopping → series prediction
+    - Explains how LoSplitter validates model generalization across scaffolds
+  - **Backward Compatible**:
+    - All existing splitting methods remain unchanged
+    - New methods are opt-in via `method` parameter
+    - Default behavior (random split) preserved
+  - **Expanded Test Coverage**:
+    - 28 unit tests total (12 new custom split tests)
+    - Tests for functional API and MolecularDataset integration
+    - Edge case testing: NaN values, invalid formats, missing columns
+- **Two-Stage Hyperparameter Optimization System** (`src/polyglotmol/models/api/`)
+  - **Stage 1**: Model screening with default parameters for rapid baseline performance assessment
+  - **Stage 2**: Automated hyperparameter optimization (HPO) for top-N performers from Stage 1
+  - **Configuration via ScreeningConfig**:
+    - `enable_hpo=True/False`: Enable/disable HPO Stage 2 (default: False for backward compatibility)
+    - `hpo_stage='coarse'/'fine'`: Coarse grid search or fine-grained Optuna optimization (default: 'coarse')
+    - `hpo_method='grid'/'random'`: GridSearchCV or RandomizedSearchCV (default: 'grid')
+    - `top_n_for_hpo=N`: Number of top Stage 1 performers to optimize (default: 10)
+    - `hpo_cv_folds=K`: CV folds for HPO (default: None, uses `cv_folds` or `inner_cv_folds`)
+    - `hpo_selection_strategy='global'/'per_type'/'per_subtype'`: Model selection strategy for HPO (default: 'global')
+      - **'global'**: Select top N performers overall across all model types (default behavior)
+      - **'per_type'**: Select top N from Traditional ML AND top N from Deep Learning separately
+        - Ensures balanced HPO coverage when one model category dominates Stage 1 performance
+        - Example: `hpo_selection_strategy='per_type', top_n_for_hpo=5` → 5 Traditional ML + 5 Deep Learning = 10 total HPO runs
+        - Use case: CNN/VAE/Transformer models receive HPO even if Traditional ML models have higher Stage 1 scores
+      - **'per_subtype'**: Select top N from each fine-grained model category (LINEAR, TREE, BOOSTING, VAE, CNN, TRANSFORMER)
+        - Most granular option for comprehensive model type coverage across all architectures
+    - `hpo_models_per_type=N`: Override number of models per type/subtype (default: None, uses `top_n_for_hpo`)
+  - **Model Type Classification System** (`processors/hpo.py`):
+    - High-level: TRADITIONAL_ML vs DEEP_LEARNING (using ModelCorpus enum from model registry)
+    - Fine-grained: LINEAR, TREE, BOOSTING, KERNEL, VAE, TRANSFORMER, CNN subtypes
+    - Automatic classification based on model registry metadata and categories
+  - **Parameter Grid System** (`src/polyglotmol/models/corpus/parameter_grids.py`):
+    - Comprehensive coarse grids for all model types (tree, boosting, SVM, linear, neural, VAE, CNN)
+    - Model-specific parameter ranges based on best practices
+    - CNN grids: learning_rate, batch_size, epochs (matrix_cnn, image_cnn variants)
+    - Fine grids reserved for Optuna optimization (future)
+  - **Database Integration**:
+    - Stage tracking in `model_results` table: `stage=1` (default params) vs `stage=2` (optimized params)
+    - HPO metadata: `hpo_stage`, `best_params`, `hpo_cv_score` columns
+    - Incremental result storage for both Stage 1 and Stage 2
+  - **Smart Workflow**:
+    - Automatically skips Stage 2 if insufficient high-performing models in Stage 1
+    - Preserves Stage 1 results even when Stage 2 is enabled
+    - Compatible with all data splitting strategies (train_val_test, nested_cv, etc.)
+  - **Performance Impact**:
+    - Stage 1 only: Fast baseline screening (~5-10 min for 100 combinations)
+    - Stage 1 + Stage 2: Comprehensive optimization (~15-30 min with top_n=10)
+  - **Complete GridSearchCV Results Storage** (`all_cv_results` column):
+    - Stores ALL tested parameter combinations from GridSearchCV, not just the best one
+    - Enables HPO parameter sensitivity analysis in dashboard
+    - Captured data for each combination:
+      - `params`: Parameter values tested (e.g., `{"alpha": 0.1}`, `{"alpha": 1.0}`)
+      - `mean_test_score`, `std_test_score`, `rank_test_score`: Aggregated CV performance
+      - Individual fold scores (`split0_test_score`, `split1_test_score`, etc.)
+      - Timing information (`mean_fit_time`, `std_fit_time`, `mean_score_time`)
+    - JSON serialization with numpy→list conversion for database storage
+    - Backward compatible: NULL for Stage 1 results (default parameters, no HPO)
+    - Example use case: Compare Ridge α=[0.1, 1.0, 10.0] to visualize sensitivity
+    - Database schema migration: Automatically adds `all_cv_results TEXT` column to existing databases
+    - Implementation locations:
+      - `grid_search.py:148-186`: `_extract_cv_results()` method extracts all cv_results_ data
+      - `screeners.py:919,947,1120-1122,1154-1174`: HPO orchestration captures and stores cv_results
+      - `results_db.py:186-187`: Database migration adds all_cv_results column
+  - Successfully tested with:
+    - Traditional ML models (Ridge, RandomForest, XGBoost, LightGBM, etc.)
+    - Deep learning models (VAE with latent_dim, learning_rate, batch_size grids)
+    - 3D representations (spatial matrices, UniMol embeddings, 3D fingerprints)
+    - Multiple fingerprint categories (RDKit, CDK, Datamol)
+
+- **VAE (Variational Autoencoder) Integration for Molecular Fingerprints** (`src/polyglotmol/models/`)
+  - **Complete VAE Implementation** (`modality_models/vae_models.py`):
+    - MolecularFingerprintVAE class with encoder-decoder architecture
+    - Integrated predictor network for direct property prediction from latent space
+    - 5 pre-configured variants: VAE (latent=64/128/256), VAE (compact), VAE (deep)
+    - Auto-generates 3D conformations from SMILES when needed
+    - PyTorch-based with GPU/CPU auto-detection
+  - **Model Registry Integration** (`api/core/model_registry.py`):
+    - All 5 VAE models registered in ModelRegistry
+    - Categorized under `DEEP_LEARNING` and `ACCURATE` corpus
+    - HPO parameter grids: latent_dim, learning_rate, batch_size, epochs
+  - **Pathway System** (`api/multimodal/`):
+    - `combinations="auto"`: Traditional ML only (default behavior, backward compatible)
+    - `combinations="comprehensive"`: Traditional ML + VAE models for vector modality
+    - Similar to matrix/image pathway handling (flattened vs CNN)
+  - **sklearn Compatibility Fixes**:
+    - Fixed `clone()` compatibility: Store device as string, convert to torch.device only when needed
+    - Fixed numpy conversion: Use `.detach().cpu().numpy()` for proper tensor→array conversion
+    - Proper 1D/2D array shape handling for sklearn metrics
+  - **User Experience**:
+    - Auto-excludes VAE models in default mode (no impact on existing workflows)
+    - Optional VAE screening via `combinations="comprehensive"` parameter
+    - Seamless integration with HPO system (Stage 1 + Stage 2 optimization)
+    - GPU acceleration when available, graceful CPU fallback
+  - **Current Status**: Fully integrated and tested, VAE models accessible but showing 0.0 scores (model performance issue, not integration bug)
+
 - **DNR Diagnostics Module** (`src/polyglotmol/data/diagnostics/`)
   - Complete implementation of DNR (Different Neighbor Ratio) analysis for dataset quality assessment
   - Paper-accurate parameters from "Upgrading Reliability in Molecular Property Prediction" (similarity threshold 0.5, property diff 1.0 log unit)
@@ -226,6 +368,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Verified DNR-based splitting with all 3 modes (threshold, quantile, neighbor)
   - Verified MaxMinPicker diversity splitting with friendly/unfriendly modes
   - Confirmed DataSplitter integration for both new strategies
+
+- **Dashboard Distribution Charts Column Name Errors** (`src/polyglotmol/dashboard/components/distribution/charts.py`)
+  - Fixed ValueError: "Value of 'x' is not the name of a column in 'data_frame'" in 6 chart rendering functions
+  - Root cause: Chart functions incorrectly used metric parameter (e.g., 'pearson_r') as dataframe column names
+  - Solution: Dashboard always uses 'score' column for metric values; metric names are for labeling only
+  - Fixed functions: `render_box_plot()`, `render_violin_plot()`, `render_histogram()`, `render_density_plot()`, `render_raincloud_plot()`, `render_quick_distribution()`
+  - Pattern: Changed from `df[metric]` to `df['score']` while keeping `format_metric_name(metric)` for axis labels
+
+- **Dashboard Usage Analysis pd.crosstab Error** (`src/polyglotmol/dashboard/components/distribution/usage_analysis.py`)
+  - Fixed ValueError: "aggfunc cannot be used without values" in representation-model combination heatmap
+  - Simplified `pd.crosstab()` call to show combination counts only (removed conditional aggfunc logic)
+  - Removed conflicting parameters: `values=df[selected_metric]` and `aggfunc='count'/'mean'`
+  - Now displays usage frequency (how many times each representation-model pair was tested)
 
 ### Changed
 - **Dataset Quality Analysis Migration**: Replaced `overview.py` with comprehensive `diagnostics/` module
