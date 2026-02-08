@@ -62,6 +62,12 @@ predictions = best_model['estimator'].predict(new_data)
 Complete function reference for universal_screen, quick_screen, and more
 :::
 
+:::{grid-item-card} 🔧 **Hyperparameter Optimization**
+:link: hpo
+:link-type: doc
+Two-stage HPO system with smart model selection and parameter tuning
+:::
+
 :::{grid-item-card} 🤖 **Available Models**
 :link: models
 :link-type: doc
@@ -78,6 +84,12 @@ SQLite database access, export options, and dashboard visualization
 :link: methodology
 :link-type: doc
 Data splitting, cross-validation protocol, and metrics explained
+:::
+
+:::{grid-item-card} 🔬 **Lead Sensitivity Analysis**
+:link: lead_sensitivity
+:link-type: doc
+Evaluate how lead molecule selection impacts LOGO cross-validation performance
 :::
 
 ::::
@@ -208,12 +220,17 @@ joblib.dump(best_estimator, 'production_model.pkl')
 
 ## Next Steps
 
-::::{grid} 1 1 2 2
+::::{grid} 1 1 2 3
 :gutter: 2
 
 :::{grid-item-card}
 **→ Learn about screening functions**
 {doc}`screening` - Complete API reference for all screening modes
+:::
+
+:::{grid-item-card}
+**→ Hyperparameter optimization**
+{doc}`hpo` - Two-stage HPO with smart selection strategies
 :::
 
 :::{grid-item-card}
@@ -260,9 +277,11 @@ A: Use `quick_screen()` first to identify promising representation families, the
 :hidden:
 
 screening
+hpo
 models
 results
 methodology
+lead_sensitivity
 ```
 
 ## Additional Resources

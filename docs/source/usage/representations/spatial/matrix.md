@@ -21,19 +21,19 @@ pip install dscribe ase  # Alternative backend
 ## Quick Start
 
 ```python
-import molblender as pm
+import molblender as mbl
 from molblender.data.molecule import Molecule
 
 # Create a molecule with 3D coordinates
 mol = Molecule.from_smiles("CCO", embed3d=True)
 
 # Generate Coulomb Matrix
-cm = pm.get_featurizer("coulomb_matrix", max_atoms=10)
+cm = mbl.get_featurizer("coulomb_matrix", max_atoms=10)
 features = cm.featurize(mol)
 print(features.shape)  # (100,) - flattened 10x10 matrix
 
 # Generate Adjacency Matrix (no 3D needed)
-adj = pm.get_featurizer("adjacency_matrix", max_atoms=10, flatten=False)
+adj = mbl.get_featurizer("adjacency_matrix", max_atoms=10, flatten=False)
 matrix = adj.featurize("CCO")  # Direct SMILES input
 print(matrix.shape)  # (10, 10) - 2D connectivity matrix
 ```
@@ -82,11 +82,11 @@ Where:
 
 :::{tab-item} Basic Usage
 ```python
-import molblender as pm
+import molblender as mbl
 from molblender.data.molecule import Molecule
 
 # Basic Coulomb Matrix
-cm = pm.get_featurizer("coulomb_matrix", 
+cm = mbl.get_featurizer("coulomb_matrix", 
     max_atoms=20,    # Matrix size
     flatten=True     # Return 1D array
 )
@@ -104,7 +104,7 @@ features_3d = cm.featurize(mol_3d)
 :::{tab-item} Advanced Options
 ```python
 # Custom parameters
-cm_custom = pm.get_featurizer("coulomb_matrix",
+cm_custom = mbl.get_featurizer("coulomb_matrix",
     max_atoms=30,
     remove_hydrogens=True,   # Ignore H atoms
     permutation='random',    # For data augmentation
@@ -138,7 +138,7 @@ Permutation-invariant representation using eigenvalues of the Coulomb matrix.
 import numpy as np
 
 # Eigenvalue representation
-cm_eig = pm.get_featurizer("coulomb_matrix_eig", 
+cm_eig = mbl.get_featurizer("coulomb_matrix_eig", 
     max_atoms=20,
     remove_hydrogens=False
 )
@@ -165,9 +165,9 @@ Binary matrix representing molecular connectivity.
 
 :::{grid-item-card} 📊 **Example**
 ```python
-import molblender as pm
+import molblender as mbl
 
-adj = pm.get_featurizer("adjacency_matrix",
+adj = mbl.get_featurizer("adjacency_matrix",
     max_atoms=10,
     remove_hydrogens=True,
     flatten=False
@@ -192,10 +192,10 @@ print(matrix[:6, :6])  # 6x6 ring
 Encodes bond types as numerical values in the connectivity matrix.
 
 ```python
-import molblender as pm
+import molblender as mbl
 
 # Edge matrix with bond orders
-edge = pm.get_featurizer("edge_matrix", 
+edge = mbl.get_featurizer("edge_matrix", 
     max_atoms=15,
     remove_hydrogens=False,
     flatten=True
@@ -218,13 +218,13 @@ features = edge.featurize(mol)
 Process multiple molecules efficiently:
 
 ```python
-import molblender as pm
+import molblender as mbl
 
 # List of molecules
 molecules = ["CCO", "c1ccccc1", "CC(=O)O", "CCC"]
 
 # Any matrix featurizer
-featurizer = pm.get_featurizer("adjacency_matrix", max_atoms=20)
+featurizer = mbl.get_featurizer("adjacency_matrix", max_atoms=20)
 
 # Process batch - returns list of arrays
 features = featurizer.featurize(molecules)

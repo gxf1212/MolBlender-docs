@@ -40,7 +40,7 @@ CREATE TABLE screening_sessions (
     session_id TEXT PRIMARY KEY,
     timestamp TEXT,
     task_type TEXT,  -- 'regression' or 'classification'
-    primary_metric TEXT,  -- 'r2', 'f1', etc.
+    primary_metric TEXT,  -- 'pearson_r', 'f1', etc.
     dataset_name TEXT,
     cv_folds INTEGER,
     test_size REAL,
@@ -63,6 +63,8 @@ CREATE TABLE model_results (
     session_id TEXT,  -- Links to screening_sessions
     model_name TEXT,
     representation_name TEXT,
+    representation_config TEXT,  -- JSON representation config
+    model_config TEXT,  -- JSON full model config
     score REAL,  -- Primary metric value
     rank INTEGER,
     cv_scores TEXT,  -- JSON array of fold scores
@@ -70,11 +72,19 @@ CREATE TABLE model_results (
     n_features INTEGER,
     model_params TEXT,  -- JSON model configuration
     predictions TEXT,  -- JSON predictions
-    representation_config TEXT,  -- JSON representation config
-    model_config TEXT,  -- JSON full model config
-    feature_importance TEXT  -- JSON feature importance
+    feature_importance TEXT,  -- JSON feature importance
+    stage INTEGER,  -- 1 = screening, 2 = HPO
+    hpo_stage TEXT,  -- 'coarse' or 'fine'
+    best_params TEXT,  -- JSON best params (Stage 2)
+    hpo_cv_score REAL,  -- Stage 2 CV score
+    train_indices TEXT,  -- JSON indices
+    test_indices TEXT,  -- JSON indices
+    created_at TIMESTAMP
 )
 ```
+
+Additional columns may be present for dashboard compatibility (e.g., `primary_metric`,
+`primary_metric_name`, `all_metrics`).
 
 ### 3. dataset_info
 
@@ -84,8 +94,8 @@ Train/test split information:
 CREATE TABLE dataset_info (
     session_id TEXT PRIMARY KEY,
     target_column TEXT,
-    n_train INTEGER,
-    n_test INTEGER,
+    dataset_n_train_samples INTEGER,
+    dataset_n_test_samples INTEGER,
     train_true_values TEXT,  -- JSON array
     test_true_values TEXT,   -- JSON array
     train_input_data TEXT,   -- JSON SMILES/identifiers
@@ -285,13 +295,13 @@ predictions = loaded_model.predict(new_data)
         'best_modality': 'VECTOR',
         'worst_modality': None,
         'task_type': 'regression',
-        'primary_metric': 'r2'
+        'primary_metric': 'pearson_r'
     },
 
     # Configuration
     'config': {
         'task_type': 'regression',
-        'primary_metric': 'r2',
+        'primary_metric': 'pearson_r',
         'cv_folds': 5,
         'test_size': 0.2,
         'random_state': 42

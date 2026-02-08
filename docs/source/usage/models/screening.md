@@ -128,6 +128,19 @@ For a complete explanation of data splitting, cross-validation, and evaluation m
   - `"memory"` - Minimize memory usage
   - `"balanced"` - Balance speed and memory
 
+**CUDA Fallback Behavior**
+
+If a CUDA‑enabled model (VAE/CNN/Transformer/XGBoost) hits a CUDA error during training,
+MolBlender will **fall back to CPU only when effective CPU cores ≥ 32**. If fewer
+cores are available, the error is raised as usual. This keeps GPU failures from
+spamming logs on large CPU machines while preserving strict failure on smaller nodes.
+
+**Log Noise Suppression**
+
+Repeated CUDA/CV/XGBoost failures and near‑constant prediction warnings are deduplicated
+to avoid extremely long `screening.out` logs. The first occurrence is kept, subsequent
+repeats are suppressed.
+
 **Storage Options**
 
 `enable_db_storage`: `bool`, default=`False`
@@ -521,21 +534,12 @@ else:
 
 ## Hyperparameter Optimization (HPO)
 
-MolBlender implements a **two-stage HPO system** for efficient model tuning:
+MolBlender implements an **intelligent two-stage HPO system** for efficient model tuning.
 
-### Two-Stage Workflow
+### Quick Overview
 
-**Stage 1**: Screen all model-representation combinations with **default parameters**
-- Quickly identifies promising models (~10-30 minutes)
-- Establishes baseline performance ranking
-- Results stored with `stage=1` in database
-
-**Stage 2**: Optimize **top-N performers** with **GridSearchCV**
-- Only runs if `enable_hpo=True`
-- Automatically tests hyperparameter grids for top-N models
-- Results stored with `stage=2` and optimized parameters
-
-### Configuration Options
+**Stage 1**: Screen all models with default parameters (~10-30 minutes)
+**Stage 2**: Optimize top performers with GridSearchCV (~10-60 minutes)
 
 ```python
 results = universal_screen(
@@ -545,75 +549,29 @@ results = universal_screen(
     hpo_stage="coarse",        # "coarse" | "fine" | "custom"
     hpo_method="grid",         # "grid" | "random"
     top_n_for_hpo=5,           # Optimize top 5 models
+    hpo_selection_strategy="global",  # "global" | "per_type" | "per_subtype"
     hpo_cv_folds=3,            # Use 3-fold CV for HPO (faster)
     enable_db_storage=True     # Track all stages in database
 )
 ```
 
-### HPO Granularity Levels
+### HPO Selection Strategies
 
-| Stage | Grid Size | Example | Use Case |
-|-------|-----------|---------|----------|
-| **coarse** | 3-5 values/param | `n_estimators: [50, 100, 200]` | Fast exploration |
-| **fine** | 5-10 values/param | `n_estimators: [50, 100, 150, 200, 300]` | Detailed tuning |
-| **custom** | User-defined | Edit `parameter_grids.py` | Expert control |
+`hpo_selection_strategy` controls which models are selected for Stage 2 optimization:
 
-### Supported Models
+- **`"global"`** (default) - Top N models overall by primary metric
+- **`"per_type"`** - Top N Traditional ML + Top N Deep Learning
+- **`"per_subtype"`** - Top N from each model family (LINEAR, TREE, BOOSTING, KERNEL, VAE, TRANSFORMER, CNN)
 
-HPO works with all model types:
-- **Traditional ML**: Random Forest, XGBoost, SVM, Ridge, Lasso, etc.
-- **Deep Learning**: VAE models, CNN models
-- **3D Representations**: Spatial matrices, UniMol embeddings, 3D fingerprints
+```{admonition} For Complete HPO Documentation
+:class: seealso
 
-### Database Integration
-
-When `enable_db_storage=True`, HPO progress is tracked:
-
-```python
-# Resume interrupted HPO runs
-db = ScreeningResultsDB("screening_results.db")
-previous_results = db.load_comprehensive_results()
-
-# Stage 1 results have default parameters
-stage1_models = [r for r in results if r.get('stage') == 1]
-
-# Stage 2 results have optimized parameters
-stage2_models = [r for r in results if r.get('stage') == 2]
-```
-
-### Performance Considerations
-
-```{admonition} HPO Best Practices
-:class: tip
-
-1. **Use `hpo_cv_folds=3`** for Stage 2 - faster with minimal accuracy loss
-2. **Start with `hpo_stage="coarse"`** - quick exploration before fine-tuning
-3. **Set `top_n_for_hpo=3`** for large grids - reduce total optimization time
-4. **Enable database storage** - track all optimization attempts
-5. **Monitor verbose output** - watch for Stage 2 progression messages
-```
-
-Example HPO workflow:
-
-```python
-# Step 1: Quick screening with default parameters
-results = universal_screen(
-    dataset=dataset,
-    target_column="activity",
-    cv_folds=3,              # Fast Stage 1
-    enable_db_storage=True
-)
-
-# Step 2: Optimize top performers
-optimized = universal_screen(
-    dataset=dataset,
-    target_column="activity",
-    enable_hpo=True,
-    hpo_stage="coarse",
-    top_n_for_hpo=3,
-    hpo_cv_folds=3,
-    db_path="screening_results.db"  # Reuse same database
-)
+See {doc}`hpo` for comprehensive HPO guide including:
+- Selection strategies and model subtypes
+- Parameter grid configurations
+- Custom grid definitions
+- Database integration and resuming
+- Performance tips and troubleshooting
 ```
 
 ## Performance Tips

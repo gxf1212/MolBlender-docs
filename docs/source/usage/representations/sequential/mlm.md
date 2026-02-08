@@ -10,11 +10,11 @@ Molecular Language Models (MLMs) are transformer-based models pre-trained on mil
 ## Quick Start
 
 ```python
-import molblender as pm
+import molblender as mbl
 from molblender.data import Molecule
 
 # List available molecular language models
-mlm_featurizers = [f for f in pm.list_available_featurizers() 
+mlm_featurizers = [f for f in mbl.list_available_featurizers() 
                    if 'language_model' in f]
 print(mlm_featurizers)
 # Output: ['chemberta', 'chemberta-zinc250k', 'chemberta-pubchem10m',
@@ -22,7 +22,7 @@ print(mlm_featurizers)
 #          'molbert', 'molformer', 'selformer']
 
 # Get a molecular language model featurizer
-featurizer = pm.get_featurizer('chemberta')
+featurizer = mbl.get_featurizer('chemberta')
 
 # Featurize a single molecule (various input formats)
 # From SMILES
@@ -90,10 +90,10 @@ pip install torch>=2.6 --index-url https://download.pytorch.org/whl/cu118
 
 ```python
 # Basic usage with default settings
-featurizer = pm.get_featurizer('chemberta')
+featurizer = mbl.get_featurizer('chemberta')
 
 # Custom configuration
-featurizer = pm.get_featurizer(
+featurizer = mbl.get_featurizer(
     'chemberta',
     pooling='cls',        # Pooling strategy: 'mean', 'cls', 'max'
     max_length=256,       # Maximum sequence length
@@ -113,13 +113,13 @@ Different pooling strategies extract molecular representations differently:
 
 ```python
 # Mean pooling (default) - average over all tokens
-mean_featurizer = pm.get_featurizer('chemberta', pooling='mean')
+mean_featurizer = mbl.get_featurizer('chemberta', pooling='mean')
 
 # CLS pooling - use first token representation
-cls_featurizer = pm.get_featurizer('chemberta', pooling='cls')
+cls_featurizer = mbl.get_featurizer('chemberta', pooling='cls')
 
 # Max pooling - maximum values across tokens
-max_featurizer = pm.get_featurizer('chemberta', pooling='max')
+max_featurizer = mbl.get_featurizer('chemberta', pooling='max')
 
 # Compare representations
 smiles = "CC(C)CC1=CC=C(C=C1)C(C)C"  # Ibuprofen
@@ -171,7 +171,7 @@ dataset = MolecularDataset.from_csv(
 )
 
 # Featurize entire dataset
-featurizer = pm.get_featurizer('molformer')
+featurizer = mbl.get_featurizer('molformer')
 X = dataset.featurize(featurizer, n_workers=8)
 y = dataset.get_labels('activity')
 
@@ -212,7 +212,7 @@ models = ['chemberta', 'chemberta-zinc250k', 'chemberta-pubchem10m']
 embeddings = {}
 
 for model_key in models:
-    featurizer = pm.get_featurizer(model_key)
+    featurizer = mbl.get_featurizer(model_key)
     embeddings[model_key] = {}
     for name, smiles in test_molecules.items():
         embeddings[model_key][name] = featurizer(smiles)
@@ -262,7 +262,7 @@ def featurize_large_dataset(smiles_list, featurizer, chunk_size=100):
 
 # Example with 10,000 molecules
 large_dataset = ["C" * (i % 50 + 1) for i in range(10000)]
-featurizer = pm.get_featurizer('molformer', device='cuda')
+featurizer = mbl.get_featurizer('molformer', device='cuda')
 embeddings = featurize_large_dataset(large_dataset, featurizer)
 print(f"Processed {len(embeddings)} molecules")
 ```
@@ -280,7 +280,7 @@ This is required due to security vulnerability CVE-2025-32434.
 :::{dropdown} **MolBERT access error**
 The MolBERT model may require special access. If you encounter access errors, consider using ChemBERTa as an alternative:
 ```python
-featurizer = pm.get_featurizer('chemberta')  # Similar performance
+featurizer = mbl.get_featurizer('chemberta')  # Similar performance
 ```
 :::
 

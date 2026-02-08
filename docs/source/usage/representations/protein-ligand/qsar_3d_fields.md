@@ -38,11 +38,11 @@ Field values suitable for PLS regression
 ## Quick Start
 
 ```python
-import molblender as pm
+import molblender as mbl
 import numpy as np
 
 # Basic 3D field calculation
-featurizer = pm.get_featurizer('qsar_3d_fields')
+featurizer = mbl.get_featurizer('qsar_3d_fields')
 features = featurizer.featurize('CCO')  # ethanol
 print(f"Shape: {features.shape}")  # (1000,)
 
@@ -143,7 +143,7 @@ molecules = {
     'complex': 'CN1C=NC2=C1C(=O)N(C(=O)N2C)C'  # caffeine
 }
 
-featurizer = pm.get_featurizer('qsar_3d_fields')
+featurizer = mbl.get_featurizer('qsar_3d_fields')
 
 for name, smiles in molecules.items():
     features = featurizer.featurize(smiles)
@@ -163,14 +163,14 @@ for name, smiles in molecules.items():
 
 ```python
 # High-resolution analysis for small molecules
-high_res_featurizer = pm.get_featurizer(
+high_res_featurizer = mbl.get_featurizer(
     'qsar_3d_fields',
     grid_spacing=0.5,      # Finer grid
     field_radius=6.0       # Smaller radius
 )
 
 # Low-resolution for large molecules  
-fast_featurizer = pm.get_featurizer(
+fast_featurizer = mbl.get_featurizer(
     'qsar_3d_fields',
     grid_spacing=1.5,      # Coarser grid
     field_radius=10.0      # Larger radius
@@ -256,7 +256,7 @@ virtual_library = [
     'CCN(CC)C(=O)c1ccc2c(c1)ncn2C'        # theophylline (unrelated)
 ]
 
-featurizer = pm.get_featurizer('qsar_3d_fields')
+featurizer = mbl.get_featurizer('qsar_3d_fields')
 
 # Calculate reference field
 ref_fields = featurizer.featurize(reference_compound).reshape(1, -1)
@@ -285,7 +285,7 @@ import matplotlib.pyplot as plt
 
 # Analyze field contributions across compound series
 alcohol_series = ['CO', 'CCO', 'CCCO', 'CCCCO', 'CCCCCO']
-featurizer = pm.get_featurizer('qsar_3d_fields')
+featurizer = mbl.get_featurizer('qsar_3d_fields')
 
 field_analysis = []
 for alcohol in alcohol_series:
@@ -398,7 +398,7 @@ lead_series = [
     'c1ccc2c(c1)[nH]c3cc(N)ccc23'       # 3-amino derivative
 ]
 
-featurizer = pm.get_featurizer('qsar_3d_fields')
+featurizer = mbl.get_featurizer('qsar_3d_fields')
 lead_features = featurizer.featurize_many(lead_series)
 
 # Compare field patterns

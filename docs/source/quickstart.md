@@ -21,7 +21,7 @@ We'll predict aqueous solubility using a public dataset of drug-like molecules.
 ```python
 import pandas as pd
 import numpy as np
-import molblender as pm
+import molblender as mbl
 from molblender.data import MolecularDataset
 from molblender.models.api import thorough_screen
 from molblender.drawings import plot_publication_regression
@@ -332,14 +332,14 @@ large_dataset = MolecularDataset.from_csv(
 )
 
 # Use quick screening first
-quick_results = pm.models.api.quick_screen(
+quick_results = mbl.models.api.quick_screen(
     large_dataset, 
     target_column="target",
     representations=["morgan_fp_r2_1024", "rdkit_essential_descriptors"]
 )
 
 # Then detailed screening on promising approaches
-detailed_results = pm.models.api.thorough_screen(
+detailed_results = mbl.models.api.thorough_screen(
     large_dataset,
     target_column="target", 
     representations=[quick_results['best_model']['representation_name']],

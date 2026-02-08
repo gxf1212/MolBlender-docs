@@ -21,10 +21,10 @@ MolBlender currently supports the following tokenizer types:
 
 ```python
 # 1. Import MolBlender
-import molblender as pm
+import molblender as mbl
 
 # 2. Set up a basic tokenizer
-featurizer = pm.get_featurizer('DeepChem-BasicSmilesTokenizer')
+featurizer = mbl.get_featurizer('DeepChem-BasicSmilesTokenizer')
 
 # 3. Tokenize a SMILES string
 tokens = featurizer.featurize("CC(=O)C")
@@ -33,7 +33,7 @@ print(tokens)  # Array of token strings: ['C', 'C', '(', '=', 'O', ')', 'C']
 # 4. Using a vocabulary-based tokenizer (with numerical IDs)
 # First, you need a vocabulary file
 vocab_file = "/path/to/vocab.txt"  
-featurizer = pm.get_featurizer('DeepChem-SmilesTokenizer', vocab_file=vocab_file)
+featurizer = mbl.get_featurizer('DeepChem-SmilesTokenizer', vocab_file=vocab_file)
 token_ids = featurizer.featurize("CC(=O)C")
 print(token_ids)  # Array of integer IDs: [12, 12, 17, 22, 19, 18, 12]
 ```

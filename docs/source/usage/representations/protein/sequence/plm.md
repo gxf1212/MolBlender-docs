@@ -10,17 +10,17 @@ Protein Language Models (PLMs) are deep learning models trained on vast protein 
 ## Quick Start
 
 ```python
-import molblender as pm
+import molblender as mbl
 
 # List available protein featurizers
-print(pm.list_available_protein_featurizers())
+print(mbl.list_available_protein_featurizers())
 # Output: ['ankh', 'ankh2', 'ankh3', 'carp', 'esm2', 'esm2_t12_35M', 'esm2_t30_150M', 
 #          'esm2_t33_650M', 'esm2_t36_3B', 'esm2_t48_15B', 'esm2_t6_8M', 'esmc', 
 #          'esmc_300m', 'esmc_600m', 'esmc_6b', 'pepbert', 'protT5', 'protT5_xl', 
 #          'protT5_xxl']
 
 # Get a protein featurizer
-featurizer = pm.get_protein_featurizer('esm2')
+featurizer = mbl.get_protein_featurizer('esm2')
 
 # Featurize a single sequence
 sequence = "MKTAYIAKQRQISFVKSHFSRQ"
@@ -119,20 +119,20 @@ pip install torch  # See pytorch.org for GPU-specific installation
 
 ```python
 # Basic initialization
-featurizer = pm.get_protein_featurizer('esm2')
+featurizer = mbl.get_protein_featurizer('esm2')
 
 # With GPU acceleration
-featurizer = pm.get_protein_featurizer('esm2', device='cuda')
+featurizer = mbl.get_protein_featurizer('esm2', device='cuda')
 
 # With custom cache directory
-featurizer = pm.get_protein_featurizer(
+featurizer = mbl.get_protein_featurizer(
     'protT5',
     cache_dir='/path/to/model/cache',
     device='cuda'
 )
 
 # With specific model parameters
-featurizer = pm.get_protein_featurizer(
+featurizer = mbl.get_protein_featurizer(
     'esm2_t36_3B',
     repr_layer=30,  # Extract from specific layer (ESM models)
     max_length=1024,  # Maximum sequence length
@@ -194,7 +194,7 @@ def process_fasta_file(fasta_path: str,
     from Bio import SeqIO
     
     # Initialize featurizer
-    featurizer = pm.get_protein_featurizer(model, device='cuda')
+    featurizer = mbl.get_protein_featurizer(model, device='cuda')
     
     # Read sequences
     sequences = []
@@ -272,7 +272,7 @@ custom_esm = CustomESM2(device='cuda')
 def memory_efficient_processing(sequences: List[str], 
                                model_name: str = 'esm2_t36_3B') -> List[np.ndarray]:
     """Process sequences with minimal GPU memory usage."""
-    featurizer = pm.get_protein_featurizer(model_name, device='cuda')
+    featurizer = mbl.get_protein_featurizer(model_name, device='cuda')
     
     embeddings = []
     for seq in sequences:
@@ -333,13 +333,13 @@ def select_model(sequence_length: int,
 ```python
 # ESM models can extract from different layers
 # Last layer (default) - most task-specific
-last_layer = pm.get_protein_featurizer('esm2', repr_layer=-1)
+last_layer = mbl.get_protein_featurizer('esm2', repr_layer=-1)
 
 # Middle layer - more general features
-middle_layer = pm.get_protein_featurizer('esm2', repr_layer=17)
+middle_layer = mbl.get_protein_featurizer('esm2', repr_layer=17)
 
 # Early layer - basic sequence patterns
-early_layer = pm.get_protein_featurizer('esm2', repr_layer=6)
+early_layer = mbl.get_protein_featurizer('esm2', repr_layer=6)
 
 # Compare representations
 seq = "MKTAYIAKQRQISFVKSHFSRQ"
@@ -361,11 +361,11 @@ sequences_with_special = [
 ]
 
 # ProtT5 handles these well
-protT5 = pm.get_protein_featurizer('protT5')
+protT5 = mbl.get_protein_featurizer('protT5')
 embeddings = protT5(sequences_with_special)
 
 # ESM models convert special AAs to X
-esm2 = pm.get_protein_featurizer('esm2')
+esm2 = mbl.get_protein_featurizer('esm2')
 embeddings_esm = esm2(sequences_with_special)
 ```
 
@@ -381,7 +381,7 @@ def train_protein_classifier(sequences: List[str],
                            model_name: str = 'esm2_t30_150M'):
     """Train a classifier on protein embeddings."""
     # Get embeddings
-    featurizer = pm.get_protein_featurizer(model_name, device='cuda')
+    featurizer = mbl.get_protein_featurizer(model_name, device='cuda')
     embeddings = featurizer(sequences)
     
     # Remove failed sequences
@@ -415,7 +415,7 @@ class CachedProteinFeaturizer:
     """Wrapper that caches embeddings to disk."""
     
     def __init__(self, model_name: str, cache_dir: str = './plm_cache'):
-        self.featurizer = pm.get_protein_featurizer(model_name, device='cuda')
+        self.featurizer = mbl.get_protein_featurizer(model_name, device='cuda')
         self.cache_dir = Path(cache_dir)
         self.cache_dir.mkdir(exist_ok=True)
         self.model_name = model_name
@@ -479,7 +479,7 @@ import torch
 
 def profile_memory_usage(model_name: str, sequence_lengths: List[int]):
     """Profile memory usage for different sequence lengths."""
-    featurizer = pm.get_protein_featurizer(model_name, device='cuda')
+    featurizer = mbl.get_protein_featurizer(model_name, device='cuda')
     
     for length in sequence_lengths:
         # Create test sequence
@@ -507,20 +507,20 @@ def profile_memory_usage(model_name: str, sequence_lengths: List[int]):
 1. **Out of Memory Error**
    ```python
    # Solution 1: Use smaller model
-   featurizer = pm.get_protein_featurizer('esm2_t12_35M')
+   featurizer = mbl.get_protein_featurizer('esm2_t12_35M')
    
    # Solution 2: Reduce batch size
    embeddings = featurizer(sequences, n_workers=1)  # Process one at a time
    
    # Solution 3: Use CPU (slower)
-   featurizer = pm.get_protein_featurizer('esm2', device='cpu')
+   featurizer = mbl.get_protein_featurizer('esm2', device='cpu')
    ```
 
 2. **Dependency Not Found**
    ```python
    # Check which dependencies are missing
    try:
-       featurizer = pm.get_protein_featurizer('esm2')
+       featurizer = mbl.get_protein_featurizer('esm2')
    except DependencyNotFoundError as e:
        print(f"Missing dependency: {e}")
        # Install the required package
@@ -529,10 +529,10 @@ def profile_memory_usage(model_name: str, sequence_lengths: List[int]):
 3. **Slow Processing**
    ```python
    # Use GPU acceleration
-   featurizer = pm.get_protein_featurizer('esm2', device='cuda')
+   featurizer = mbl.get_protein_featurizer('esm2', device='cuda')
    
    # Use smaller, faster model
-   featurizer = pm.get_protein_featurizer('esm2_t6_8M')
+   featurizer = mbl.get_protein_featurizer('esm2_t6_8M')
    
    # Enable caching for repeated sequences
    # See CachedProteinFeaturizer example above

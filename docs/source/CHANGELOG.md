@@ -7,7 +7,249 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Disabled Lasso and ElasticNet Models** (2026-02-08)
+  - Removed lasso and elastic_net from available models due to poor performance on small datasets
+  - These models consistently produce Pearson R = 0.00 on small datasets (<500 training samples)
+  - Model registration commented out in `models/api/core/model_registry.py`
+  - Parameter grids commented out in `models/corpus/grids/linear_models.py`
+  - Code preserved for potential future re-enablement on larger datasets
+  - Linear models category now reduced to 4 models: Ridge, Logistic, LinearSVR, Bayesian Ridge
+
+- **Mordred Batch Processing** (2026-02-07)
+  - Added `_featurize_batch()` method to MordredFeaturizer for parallel computation
+  - Uses Mordred's `calc.pandas()` API for batch descriptor calculation
+  - Significantly faster than individual molecule processing (10-50x speedup)
+  - Automatically falls back to individual calculation if batch fails
+  - File modified: `representations/descriptors/descriptors_basic.py`
+
+- **Default Primary Metric: Pearson R** (2026-02-07)
+  - Changed default regression metric from R² to Pearson R for better interpretability
+  - Pearson R directly measures linear correlation strength (-1 to 1)
+  - More stable on small datasets and symmetric for prediction evaluation
+  - Files modified: `api.py`, `reporting.py`, `results_db.py`, `migration.py`
+
+### Fixed
+
+- **skip_existing_results Empty Database Bug** (2026-02-07)
+  - Fixed bug where `skip_existing_results=True` would skip all screening when database is empty
+  - Now correctly runs full screening when no existing results are found (count=0)
+  - Only skips when all results exist (count=len(representations))
+  - Partial results still load existing and skip missing to avoid OOM
+  - File modified: `models/api/multimodal/modality_handlers.py`
+
+- **Mol2Vec Offline Support** (2026-02-07)
+  - Removed network connectivity check that blocked Mol2Vec in offline environments
+  - Now works with locally cached models without internet access
+  - File modified: `config/dependencies.py`
+
 ### Added
+
+- **Mol2Vec Auto-Download Enhancement** (2026-02-07)
+  - Added `download_mol2vec_model()` function for automatic model downloading
+  - Caches model in `~/.mol2vec/` directory (26MB)
+  - Supports custom model paths via `pretrain_model_path` parameter
+  - Falls back gracefully with clear error messages if download fails
+  - File modified: `config/models.py`, `representations/fingerprints/deepchem.py`
+
+- **HPO Resume + Stage 2 Autosave** (2026-02-07)
+  - Stage 2 skips combinations already optimized in the database
+  - Results are saved after each optimized model to reduce lost work
+  - Pre-computes required representations once before HPO loop
+
+- **Mol2Vec Auto-Download + Offline Checks** (2026-02-07)
+  - Auto-downloads Mol2Vec pretrained model (cached in `~/.mol2vec`) when not provided
+  - Detects missing network connectivity for PubChem/Mol2Vec features and warns early
+
+- **Dashboard Analysis Enhancements** (2026-02-07)
+  - Adds category-specific model distribution chart in Performance Analysis
+  - Detailed Results table now includes best CV fold score and training-set primary metric (when available)
+
+- **Universal skip_existing_results for All Modalities** (2026-02-04)
+  - **Problem**: `skip_existing_results` only worked for VECTOR modality, other modalities (STRING, MATRIX, IMAGE, LANGUAGE_MODEL) always re-ran Stage 1 screening
+  - **Solution**: Created universal helper method `_check_and_load_existing_results()` in `ModalityHandlerMixin`
+  - **Implementation**: All 5 modality handlers now call this shared method to check database for existing Stage 1 results
+  - **Behavior**:
+    - ✅ If **all** representations have Stage 1 results → skip screening, load from database
+    - ⚠️ If **partial** representations have results → run full screening (ensures completeness)
+    - ✅ If **no** representations have results → run full screening
+  - **Files Modified**:
+    - `src/molblender/models/api/multimodal/modality_handlers.py`: Added `_check_and_load_existing_results()` helper (126 lines)
+    - All modality handlers (VECTOR, STRING, MATRIX, IMAGE, LANGUAGE_MODEL) now use this method
+  - **User Impact**: Significantly faster HPO Stage 2 execution when Stage 1 results already exist in database
+
+- **Database Merger Enhancements** (2026-02-04)
+  - **Session Preservation**: Now preserves all sessions and their metadata when merging databases
+  - **Flexible Deduplication**: Added `--no-remove-duplicates` flag to keep all results including duplicates
+  - **Table Completeness**: Ensures all required tables (dataset_info, schema_version) are copied to merged database
+  - **Session Consistency**: Maintains session_id consistency across model_results and dataset_info tables
+  - **File Modified**: `src/molblender/models/api/utils/database_merger.py`
+  - **New Behavior**:
+    - Default: Remove duplicates, keep best score per model+representation
+    - With `--no-remove-duplicates`: Keep all results from all databases
+  - **Example**: `molblender merge_databases db1.db db2.db -o merged.db --no-remove-duplicates`
+
+- **Multi-Database Merge Tool** (`molblender merge_databases`)
+  - New CLI command to merge multiple `.db` files into one unified database
+  - Automatically deduplicates `model_name + representation_name` combinations (keeps best score)
+  - Filters out entries with NaN/invalid scores
+  - Example: `molblender merge_databases db1.db db2.db -o merged.db`
+  - Use cases: Merge interrupted+resumed screenings, combine multi-modality results, clean up test runs
+  - Documentation: `usage/basic/cli.md`
+
+- **Data Type Error Fix** (data_handler.py)
+  - Fixed `ufunc 'isnan' not supported for the input types` error when processing non-numeric dtype arrays
+  - Added automatic object→float64 conversion for numeric data stored as object dtype
+  - Prevents VECTOR modality failures on larger datasets (2535 molecules)
+
+- **Grid Search Resolution Improvement** (tree_models.py)
+  - Increased grid points for well-performing models (Random Forest, XGBoost, LightGBM)
+  - Random Forest: 36 → 2160 combinations (60x increase)
+  - XGBoost: 108 → 57600 combinations (533x increase)
+  - All grid centers now use sklearn/official defaults
+
+- **Optuna Integration** (optuna_optimizer.py)
+  - New Optuna-based Bayesian optimizer for fine-tuning top models
+  - Warm-start from Grid Search best parameters (±50% range)
+  - MedianPruner for early stopping of unpromising trials
+  - Focuses on top 3 models + slow models (Transformer, CNN)
+
+- **Cross-Session Result Caching** (`--skip-existing`)
+  - **Problem**: Previously, re-running screening would re-compute all model-representation combinations even if results existed in previous database sessions
+  - **Solution**: Added `skip_existing_results` configuration parameter and `--skip-existing` CLI flag
+  - **Implementation Details**:
+    - `ScreeningConfig.skip_existing_results`: Check across ALL sessions, not just current session
+    - `ScreeningResultsDB.check_existing_result(check_all_sessions=True)`: SQL query without session_id filter
+    - **Smart Caching**: When enabled, skips any model-representation combination that exists in ANY previous session
+  - **Use Cases**:
+    - Resume interrupted screening jobs without re-computing completed results
+    - Add new representations/models to existing screening without re-running everything
+    - Incremental screening: run on subset, then expand with `--skip-existing`
+  - **Performance**: For the RdRp dataset (723 existing results), resuming with `--skip-existing` would skip all 723 combinations and only compute new ones
+  - **Backward Compatibility**: Default `skip_existing_results=False` preserves existing behavior (always recompute)
+  - **Files Modified**:
+    - `src/molblender/models/api/core/base.py`: Added `skip_existing_results` configuration parameter
+    - `src/molblender/models/api/multimodal/processors/database.py`: Added `check_all_sessions` parameter to `check_existing_result()`
+    - `src/molblender/models/api/utils/results_db.py`: Added `check_all_sessions` parameter to `check_existing_result()`
+    - `src/molblender/models/api/multimodal/api.py`: Added `skip_existing_results` parameter to `universal_screen()`
+    - `tests/.../run_molblender_screening.py`: Added `--skip-existing` CLI argument
+  - **Example Usage**:
+    ```bash
+    # First run: compute all combinations (723 results)
+    python run_molblender_screening.py --disable-gpu
+
+    # Second run: skip existing 723 results
+    python run_molblender_screening.py --disable-gpu --skip-existing
+    ```
+
+- **Placeholder Value Protection in Database Storage**
+  - **Problem**: Database was storing placeholder `[0,1,2,...]` indices instead of actual `y_test`/`y_train` values in `dataset_info.test_true_values`
+  - **Root Cause**: Early session creation stored placeholder data before actual split data was available
+  - **Impact**: Dashboard scatter plots showed incorrect Pearson R (near 0) due to placeholder true values
+  - **Solution**: Added validation in `ScreeningResultsDB.save_dataset_info()`:
+    - Checks if `test_true_values == list(range(len(test_true_values)))` (placeholder detection)
+    - Checks if `train_true_values == list(range(len(train_true_values)))` (placeholder detection)
+    - Refuses to save placeholder data with clear error message
+    - Returns `False` to prevent invalid data storage
+  - **Error Message**: `"❌ Refusing to save placeholder test_true_values (indices) for session {session_id}. These should be actual y_test values, not [0, 1, 2, ...]. This causes incorrect metric recalculations in Dashboard."`
+  - **Files Modified**:
+    - `src/molblender/models/api/utils/results_db.py`: Added placeholder validation in `save_dataset_info()` (lines 595-617)
+  - **User Impact**:
+    - Prevents database corruption from placeholder data
+    - Ensures Dashboard metrics are computed from correct `y_test` values
+    - Forces proper data flow: `evaluator.py` → real `y_test` → database → Dashboard
+  - **Note**: Old databases with placeholder values should be regenerated by re-running screening with latest code
+
+### Changed
+
+- **Split Strategy Name Mapping**
+  - **Fixed**: `max_dissimilarity` → `maxmin` in `run_molblender_screening.py`
+  - **Reason**: API only recognizes `maxmin`, not `max_dissimilarity`
+  - **Impact**: Correct MaxDissimilarity split functionality now works
+  - **File**: `tests/data/.../run_molblender_screening.py` line 237
+
+- **Database Merge Deduplication Keys** (2026-02-07)
+  - Deduplication now considers model params and HPO best params to preserve tuned variants
+  - Improves session/database merges for mixed Stage 1 + Stage 2 results
+
+## [Unreleased]
+
+### Fixed
+
+- **Stage 1 Partial Reuse to Avoid OOM** (2026-02-07)
+  - When only some representations have Stage 1 results, existing ones are loaded instead of forcing a full re-run
+
+- **HPO Feature Reconstruction Robustness** (2026-02-07)
+  - Handles nested embeddings with fast stacking and imputes NaNs in descriptor features
+
+- **Dashboard MAPE Radar Chart Display** (2026-02-04)
+  - **Problem**: Extremely large MAPE values (e.g., 3.6 billion %) were clamped to max range (2.0), resulting in normalized value of 0 on radar charts
+  - **Impact**: Radar charts showed misleading "0" for MAPE when actual values were unreasonably high
+  - **Solution**: Skip MAPE values >500% (5.0) from radar chart display entirely
+  - **Rationale**: MAPE >500% indicates severe data quality issues (e.g., predictions near zero for non-zero true values)
+  - **File Modified**: `src/molblender/dashboard/components/model_inspection/visualization.py`
+  - **Code Change**:
+    ```python
+    # Skip unreasonably large MAPE values (>500% indicates data issues)
+    if key == "mape" and value > 5.0:
+        continue
+    ```
+  - **User Impact**: Radar charts now show only meaningful metrics, preventing confusion from extreme outliers
+
+- **Dashboard Training Time Analysis Rendering**
+  - Fixed import path for modality training time pie chart in `general.py`
+  - Ensured Session Breakdown renders only in the right column
+  - Resolved pandas column mismatch for session aggregation when `n_jobs` is present
+- **Log Noise Reduction**
+  - Added repeated-message suppression for common CUDA/XGBoost/CV failure patterns
+  - Reduced spam for near-constant predictions and low Pearson‑r warnings
+- **Database Merge Tool (`molblender merge_databases`)**
+  - Fixed critical bugs causing Dashboard loading failures and data loss
+  - Now copies all 4 required tables (`screening_sessions`, `model_results`, `dataset_info`, `schema_version`) instead of only 2
+  - Preserves original session_ids instead of creating artificial "merged" session
+  - Properly copies `dataset_info` and `schema_version` entries for each session
+  - File: `src/molblender/models/api/utils/database_merger.py` (complete rewrite)
+
+### Changed
+
+- **CUDA → CPU Fallback (Thresholded)**
+  - Added CPU fallback for VAE/CNN/Transformer models on CUDA failure when CPU cores ≥32
+  - XGBoost CUDA fallback now respects the same core threshold (otherwise re-raises)
+
+### Added
+
+- **Sample Weighting for Imbalanced Regression** (`src/molblender/models/api/core/weighting.py`)
+  - **Three Weighting Strategies** for handling zero-inflated or heavily imbalanced regression data:
+    - **threshold**: Binary weighting (e.g., pX > 0 samples get 2-3x weight, pX = 0 get 1x weight)
+    - **inverse_density**: KDE-based density estimation, weights ∝ 1/density for rare value ranges
+    - **quantile**: Quantile-based weighting, extreme quantiles get higher weight
+  - **Configuration Parameters** in `ScreeningConfig`:
+    - `use_sample_weights`: Enable/disable weighting (default: False for backward compatibility)
+    - `weight_strategy`: Choose strategy ("threshold", "inverse_density", "quantile")
+    - `weight_threshold`: Threshold for binary split (default: 0.0)
+    - `weight_power`: Power to smooth extreme weight differences (0.5-1.0, default: 1.0)
+    - `active_subset_threshold`: Threshold for active subset evaluation (default: 0.0)
+  - **Safe Model Training** (`_safe_fit_with_weights()` in evaluator.py):
+    - Automatically handles models that don't support `sample_weight`
+    - Graceful fallback to standard training if weights not supported
+    - Logs warnings when weights cannot be used
+  - **Active Subset Metrics** for comprehensive imbalanced regression evaluation:
+    - `active_r2`, `active_rmse`, `active_mae`: Metrics computed only on active samples (e.g., pX > 0)
+    - `active_count`, `active_percentage`: Number and percentage of active samples
+    - Computed when `use_sample_weights=True` and task is regression
+  - **Command-Line Interface** (run_molblender_screening.py):
+    - `--use-sample-weights`: Enable sample weighting
+    - `--weight-strategy`: Choose weighting strategy
+    - `--weight-threshold`: Set threshold for binary weighting
+    - `--weight-power`: Smooth weight differences (default: 1.0)
+    - `--active-subset-threshold`: Set threshold for active subset evaluation
+  - **Use Case**: RdRp inhibitor screening with 86% inactive (pX=0) and 14% active (pX>0) samples
+    - Training on weighted samples improves model performance on rare active compounds
+    - Active subset metrics provide visibility into model performance on the region of interest
+  - **Backward Compatibility**: Default `use_sample_weights=False` ensures no impact on existing workflows
+  - **Reference**: SMOGN (Synthetic Minority Over-sampling Technique for Non-Gaussian continuous features)
+    https://link.springer.com/article/10.1007/s10994-021-06023-5
 
 - **Advanced Molecular Splitting Strategies** (`src/molblender/data/dataset/splitting/`)
   - **4 Advanced Splitters from splito package** (Apache 2.0 License):
@@ -381,6 +623,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Simplified `pd.crosstab()` call to show combination counts only (removed conditional aggfunc logic)
   - Removed conflicting parameters: `values=df[selected_metric]` and `aggfunc='count'/'mean'`
   - Now displays usage frequency (how many times each representation-model pair was tested)
+
+- **CNN Model Dimension Mismatch Bug** (`src/molblender/models/modality_models/cnn_models.py`)
+  - **Critical Fix**: Replaced `squeeze()` with `flatten()` to prevent scalar predictions causing "Length mismatch: y_true=457, y_pred=1" errors
+  - **Root Cause**: `squeeze()` removes all size-1 dimensions, converting single-sample predictions from `[1]` array to scalar
+  - **Fixed Locations**:
+    - `predict()` method (lines 601-605): Changed `outputs.squeeze()` → `outputs.flatten()`
+    - `fit()` method training loop (line 546): Loss calculation now uses `outputs.flatten(), batch_y.flatten()`
+    - `fit()` method validation loop (line 562): Same fix for validation loss calculation
+  - **Batch Size Safety** (lines 515-529): Added dynamic batch_size adjustment for small datasets to prevent BatchNorm errors
+    - Automatically reduces batch_size if dataset size < configured batch_size
+    - Logs warning when dataset too small for BatchNorm, preventing training crashes
+  - **Impact**: Eliminates 100+ "Length mismatch" errors per screening run, enables CNN evaluation on small datasets
+  - **Verification**: Test confirmed single-sample prediction returns 1D array `(1,)` instead of scalar
+
+- **XGBoost CUDA Compatibility** (`src/molblender/models/corpus/model_corpus.py`, `src/molblender/config/version_compat.py`)
+  - **XGBoostRegressorWrapper/XGBoostClassifierWrapper**: Automatic CUDA fallback on initialization errors
+  - **Mechanism**:
+    - Try fitting with default parameters (may attempt CUDA)
+    - On `XGBoostError` with "cuda" in error message, automatically retry with `device="cpu", tree_method="hist"`
+    - Logs warning when fallback occurs for user awareness
+  - **Implementation**: Wrapper classes with `fit()` and `predict()` methods implementing sklearn interface
+  - **Error Prevention**: Resolves 8 CUDA-related failures in production screening logs
+  - **Transparent Usage**: Drop-in replacement for `XGBRegressor`/`XGBClassifier` with no API changes
+  - **Note**: `get_xgboost_params()` now only handles version compatibility (e.g., use_label_encoder), device selection handled by wrapper
+
+- **Modality Compatibility Enforcement** (`src/molblender/models/api/core/model_registry.py`)
+  - **Critical Fix**: Added modality compatibility check when `model_names` parameter is explicitly provided
+  - **Root Cause**: Lines 82-91 previously skipped modality filtering when user specified model list
+  - **Problem**: `universal_screen(..., model_names=['transformer_small'])` with fingerprint data incorrectly attempted Transformer+VECTOR combination
+  - **Solution** (lines 82-98):
+    - Check modality compatibility even with explicit model_names
+    - Log warning and skip incompatible models: `Model '{name}' is not compatible with data modality '{modality}', skipping`
+  - **Compatibility Matrix**:
+    - VECTOR (fingerprints/descriptors) → Traditional ML only, NO Transformers/CNN
+    - STRING (raw SMILES) → Transformer only
+    - MATRIX/IMAGE → CNN only
+  - **Verification**: `transformer_small + maccs_keys` now correctly skipped, only `ridge + maccs_keys` evaluated
+
+- **Configurable Timeout System** (`src/molblender/models/api/core/base.py`, `src/molblender/models/api/core/evaluation/evaluator.py`)
+  - **User-Customizable Timeouts** in `ScreeningConfig`:
+    - `model_timeout: Optional[int] = None` - Set absolute timeout (seconds), None=use adaptive
+    - `base_model_timeout: int = 600` - Base timeout for adaptive calculation (increased from 300s to 600s)
+    - `min_model_timeout: int = 60` - Minimum allowed timeout (seconds)
+    - `max_model_timeout: int = 3600` - Maximum allowed timeout (seconds)
+  - **Adaptive Timeout Calculation** (`_get_adaptive_timeout()` method):
+    - User-specified `model_timeout` takes priority if set
+    - Otherwise uses `base_model_timeout` × multipliers:
+      - Representation type: Transformer ×3, CNN ×2, Fingerprint ×0.5
+      - Data size: n_samples > 10000 → ×2, n_features > 5000 → ×1.5
+      - Operation type: CV uses `cv_folds × 0.3` multiplier
+    - Final timeout bounded by `[min_model_timeout, max_model_timeout]`
+  - **Impact**:
+    - Transformer CV with 10k samples: 600 × 3 × 2 × (5 × 0.3) = **5400s (90min)**
+    - Fingerprint training: 600 × 0.5 = **300s (5min)**
+  - **Default Timeout Increase**: Base timeout doubled from 5min to 10min for better deep learning model coverage
 
 ### Changed
 - **Dataset Quality Analysis Migration**: Replaced `overview.py` with comprehensive `diagnostics/` module

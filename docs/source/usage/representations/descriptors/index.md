@@ -36,12 +36,12 @@ Robust handling of calculation failures
 ## Quick Start
 
 ```python
-import molblender as pm
+import molblender as mbl
 
 # Get molecular descriptor featurizers
-rdkit_desc = pm.get_featurizer("rdkit_all_descriptors")
-mordred_2d = pm.get_featurizer("mordred_descriptors_2d")
-mordred_all = pm.get_featurizer("mordred_descriptors_all")
+rdkit_desc = mbl.get_featurizer("rdkit_all_descriptors")
+mordred_2d = mbl.get_featurizer("mordred_descriptors_2d")
+mordred_all = mbl.get_featurizer("mordred_descriptors_all")
 
 # Single molecule
 smiles = "CCO"
@@ -74,11 +74,11 @@ print(f"Batch shape: {len(batch_descriptors)} molecules")
 Start with the most important physicochemical properties:
 
 ```python
-import molblender as pm
+import molblender as mbl
 import numpy as np
 
 # Get essential descriptors (most interpretable)
-essential = pm.get_featurizer("rdkit_essential_descriptors")
+essential = mbl.get_featurizer("rdkit_essential_descriptors")
 
 # Calculate for a drug-like molecule
 drug_molecule = "CC1=CC=C(C=C1)C(=O)NC2=CC=CC=C2"  # Acetaminophen
@@ -105,7 +105,7 @@ for i, (name, value) in enumerate(zip(descriptor_names[:7], descriptors[:7])):
 Evaluate drug-likeness using Lipinski descriptors:
 
 ```python
-lipinski = pm.get_featurizer("rdkit_lipinski_descriptors")
+lipinski = mbl.get_featurizer("rdkit_lipinski_descriptors")
 
 # Test different molecules
 molecules = {
@@ -139,7 +139,7 @@ for name, smiles in molecules.items():
 Properties relevant for absorption, distribution, metabolism, elimination, and toxicity:
 
 ```python
-admet = pm.get_featurizer("rdkit_admet_descriptors")
+admet = mbl.get_featurizer("rdkit_admet_descriptors")
 
 # Analyze ADMET properties
 compound = "CN1CCN(CC1)C2=CC=C(C=C2)C(=O)N"  # Drug-like compound
@@ -165,7 +165,7 @@ RDKit automatically includes 3D descriptors when molecules have conformers:
 
 ```python
 # All descriptors include 3D if available
-all_desc = pm.get_featurizer("rdkit_all_descriptors")
+all_desc = mbl.get_featurizer("rdkit_all_descriptors")
 
 # Molecule with flexible geometry
 flexible_mol = "CCCCCC(C)C(=O)O"  # Branched carboxylic acid
@@ -186,11 +186,11 @@ Mordred provides the most comprehensive descriptor collection available:
 
 ```python
 # 2D descriptors only (no 3D conformer needed)
-mordred_2d = pm.get_featurizer("mordred_descriptors_2d")
+mordred_2d = mbl.get_featurizer("mordred_descriptors_2d")
 desc_2d = mordred_2d.featurize("CCO")
 
 # All descriptors (includes 3D, conformer generated automatically)  
-mordred_all = pm.get_featurizer("mordred_descriptors_all")
+mordred_all = mbl.get_featurizer("mordred_descriptors_all")
 desc_all = mordred_all.featurize("CCO")
 
 print(f"Mordred 2D descriptors: {desc_2d.shape[0]}")   # 1613
@@ -211,7 +211,7 @@ Mordred organizes descriptors into chemical categories:
 
 ```python
 # Get detailed descriptor information
-mordred = pm.get_featurizer("mordred_descriptors_all", 
+mordred = mbl.get_featurizer("mordred_descriptors_all", 
                            fill_value=0,      # Replace NaN with 0
                            ignore_3D=False)   # Include 3D descriptors
 
@@ -240,19 +240,19 @@ import time
 molecules = ["CCO", "CCN", "CCC", "c1ccccc1", "CC(C)C(=O)O"] * 10  # 50 molecules
 
 # Time RDKit descriptors
-rdkit_desc = pm.get_featurizer("rdkit_all_descriptors")
+rdkit_desc = mbl.get_featurizer("rdkit_all_descriptors")
 start = time.time()
 rdkit_results = rdkit_desc.featurize(molecules, n_workers=4)
 rdkit_time = time.time() - start
 
 # Time Mordred 2D descriptors
-mordred_2d = pm.get_featurizer("mordred_descriptors_2d")
+mordred_2d = mbl.get_featurizer("mordred_descriptors_2d")
 start = time.time()
 mordred_2d_results = mordred_2d.featurize(molecules, n_workers=4)
 mordred_2d_time = time.time() - start
 
 # Time Mordred all descriptors  
-mordred_all = pm.get_featurizer("mordred_descriptors_all")
+mordred_all = mbl.get_featurizer("mordred_descriptors_all")
 start = time.time()
 mordred_all_results = mordred_all.featurize(molecules, n_workers=4)
 mordred_all_time = time.time() - start
@@ -272,9 +272,9 @@ print(f"Mordred all (1826): {mordred_all_time:.2f}s, {len(mordred_all_results[0]
 
 def get_drug_discovery_descriptors(smiles_list):
     """Get descriptors optimized for drug discovery"""
-    essential = pm.get_featurizer("rdkit_essential_descriptors")
-    lipinski = pm.get_featurizer("rdkit_lipinski_descriptors") 
-    admet = pm.get_featurizer("rdkit_admet_descriptors")
+    essential = mbl.get_featurizer("rdkit_essential_descriptors")
+    lipinski = mbl.get_featurizer("rdkit_lipinski_descriptors") 
+    admet = mbl.get_featurizer("rdkit_admet_descriptors")
     
     results = []
     for smiles in smiles_list:
@@ -290,7 +290,7 @@ def get_drug_discovery_descriptors(smiles_list):
 
 def get_interpretable_descriptors(smiles_list):
     """Get most interpretable descriptors"""
-    rdkit_desc = pm.get_featurizer("rdkit_all_descriptors")
+    rdkit_desc = mbl.get_featurizer("rdkit_all_descriptors")
     
     # Select interpretable descriptors by name
     interpretable_indices = [0, 1, 2, 3, 4, 5, 10, 15, 20, 25]  # Key indices
@@ -326,7 +326,7 @@ molecule_classes = {
     "Aromatics": ["c1ccccc1", "c1ccc2ccccc2c1", "c1ccc(cc1)c2ccccc2"]
 }
 
-rdkit_desc = pm.get_featurizer("rdkit_essential_descriptors")
+rdkit_desc = mbl.get_featurizer("rdkit_essential_descriptors")
 
 print("Chemical Space Analysis:")
 for class_name, molecules in molecule_classes.items():
@@ -358,7 +358,7 @@ problematic_mol = "[Pt]"  # Metal complex - may cause descriptor failures
 
 for strategy_name, params in strategies:
     try:
-        mordred = pm.get_featurizer("mordred_descriptors_2d", **params)
+        mordred = mbl.get_featurizer("mordred_descriptors_2d", **params)
         descriptors = mordred.featurize(problematic_mol)
         nan_count = np.isnan(descriptors).sum()
         
@@ -375,7 +375,7 @@ Handle descriptor failures gracefully in batch processing:
 ```python
 def robust_descriptor_calculation(smiles_list, featurizer_name="rdkit_all_descriptors"):
     """Calculate descriptors with error handling"""
-    featurizer = pm.get_featurizer(featurizer_name, fill_value=0)
+    featurizer = mbl.get_featurizer(featurizer_name, fill_value=0)
     
     results = []
     failed_molecules = []
@@ -436,7 +436,7 @@ np.random.seed(42)
 target = np.random.normal(0, 1, len(molecules))
 
 # Calculate descriptors
-rdkit_desc = pm.get_featurizer("rdkit_essential_descriptors")
+rdkit_desc = mbl.get_featurizer("rdkit_essential_descriptors")
 X = np.array([rdkit_desc.featurize(mol) for mol in molecules])
 y = target
 
@@ -499,14 +499,14 @@ print(f"Combined descriptors shape: {all_descriptors.shape}")
 # For detailed analysis: use comprehensive sets
 
 # 2. Handle missing values efficiently
-mordred_fast = pm.get_featurizer("mordred_descriptors_2d", 
+mordred_fast = mbl.get_featurizer("mordred_descriptors_2d", 
                                 fill_value=0,        # Faster than mean
                                 ignore_3D=True)      # Skip 3D calculations
 
 # 3. Use parallel processing for large datasets
 def process_large_dataset(smiles_list, batch_size=1000):
     """Process large datasets in batches"""
-    featurizer = pm.get_featurizer("rdkit_all_descriptors")
+    featurizer = mbl.get_featurizer("rdkit_all_descriptors")
     
     all_results = []
     for i in range(0, len(smiles_list), batch_size):
@@ -522,7 +522,7 @@ def memory_efficient_descriptors(smiles_list, output_file):
     """Calculate descriptors with memory management"""
     import pickle
     
-    featurizer = pm.get_featurizer("rdkit_essential_descriptors")
+    featurizer = mbl.get_featurizer("rdkit_essential_descriptors")
     
     with open(output_file, 'wb') as f:
         for i, smiles in enumerate(smiles_list):

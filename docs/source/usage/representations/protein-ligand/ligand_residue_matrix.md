@@ -38,11 +38,11 @@ Farthest-point sampling for diverse atom selection
 ## Quick Start
 
 ```python
-import molblender as pm
+import molblender as mbl
 import numpy as np
 
 # Basic atomic distance matrix
-featurizer = pm.get_featurizer('ligand_residue_distance_matrix')
+featurizer = mbl.get_featurizer('ligand_residue_distance_matrix')
 features = featurizer.featurize('c1ccc2[nH]c3ccccc3c2c1')  # indole
 print(f"Shape: {features.shape}")  # (6000,)
 
@@ -159,7 +159,7 @@ drug_compounds = [
     'CC(C)(C)NCC(c1ccc(O)cc1O)O'    # salbutamol (13 atoms)
 ]
 
-featurizer = pm.get_featurizer('ligand_residue_distance_matrix')
+featurizer = mbl.get_featurizer('ligand_residue_distance_matrix')
 
 for compound in drug_compounds:
     features = featurizer.featurize(compound)
@@ -184,7 +184,7 @@ for compound in drug_compounds:
 
 ```python
 # Fine-grained cavity detection
-detailed_featurizer = pm.get_featurizer(
+detailed_featurizer = mbl.get_featurizer(
     'ligand_residue_distance_matrix',
     cavity_cutoff=3.5,              # Tighter cavity definition
     max_cavity_residues=30,         # Fewer residues
@@ -193,7 +193,7 @@ detailed_featurizer = pm.get_featurizer(
 )
 
 # Broader cavity analysis  
-broad_featurizer = pm.get_featurizer(
+broad_featurizer = mbl.get_featurizer(
     'ligand_residue_distance_matrix',
     cavity_cutoff=5.0,              # Broader cavity
     max_cavity_residues=60,         # More residues
@@ -291,7 +291,7 @@ similar_compounds = [
     'c1ccc2c(c1)sc3ccccc23'         # dibenzothiophene
 ]
 
-featurizer = pm.get_featurizer('ligand_residue_distance_matrix')
+featurizer = mbl.get_featurizer('ligand_residue_distance_matrix')
 binding_features = featurizer.featurize_many(similar_compounds)
 
 # Cluster by binding patterns
@@ -352,7 +352,7 @@ scaffolds = {
     'phenanthrene': 'c1ccc2c(c1)ccc3ccccc23'
 }
 
-featurizer = pm.get_featurizer('ligand_residue_distance_matrix')
+featurizer = mbl.get_featurizer('ligand_residue_distance_matrix')
 
 spatial_data = {}
 for name, smiles in scaffolds.items():
@@ -405,7 +405,7 @@ extended_fragments = [
     'c1ccccc1c2ccccc2',       # biphenyl extension
 ]
 
-featurizer = pm.get_featurizer('ligand_residue_distance_matrix')
+featurizer = mbl.get_featurizer('ligand_residue_distance_matrix')
 
 core_features = featurizer.featurize(core_fragment)
 core_matrix = core_features.reshape(30, 200)
@@ -442,7 +442,7 @@ lead_series = [
     'c1ccc2c(c1)[nH]c3cc(N)ccc23'     # 3-amino
 ]
 
-featurizer = pm.get_featurizer('ligand_residue_distance_matrix')
+featurizer = mbl.get_featurizer('ligand_residue_distance_matrix')
 series_features = featurizer.featurize_many(lead_series)
 
 # Lead compound reference

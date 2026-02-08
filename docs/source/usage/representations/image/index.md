@@ -13,23 +13,23 @@ conda install -c conda-forge pymol-open-source  # For high-quality 3D rendering
 ## Quick Start
 
 ```python
-import molblender as pm
+import molblender as mbl
 import numpy as np
 
 # Generate 2D molecular image
-image_featurizer = pm.get_featurizer("rdkit_2d_image")
+image_featurizer = mbl.get_featurizer("rdkit_2d_image")
 image = image_featurizer.featurize("CCO")  # Shape: (224, 224, 3)
 
 # Extract CNN features from images  
-cnn_featurizer = pm.get_featurizer("cnn_features_resnet")
+cnn_featurizer = mbl.get_featurizer("cnn_features_resnet")
 features = cnn_featurizer.featurize("CCO")  # Shape: (2048,)
 
 # Generate multi-channel chemical image
-chemception = pm.get_featurizer("chemception_image") 
+chemception = mbl.get_featurizer("chemception_image") 
 multi_image = chemception.featurize("CCO")  # Shape: (80, 80, 4)
 
 # Create 3D voxel representation
-voxel_featurizer = pm.get_featurizer("voxel_grid")
+voxel_featurizer = mbl.get_featurizer("voxel_grid")
 voxels = voxel_featurizer.featurize("CCO")  # Shape: (48, 48, 48, 8)
 ```
 
@@ -117,7 +117,7 @@ Voxel grids, point clouds, and surface representations for 3D analysis
 molecules = ["CCO", "CCN", "CCC", "c1ccccc1"]
 
 # Generate 2D images in parallel
-featurizer = pm.get_featurizer("rdkit_2d_image")
+featurizer = mbl.get_featurizer("rdkit_2d_image")
 images = featurizer.featurize(molecules, n_workers=4)
 print(f"Generated {len(images)} images, each with shape {images[0].shape}")
 
@@ -140,7 +140,7 @@ from torch.utils.data import DataLoader, TensorDataset
 smiles_train = ["CCO", "CCN", "CCC"] * 100
 labels_train = [0, 1, 0] * 100  # Binary classification
 
-featurizer = pm.get_featurizer("rdkit_2d_image")
+featurizer = mbl.get_featurizer("rdkit_2d_image")
 X = np.array(featurizer.featurize(smiles_train))
 y = np.array(labels_train)
 
@@ -159,7 +159,7 @@ print(f"Training data shape: {X_tensor.shape}")  # (300, 3, 224, 224)
 ```python
 # Memory-efficient processing for large datasets
 def process_in_chunks(smiles_list, chunk_size=1000):
-    featurizer = pm.get_featurizer("rdkit_2d_image") 
+    featurizer = mbl.get_featurizer("rdkit_2d_image") 
     for i in range(0, len(smiles_list), chunk_size):
         chunk = smiles_list[i:i+chunk_size]
         yield featurizer.featurize(chunk, n_workers=8)
@@ -176,7 +176,7 @@ for chunk_features in process_in_chunks(large_dataset):
 ```python
 # Robust batch processing with error handling
 def safe_batch_featurize(smiles_list):
-    featurizer = pm.get_featurizer("rdkit_2d_image")
+    featurizer = mbl.get_featurizer("rdkit_2d_image")
     results = []
     failed = []
     

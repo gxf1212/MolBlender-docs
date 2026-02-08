@@ -30,11 +30,11 @@ Load receptor once, process many ligands efficiently
 ## Quick Start
 
 ```python
-import molblender as pm
+import molblender as mbl
 import numpy as np
 
 # Basic distance matrix fingerprint
-featurizer = pm.get_featurizer('protein_ligand_distance_matrix')
+featurizer = mbl.get_featurizer('protein_ligand_distance_matrix')
 features = featurizer.featurize('c1ccc2[nH]c3ccccc3c2c1')  # indole
 print(f"Shape: {features.shape}")  # (200,)
 print(f"Distance interactions: {np.sum(features > 0)}")
@@ -120,7 +120,7 @@ virtual_library = [
     'CC(C)(C)NCC(c1ccc(O)cc1O)O'    # salbutamol
 ]
 
-featurizer = pm.get_featurizer('protein_ligand_distance_matrix')
+featurizer = mbl.get_featurizer('protein_ligand_distance_matrix')
 
 # Batch processing (optimized for single protein scenario)
 distance_features = featurizer.featurize_many(virtual_library, n_jobs=4)
@@ -138,7 +138,7 @@ for i, smiles in enumerate(virtual_library):
 
 ```python
 # Custom distance binning for specific applications
-short_range_featurizer = pm.get_featurizer(
+short_range_featurizer = mbl.get_featurizer(
     'protein_ligand_distance_matrix',
     distance_bins=[3.0, 6.0, 10.0],           # Three bins only
     ligand_atom_types=['C', 'N', 'O'],         # Focus on common atoms
@@ -146,7 +146,7 @@ short_range_featurizer = pm.get_featurizer(
 )
 
 # Long-range analysis
-long_range_featurizer = pm.get_featurizer(
+long_range_featurizer = mbl.get_featurizer(
     'protein_ligand_distance_matrix', 
     distance_bins=[2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 15.0],  # Extended range
     ligand_atom_types=['C', 'N', 'O', 'S', 'P', 'F', 'Cl'], # More atom types
@@ -228,7 +228,7 @@ flexible_compounds = [
     'NCCCCCCCCCCCCCCCCCCCCN'                # very flexible diamine
 ]
 
-featurizer = pm.get_featurizer('protein_ligand_distance_matrix')
+featurizer = mbl.get_featurizer('protein_ligand_distance_matrix')
 
 flexibility_analysis = []
 for compound in flexible_compounds:
@@ -268,9 +268,9 @@ test_compounds = [
 ]
 
 # Get multiple 3D representations
-distance_fp = pm.get_featurizer('protein_ligand_distance_matrix')
-topology_fp = pm.get_featurizer('topology_net_3d')
-splif_fp = pm.get_featurizer('splif_enhanced')
+distance_fp = mbl.get_featurizer('protein_ligand_distance_matrix')
+topology_fp = mbl.get_featurizer('topology_net_3d')
+splif_fp = mbl.get_featurizer('splif_enhanced')
 
 # Calculate features
 distance_features = distance_fp.featurize_many(test_compounds)
@@ -298,7 +298,7 @@ import time
 
 # Benchmark different batch sizes
 compound_library = ['CCO'] * 1000  # 1000 identical compounds for timing
-featurizer = pm.get_featurizer('protein_ligand_distance_matrix')
+featurizer = mbl.get_featurizer('protein_ligand_distance_matrix')
 
 batch_sizes = [1, 10, 50, 100, 500, 1000]
 timing_results = []
@@ -334,7 +334,7 @@ def get_memory_usage():
     return process.memory_info().rss / 1024 / 1024
 
 # Memory profiling
-featurizer = pm.get_featurizer('protein_ligand_distance_matrix')
+featurizer = mbl.get_featurizer('protein_ligand_distance_matrix')
 test_compounds = ['CCO', 'CCN', 'CCC'] * 100  # 300 compounds
 
 print("Memory usage during processing:")
@@ -367,7 +367,7 @@ fragments = [
     'c1coc2ccccc12'       # benzofuran (bicyclic heteroaromatic)
 ]
 
-featurizer = pm.get_featurizer('protein_ligand_distance_matrix')
+featurizer = mbl.get_featurizer('protein_ligand_distance_matrix')
 fragment_features = featurizer.featurize_many(fragments)
 
 # Cluster fragments by binding patterns

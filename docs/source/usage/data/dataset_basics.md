@@ -150,11 +150,11 @@ for mol_id, molecule, labels, features, weights in dataset.itersamples():
 ## Adding Features
 
 ```python
-import molblender as pm
+import molblender as mbl
 from molblender.data import MolecularDataset
 
 # List available featurizers
-available_featurizers = pm.list_available_featurizers()
+available_featurizers = mbl.list_available_featurizers()
 print(f"Available featurizers: {available_featurizers[:5]}...")
 
 # Add a single feature set 

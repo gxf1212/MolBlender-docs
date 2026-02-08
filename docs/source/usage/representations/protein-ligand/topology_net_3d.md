@@ -30,16 +30,16 @@ Separate analysis for C, N, O, S, P atomic groups
 ## Quick Start
 
 ```python
-import molblender as pm
+import molblender as mbl
 
 # Basic usage
-featurizer = pm.get_featurizer('topology_net_3d')
+featurizer = mbl.get_featurizer('topology_net_3d')
 features = featurizer.featurize('c1ccc2[nH]c3ccccc3c2c1')  # indole
 print(f"Shape: {features.shape}")  # (512,)
 print(f"Non-zero features: {np.count_nonzero(features)}")
 
 # Custom parameters
-custom_featurizer = pm.get_featurizer(
+custom_featurizer = mbl.get_featurizer(
     'topology_net_3d',
     max_distance=10.0,  # Shorter range analysis
     n_bins=4           # Fewer distance bins
@@ -111,7 +111,7 @@ molecules = {
     'complex': 'CN1C=NC2=C1C(=O)N(C(=O)N2C)C'  # caffeine
 }
 
-featurizer = pm.get_featurizer('topology_net_3d')
+featurizer = mbl.get_featurizer('topology_net_3d')
 
 for name, smiles in molecules.items():
     features = featurizer.featurize(smiles)
@@ -131,7 +131,7 @@ compound_library = [
     'CC1=CC=C(C=C1)C(=O)O'          # p-toluic acid
 ]
 
-featurizer = pm.get_featurizer('topology_net_3d')
+featurizer = mbl.get_featurizer('topology_net_3d')
 
 # Parallel processing
 features = featurizer.featurize_many(compound_library, n_jobs=4)
@@ -178,7 +178,7 @@ print(f"Topology model CV R²: {cv_scores.mean():.3f} ± {cv_scores.std():.3f}")
 
 ```python
 # Analyze feature distribution
-featurizer = pm.get_featurizer('topology_net_3d')
+featurizer = mbl.get_featurizer('topology_net_3d')
 features = featurizer.featurize('CN1C=NC2=C1C(=O)N(C(=O)N2C)C')  # caffeine
 
 # Split by feature type
@@ -209,7 +209,7 @@ compounds = [
     'CCCCCCCC'                       # octane (very different)
 ]
 
-featurizer = pm.get_featurizer('topology_net_3d')
+featurizer = mbl.get_featurizer('topology_net_3d')
 
 # Calculate topological fingerprints
 ref_fp = featurizer.featurize(reference).reshape(1, -1)

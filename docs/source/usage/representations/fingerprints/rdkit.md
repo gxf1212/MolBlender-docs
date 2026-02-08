@@ -37,23 +37,23 @@ Parallel computation support
 ## Quick Start
 
 ```python
-import molblender as pm
+import molblender as mbl
 import numpy as np
 
 # Three ways to provide molecular input
 # Method 1: Direct SMILES string
-featurizer = pm.get_featurizer('morgan_fp_r2_2048')
+featurizer = mbl.get_featurizer('morgan_fp_r2_2048')
 fp_smiles = featurizer.featurize('CCO')
 print(fp_smiles.shape)  # (2048,)
 print(fp_smiles.dtype)  # uint8
 
 # Method 2: MolBlender Molecule object
-mol = pm.Molecule.from_smiles('CCO')
+mol = mbl.Molecule.from_smiles('CCO')
 fp_mol = featurizer.featurize(mol)
 print(np.array_equal(fp_smiles, fp_mol))  # True
 
 # Method 3: RDKit Mol object
-rdkit_mol = pm.mol_from_input('CCO')
+rdkit_mol = mbl.mol_from_input('CCO')
 fp_rdkit = featurizer.featurize(rdkit_mol)
 print(np.array_equal(fp_mol, fp_rdkit))  # True
 ```
@@ -139,7 +139,7 @@ print(np.array_equal(fp_mol, fp_rdkit))  # True
 :::
 
 ```{tip}
-Copy any featurizer key from the table above and use it directly with `pm.get_featurizer()`!
+Copy any featurizer key from the table above and use it directly with `mbl.get_featurizer()`!
 ```
 
 ## Fingerprint Types
@@ -153,13 +153,13 @@ Circular fingerprints that encode atom environments within a specified radius. K
 :::{tab-item} Basic Usage
 ```python
 # Binary Morgan fingerprints
-morgan = pm.get_featurizer('morgan_fp_r2_2048')
+morgan = mbl.get_featurizer('morgan_fp_r2_2048')
 fp = morgan.featurize('c1ccccc1O')  # phenol
 print(f"Active bits: {np.sum(fp)}")  # Number of set bits
 print(f"Fingerprint density: {np.sum(fp) / len(fp):.3f}")  # Sparsity
 
 # Count-based Morgan fingerprints
-morgan_count = pm.get_featurizer('morgan_count_fp_r2')
+morgan_count = mbl.get_featurizer('morgan_count_fp_r2')
 fp_count = morgan_count.featurize('c1ccccc1O')
 print(f"Non-zero features: {np.count_nonzero(fp_count)}")
 print(f"Max count: {np.max(fp_count)}")  # Some features may appear multiple times
@@ -203,8 +203,8 @@ RDKit's native fingerprints based on paths between atoms.
 
 ```python
 # Different sizes for different applications
-rdkit_fp_large = pm.get_featurizer('rdkit_fp_2048')  # More detailed
-rdkit_fp_small = pm.get_featurizer('rdkit_fp_512')   # Memory efficient
+rdkit_fp_large = mbl.get_featurizer('rdkit_fp_2048')  # More detailed
+rdkit_fp_small = mbl.get_featurizer('rdkit_fp_512')   # Memory efficient
 
 # Compare fingerprint density
 mol = 'CC(C)CC(C)(C)O'  # Complex branched molecule
@@ -220,7 +220,7 @@ print(f"Small FP active bits: {np.sum(fp_small)}/{len(fp_small)}")
 Fixed set of 166 structural keys (+ 1 unused bit) designed for substructure screening.
 
 ```python
-maccs = pm.get_featurizer('maccs_keys')
+maccs = mbl.get_featurizer('maccs_keys')
 
 # Compare different functional groups
 molecules = {
@@ -242,11 +242,11 @@ Encode all atom pairs and their topological distances.
 
 ```python
 # Binary atom pairs
-atom_pair = pm.get_featurizer('atom_pair_fp')
+atom_pair = mbl.get_featurizer('atom_pair_fp')
 fp = atom_pair.featurize('CCOC(=O)C')  # ethyl acetate
 
 # Count-based atom pairs (captures frequency)
-atom_pair_count = pm.get_featurizer('atom_pair_count_fp')
+atom_pair_count = mbl.get_featurizer('atom_pair_count_fp')
 fp_count = atom_pair_count.featurize('CCOC(=O)C')
 print(f"Unique atom pairs: {np.count_nonzero(fp_count)}")
 ```
@@ -257,7 +257,7 @@ Capture four consecutive bonded atoms (torsion angles in 2D).
 
 ```python
 # Torsions need at least 4 atoms
-torsion = pm.get_featurizer('torsion_fp')
+torsion = mbl.get_featurizer('torsion_fp')
 
 # Small molecule - few torsions
 fp_small = torsion.featurize('CCCC')  # n-butane
@@ -282,7 +282,7 @@ smiles_list = [
     'CN1C=NC2=C1C(=O)N(C(=O)N2C)C'  # caffeine
 ]
 
-featurizer = pm.get_featurizer('morgan_fp_r2_2048')
+featurizer = mbl.get_featurizer('morgan_fp_r2_2048')
 
 # Sequential processing
 fps_sequential = featurizer.featurize_many(smiles_list)
@@ -309,7 +309,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 # Reference molecule
 reference = 'CC(=O)Oc1ccccc1C(=O)O'  # aspirin
-featurizer = pm.get_featurizer('morgan_fp_r2_2048')
+featurizer = mbl.get_featurizer('morgan_fp_r2_2048')
 ref_fp = featurizer.featurize(reference).reshape(1, -1)
 
 # Database to search

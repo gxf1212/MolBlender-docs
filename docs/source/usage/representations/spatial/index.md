@@ -40,12 +40,12 @@ Automatic 3D structure generation
 ## Quick Start
 
 ```python
-import molblender as pm
+import molblender as mbl
 
 # Get spatial featurizers
-coulomb = pm.get_featurizer("coulomb_matrix")
-coords = pm.get_featurizer("coordinates_3d") 
-unimol = pm.get_featurizer("UniMol-CLS-unimolv2-1.1b-WithHs")  # If available
+coulomb = mbl.get_featurizer("coulomb_matrix")
+coords = mbl.get_featurizer("coordinates_3d") 
+unimol = mbl.get_featurizer("UniMol-CLS-unimolv2-1.1b-WithHs")  # If available
 
 # Single molecule
 smiles = "CCO"
@@ -76,11 +76,11 @@ batch_features = coulomb.featurize(molecules, n_workers=4)
 Encodes nuclear repulsion and atomic distances in a rotation-invariant matrix:
 
 ```python
-import molblender as pm
+import molblender as mbl
 import numpy as np
 
 # Initialize Coulomb matrix featurizer
-coulomb = pm.get_featurizer("coulomb_matrix")
+coulomb = mbl.get_featurizer("coulomb_matrix")
 
 # Generate features for ethanol
 matrix_flat = coulomb.featurize("CCO")
@@ -101,7 +101,7 @@ print(f"Still same shape: {large_mol.shape}")  # (529,)
 Rotation and translation invariant descriptor from Coulomb matrix:
 
 ```python
-coulomb_eig = pm.get_featurizer("coulomb_matrix_eig")
+coulomb_eig = mbl.get_featurizer("coulomb_matrix_eig")
 
 # Eigenvalues are sorted in descending order
 eigenvals = coulomb_eig.featurize("CCO")
@@ -122,11 +122,11 @@ Encode molecular connectivity and bond types:
 
 ```python
 # Adjacency matrix (binary connectivity)
-adj = pm.get_featurizer("adjacency_matrix")
+adj = mbl.get_featurizer("adjacency_matrix")
 adj_matrix = adj.featurize("CCO").reshape(23, 23)
 
 # Edge matrix (bond order information)
-edge = pm.get_featurizer("edge_matrix") 
+edge = mbl.get_featurizer("edge_matrix") 
 edge_matrix = edge.featurize("CCO").reshape(23, 23)
 
 print("Bond analysis for ethanol (CCO):")
@@ -143,7 +143,7 @@ Access atomic positions directly with preprocessing options:
 
 ```python
 # Initialize with custom parameters
-coords = pm.get_featurizer("coordinates_3d", max_atoms=30, center=True, normalize=True)
+coords = mbl.get_featurizer("coordinates_3d", max_atoms=30, center=True, normalize=True)
 
 # Get 3D coordinates
 positions = coords.featurize("CCO")
@@ -154,7 +154,7 @@ print(f"First atom position: {coords_matrix[0]}")
 print(f"Coordinates centered: {np.allclose(coords_matrix[:3].mean(axis=0), 0)}")
 
 # Compare normalized vs. non-normalized
-coords_raw = pm.get_featurizer("coordinates_3d", normalize=False)
+coords_raw = mbl.get_featurizer("coordinates_3d", normalize=False)
 raw_pos = coords_raw.featurize("CCO").reshape(30, 3)
 print(f"Coordinate scale difference: {np.max(np.linalg.norm(raw_pos[:3], axis=1)):.2f}")
 ```
@@ -162,7 +162,7 @@ print(f"Coordinate scale difference: {np.max(np.linalg.norm(raw_pos[:3], axis=1)
 ### Distance Matrix Representations
 
 ```python
-dist_matrix = pm.get_featurizer("distance_matrix")
+dist_matrix = mbl.get_featurizer("distance_matrix")
 
 # Get pairwise distances
 distances = dist_matrix.featurize("CCO").reshape(23, 23)
@@ -190,7 +190,7 @@ unimol_models = [
 ]
 
 try:
-    unimol = pm.get_featurizer("UniMol-CLS-unimolv2-1.1b-WithHs")
+    unimol = mbl.get_featurizer("UniMol-CLS-unimolv2-1.1b-WithHs")
     
     # Single molecule embedding
     embedding = unimol.featurize("CCO")
@@ -215,11 +215,11 @@ MolBlender automatically generates 3D conformers when needed:
 
 ```python
 # Molecules without 3D coordinates get conformers automatically
-coulomb = pm.get_featurizer("coulomb_matrix")
+coulomb = mbl.get_featurizer("coulomb_matrix")
 
 # These all work seamlessly:
 from_smiles = coulomb.featurize("CCO")                    # SMILES → 3D
-from_rdkit = coulomb.featurize(pm.Molecule("CCO").mol)    # RDKit Mol → 3D  
+from_rdkit = coulomb.featurize(mbl.Molecule("CCO").mol)    # RDKit Mol → 3D  
 from_file = coulomb.featurize("molecule.sdf")             # File → 3D
 
 print("All generate 3D features automatically")
@@ -229,7 +229,7 @@ print("All generate 3D features automatically")
 
 ```python
 # Generate multiple conformers for ensemble analysis
-ensemble_coulomb = pm.get_featurizer("coulomb_matrix_ensemble", n_conformers=10)
+ensemble_coulomb = mbl.get_featurizer("coulomb_matrix_ensemble", n_conformers=10)
 
 # Get features from multiple conformers
 conformer_features = ensemble_coulomb.featurize("CC(C)C(=O)O")  # Flexible molecule
@@ -244,7 +244,7 @@ print(f"Feature variability: {std_per_feature.mean():.3f}")
 
 ```python
 # Configure conformer generation parameters
-custom_coords = pm.get_featurizer("coordinates_3d", 
+custom_coords = mbl.get_featurizer("coordinates_3d", 
                                  conformer_method="ETKDG",    # Algorithm
                                  optimize_conformer=True,      # Energy minimize
                                  random_seed=42)               # Reproducible
@@ -263,7 +263,7 @@ import time
 molecules = ["C" * i for i in range(5, 25)]  # Alkanes of increasing size
 
 # Serial vs parallel comparison
-coulomb = pm.get_featurizer("coulomb_matrix")
+coulomb = mbl.get_featurizer("coulomb_matrix")
 
 start_time = time.time()
 serial_results = [coulomb.featurize(mol) for mol in molecules]
@@ -283,7 +283,7 @@ print(f"Speedup: {serial_time/parallel_time:.1f}x")
 ```python
 # For very large datasets, use batch processing
 def process_large_dataset(smiles_list, batch_size=1000):
-    coulomb = pm.get_featurizer("coulomb_matrix")
+    coulomb = mbl.get_featurizer("coulomb_matrix")
     results = []
     
     for i in range(0, len(smiles_list), batch_size):
@@ -332,7 +332,7 @@ dataset.to_pickle("spatial_dataset.pkl")
 problematic = []
 molecules = ["CCO", "C#C", "[H]"]  # Include edge cases
 
-coulomb = pm.get_featurizer("coulomb_matrix")
+coulomb = mbl.get_featurizer("coulomb_matrix")
 for mol in molecules:
     try:
         result = coulomb.featurize(mol)
@@ -345,7 +345,7 @@ for mol in molecules:
 **Memory issues with large molecules:**
 ```python
 # Use size limits
-coords = pm.get_featurizer("coordinates_3d", max_atoms=50)  # Increase limit
+coords = mbl.get_featurizer("coordinates_3d", max_atoms=50)  # Increase limit
 large_mol = "C" * 100  # 100-carbon chain
 try:
     result = coords.featurize(large_mol)
@@ -361,7 +361,7 @@ import logging
 logging.getLogger("molblender.representations.spatial").setLevel(logging.INFO)
 
 # This will show conformer generation progress
-coulomb = pm.get_featurizer("coulomb_matrix")
+coulomb = mbl.get_featurizer("coulomb_matrix")
 result = coulomb.featurize("CC(C)(C)C(=O)O")  # Branched molecule
 ```
 

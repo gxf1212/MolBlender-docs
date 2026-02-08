@@ -10,9 +10,10 @@ Key topics include:
 - **Featurizer System**: Understanding how to discover, instantiate, and use molecular and protein featurizers
 - **Configuration**: Managing global settings, dependencies, and environment setup
 - **Data Shapes & Modalities**: Understanding the different representation formats and their dimensions
+- **CLI Tools**: Command-line utilities for result management and analysis
 
-::::{grid} 1 1 2 3
-:gutter: 3
+::::{grid} 1 1 2 2
+:gutter: 2
 
 :::{grid-item-card} 🔧 **Featurizers**
 :link: featurizers
@@ -28,6 +29,13 @@ Understanding the featurizer system and registry
 Global settings and dependency management
 :::
 
+:::{grid-item-card} 💻 **CLI**
+:link: cli
+:link-type: doc
+
+Command-line interface tools
+:::
+
 :::{grid-item-card} 📐 **Data Shapes**
 :link: shapes
 :link-type: doc
@@ -40,14 +48,14 @@ Understanding modalities and tensor dimensions
 ## Quick Start
 
 ```python
-import molblender as pm
+import molblender as mbl
 
 # List available featurizers
-featurizers = pm.list_available_featurizers()
+featurizers = mbl.list_available_featurizers()
 print(f"Available featurizers: {len(featurizers)}")
 
 # Get a specific featurizer
-featurizer = pm.get_featurizer("morgan_fp_r2_1024")
+featurizer = mbl.get_featurizer("morgan_fp_r2_1024")
 
 # Generate features
 from rdkit import Chem

@@ -65,23 +65,23 @@ Full atomic resolution distance matrix
 ## Quick Start
 
 ```python
-import molblender as pm
+import molblender as mbl
 import numpy as np
 
 # Three ways to provide molecular input
 # Method 1: Direct SMILES string
-featurizer = pm.get_featurizer('topology_net_3d')
+featurizer = mbl.get_featurizer('topology_net_3d')
 fp_smiles = featurizer.featurize('CCO')
 print(fp_smiles.shape)  # (512,)
 print(fp_smiles.dtype)  # float64
 
 # Method 2: MolBlender Molecule object
-mol = pm.Molecule.from_smiles('CCO')
+mol = mbl.Molecule.from_smiles('CCO')
 fp_mol = featurizer.featurize(mol)
 print(np.array_equal(fp_smiles, fp_mol))  # True
 
 # Method 3: RDKit Mol object
-rdkit_mol = pm.mol_from_input('CCO')
+rdkit_mol = mbl.mol_from_input('CCO')
 fp_rdkit = featurizer.featurize(rdkit_mol)
 print(np.array_equal(fp_mol, fp_rdkit))  # True
 ```
@@ -137,7 +137,7 @@ print(np.array_equal(fp_mol, fp_rdkit))  # True
 :::
 
 ```{tip}
-Copy any featurizer key from the table above and use it directly with `pm.get_featurizer()`!
+Copy any featurizer key from the table above and use it directly with `mbl.get_featurizer()`!
 ```
 
 ## Batch Processing
@@ -154,7 +154,7 @@ smiles_list = [
     'c1ccc2c(c1)c(c(=O)[nH]2)CC(=O)O'  # indole-3-acetic acid
 ]
 
-featurizer = pm.get_featurizer('topology_net_3d')
+featurizer = mbl.get_featurizer('topology_net_3d')
 
 # Sequential processing
 fps_sequential = featurizer.featurize(smiles_list)

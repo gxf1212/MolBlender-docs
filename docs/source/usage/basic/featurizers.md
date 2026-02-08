@@ -24,10 +24,10 @@ MolBlender maintains separate registries for featurizers designed for small mole
 You can easily get a list of registered names:
 
 ```python
-import molblender as pm
+import molblender as mbl
 
 # List all available small molecule featurizer names
-sm_featurizer_names = pm.list_available_featurizers()
+sm_featurizer_names = mbl.list_available_featurizers()
 print(f"Total small molecule featurizers: {len(sm_featurizer_names)}")
 if sm_featurizer_names:
     print(f"Examples: {sm_featurizer_names[:3]}")
@@ -36,7 +36,7 @@ if sm_featurizer_names:
 # Examples: ['UniMol-CLS-unimolv1-WithHs', 'UniMol-CLS-unimolv2-1.1b-NoHs', 'UniMol-CLS-unimolv2-1.1b-WithHs']
 
 # List all available protein featurizer names
-protein_featurizer_names = pm.list_available_protein_featurizers()
+protein_featurizer_names = mbl.list_available_protein_featurizers()
 print(f"\nTotal protein featurizers: {len(protein_featurizer_names)}")
 if protein_featurizer_names:
     print(f"Examples: {protein_featurizer_names[:3]}")
@@ -49,13 +49,13 @@ if protein_featurizer_names:
 For a more structured and user-friendly overview, especially in an interactive console, you can print a categorized tree of available featurizers:
 
 ```python
-import molblender as pm
+import molblender as mbl
 
 # Pretty print small molecule featurizers in a categorized tree
-pm.print_available_featurizers(categorized=True, registry_type='small_molecule')
+mbl.print_available_featurizers(categorized=True, registry_type='small_molecule')
 
 # Pretty print protein featurizers
-pm.print_available_featurizers(categorized=True, registry_type='protein')
+mbl.print_available_featurizers(categorized=True, registry_type='protein')
 ```
 An example output for small molecule featurizers might look like:
 ```
@@ -89,10 +89,10 @@ Total: 72 featurizers in 10 categories
 To learn more about a specific featurizer, including its underlying class, default parameters, output shape, and description:
 
 ```python
-import molblender as pm
+import molblender as mbl
 
 # Get info for a small molecule featurizer
-info_morgan = pm.get_featurizer_info('morgan_fp_r2_1024')
+info_morgan = mbl.get_featurizer_info('morgan_fp_r2_1024')
 if info_morgan:
     print("\nInfo for 'morgan_fp_r2_1024':")
     print(f"  class: {info_morgan['class']}")
@@ -109,7 +109,7 @@ if info_morgan:
 #   description: Morgan fingerprint (radius 2, 1024 bits) (via RDKit)
 
 # Get info for a protein featurizer
-info_esm = pm.get_protein_featurizer_info('esm2_t6_8M_UR50D')
+info_esm = mbl.get_protein_featurizer_info('esm2_t6_8M_UR50D')
 if info_esm:
     print("\nInfo for 'esm2_t6_8M_UR50D':")
     print(f"  class: {info_esm['class']}")
@@ -125,7 +125,7 @@ if info_esm:
 
 # Quick shape check for any featurizer
 def get_shape(name):
-    info = pm.get_featurizer_info(name) or pm.get_protein_featurizer_info(name)
+    info = mbl.get_featurizer_info(name) or mbl.get_protein_featurizer_info(name)
     return info['shape'] if info else None
 
 print(f"\nMorgan FP shape: {get_shape('morgan_fp_r2_1024')}")  # (1024,)
@@ -136,16 +136,16 @@ print(f"Count FP shape: {get_shape('ecfp4_count')}")  # 'dynamic'
 Here's how to examine the shapes of all CDK fingerprints:
 
 ```python
-import molblender as pm
+import molblender as mbl
 
 # Get all CDK fingerprints
-cdk_fingerprints = pm.select_featurizers_by_category("fingerprints/cdk")
+cdk_fingerprints = mbl.select_featurizers_by_category("fingerprints/cdk")
 print(f"Found {len(cdk_fingerprints)} CDK fingerprints\n")
 
 # Check shapes of all CDK fingerprints
 cdk_shapes = {}
 for fp_name in sorted(cdk_fingerprints):
-    info = pm.get_featurizer_info(fp_name)
+    info = mbl.get_featurizer_info(fp_name)
     if info:
         shape = info['shape']
         shape_type = info['shape_type']
@@ -194,19 +194,19 @@ for shape, fps in sorted(cdk_shapes.items(), key=lambda x: str(x[0])):
 You can also search for featurizers based on their output shape:
 
 ```python
-import molblender as pm
+import molblender as mbl
 
 # Find all 2048-bit fingerprints
 def find_by_shape(target_shape, category=None):
     """Find all featurizers with a specific shape."""
     if category:
-        candidates = pm.select_featurizers_by_category(category)
+        candidates = mbl.select_featurizers_by_category(category)
     else:
-        candidates = pm.list_available_featurizers()
+        candidates = mbl.list_available_featurizers()
     
     results = []
     for name in candidates:
-        info = pm.get_featurizer_info(name)
+        info = mbl.get_featurizer_info(name)
         if info and info['shape'] == target_shape:
             results.append(name)
     return results
@@ -223,7 +223,7 @@ if len(fp_2048) > 5:
 dynamic_feats = find_by_shape("dynamic")
 print(f"\nFound {len(dynamic_feats)} featurizers with dynamic shapes:")
 for feat in dynamic_feats[:3]:
-    info = pm.get_featurizer_info(feat)
+    info = mbl.get_featurizer_info(feat)
     print(f"  - {feat}: {info['metadata']['description'][:40]}...")
 ```
 
@@ -231,7 +231,7 @@ for feat in dynamic_feats[:3]:
 When building ensemble models, it's important to check shape compatibility:
 
 ```python
-import molblender as pm
+import molblender as mbl
 
 # Check if multiple featurizers have compatible shapes
 featurizers_to_check = [
@@ -243,7 +243,7 @@ featurizers_to_check = [
 
 shapes = {}
 for name in featurizers_to_check:
-    info = pm.get_featurizer_info(name)
+    info = mbl.get_featurizer_info(name)
     if info:
         shapes[name] = info['shape']
 
@@ -294,21 +294,21 @@ MolBlender groups featurizers into logical categories:
 Once you know the registered name of the featurizer:
 
 ```python
-import molblender as pm
+import molblender as mbl
 
 # For a small molecule featurizer (e.g., MACCS keys)
-maccs_featurizer = pm.get_featurizer('maccs_keys')
+maccs_featurizer = mbl.get_featurizer('maccs_keys')
 print(f"Instantiated: {maccs_featurizer}")
 # Example Output: MACCSKeysFP(name='maccs_keys')
 
 # For a protein featurizer (e.g., a small ESM2 model)
 # Replace 'esm2_t6_8M_UR50D' with an actual registered key from list_available_protein_featurizers()
-protein_plm_featurizer = pm.get_protein_featurizer('esm2_t6_8M_UR50D')
+protein_plm_featurizer = mbl.get_protein_featurizer('esm2_t6_8M_UR50D')
 print(f"Instantiated: {protein_plm_featurizer}")
 # Example Output: ESM2Featurizer(name='esm2_t6_8M_UR50D', model_name='esm2_t6_8M_UR50D', ...)
 ```
 You can often override default parameters by passing them as keyword arguments to `get_featurizer` or `get_protein_featurizer`. For example:
-`morgan_featurizer_custom = pm.get_featurizer('morgan_fp_r2_1024', nBits=512, radius=3)`
+`morgan_featurizer_custom = mbl.get_featurizer('morgan_fp_r2_1024', nBits=512, radius=3)`
 
 ### Preparing Input Data
 
@@ -323,11 +323,11 @@ For most use cases, you can pass your raw data (like a SMILES string or protein 
 The `featurize()` method (or calling the featurizer instance directly) computes the features.
 
 ```python
-import molblender as pm
+import molblender as mbl
 
 # Using a pre-instantiated featurizer (e.g., from the previous step)
 # For this example, let's get a MACCS keys featurizer
-maccs_featurizer = pm.get_featurizer('maccs_keys')
+maccs_featurizer = mbl.get_featurizer('maccs_keys')
 
 # Featurize a single small molecule (SMILES string)
 smiles_ethanol = "CCO"
@@ -361,14 +361,14 @@ Most small molecule featurizers accept:
 
 ```python
 from rdkit import Chem
-import molblender as pm
+import molblender as mbl
 
 # Assume 'featurizer' is a small molecule featurizer instance, e.g.,
-# featurizer = pm.get_featurizer('rdkit_fp_2048') 
+# featurizer = mbl.get_featurizer('rdkit_fp_2048') 
 # For demonstration, we re-initialize it here if the previous block wasn't run
 try:
-    featurizer = pm.get_featurizer('rdkit_fp_2048')
-except pm.RegistryError:
+    featurizer = mbl.get_featurizer('rdkit_fp_2048')
+except mbl.RegistryError:
     print("Skipping 'Handling Different Input Types' example as 'rdkit_fp_2048' is not available.")
     featurizer = None
 
@@ -395,14 +395,14 @@ if featurizer:
 Protein featurizers (like PLMs) typically expect raw amino acid sequences:
 
 ```python
-import molblender as pm
+import molblender as mbl
 
 # Assume 'protein_featurizer' is an instance, e.g.,
-# protein_featurizer = pm.get_protein_featurizer('esm2_t6_8M_UR50D')
+# protein_featurizer = mbl.get_protein_featurizer('esm2_t6_8M_UR50D')
 # For demonstration, we re-initialize it here
 try:
-    protein_featurizer = pm.get_protein_featurizer('esm2_t6_8M_UR50D')
-except (pm.RegistryError, pm.DependencyNotFoundError):
+    protein_featurizer = mbl.get_protein_featurizer('esm2_t6_8M_UR50D')
+except (mbl.RegistryError, mbl.DependencyNotFoundError):
     print("Skipping protein input example as 'esm2_t6_8M_UR50D' is not available.")
     protein_featurizer = None
 
@@ -426,14 +426,14 @@ if protein_featurizer:
 For more complex scenarios or pre-processing, you might use MolBlender's data input functions directly before featurization.
 
 ```python
-import molblender as pm
+import molblender as mbl
 from molblender.data.io import mol_from_input # Assuming direct import path
 # from molblender.data.protein import protein_from_input # Conceptual
 
 # Small molecule from SMILES
 ethanol_mol_obj = mol_from_input("CCO", input_type="smiles")
 if ethanol_mol_obj:
-    morgan_featurizer = pm.get_featurizer('morgan_fp_r2_1024')
+    morgan_featurizer = mbl.get_featurizer('morgan_fp_r2_1024')
     if morgan_featurizer:
         ethanol_fp = morgan_featurizer.featurize(ethanol_mol_obj)
         # print(f"Ethanol fingerprint shape: {ethanol_fp.shape if ethanol_fp is not None else 'Failed'}")
@@ -441,7 +441,7 @@ if ethanol_mol_obj:
 # Protein sequence (already a string, protein_from_input would standardize further)
 # protein_seq = "MKTAYI"
 # standardized_protein_seq = protein_from_input(protein_seq) # Example
-# esm_featurizer = pm.get_protein_featurizer('esm2_t6_8M_UR50D') # Use an actual key
+# esm_featurizer = mbl.get_protein_featurizer('esm2_t6_8M_UR50D') # Use an actual key
 # if esm_featurizer and standardized_protein_seq:
 #     protein_embedding = esm_featurizer.featurize(standardized_protein_seq)
 #     # print(f"Protein ESM embedding shape: {protein_embedding.shape if protein_embedding is not None else 'Failed'}")
@@ -453,13 +453,13 @@ if ethanol_mol_obj:
 The `featurize()` method can process single items or a list of items. For multiple items, you can leverage parallel processing by setting the `n_workers` argument.
 
 ```python
-import molblender as pm
+import molblender as mbl
 
 # Example: Featurizing a larger list of SMILES using multiple workers
-# featurizer = pm.get_featurizer('morgan_fp_r2_1024') # Ensure featurizer is defined
+# featurizer = mbl.get_featurizer('morgan_fp_r2_1024') # Ensure featurizer is defined
 try:
-    featurizer = pm.get_featurizer('morgan_fp_r2_1024')
-except pm.RegistryError:
+    featurizer = mbl.get_featurizer('morgan_fp_r2_1024')
+except mbl.RegistryError:
     print("Skipping parallel processing example as 'morgan_fp_r2_1024' is not available.")
     featurizer = None
 
@@ -473,7 +473,7 @@ if featurizer:
     # `features_parallel` is a list of NumPy arrays or Nones
 
 # Parallel processing for protein sequences (PLMs are often better with n_workers=1 or GPU)
-# protein_featurizer = pm.get_protein_featurizer('esm2_t6_8M_UR50D') # Ensure featurizer is defined
+# protein_featurizer = mbl.get_protein_featurizer('esm2_t6_8M_UR50D') # Ensure featurizer is defined
 # large_sequences_list = ["MKTAYIAKQRQISFVKSHFSRQ"] * 100
 # embeddings_parallel = protein_featurizer.featurize(large_sequences_list, n_workers=1) # Or adjust based on model
 # print(f"Processed {len(embeddings_parallel)} protein sequences.")
@@ -485,14 +485,14 @@ For very large datasets that may not fit into memory all at once, or to manage r
 
 ```python
 import numpy as np
-import molblender as pm
+import molblender as mbl
 
 def process_dataset_in_batches(data_list, featurizer_name='morgan_fp_r2_1024', 
                                batch_size=500, n_workers=2):
     """Processes a list of inputs (e.g., SMILES) in batches."""
     print(f"Initializing featurizer: {featurizer_name}")
     # Get the featurizer instance
-    featurizer = pm.get_featurizer(featurizer_name)
+    featurizer = mbl.get_featurizer(featurizer_name)
     if not featurizer: # Should not happen if name is valid and deps are met
         print(f"Could not get featurizer {featurizer_name}")
         return None, []
@@ -545,11 +545,11 @@ You can customize featurizers by:
 2.  Directly instantiating the featurizer class with desired parameters.
 
 ```python
-import molblender as pm
+import molblender as mbl
 
 # Option 1: Pass parameters via get_featurizer
 # Override default radius and nBits for a Morgan fingerprint
-custom_morgan1 = pm.get_featurizer(
+custom_morgan1 = mbl.get_featurizer(
     'morgan_fp_r2_1024', 
     radius=3, 
     nBits=512, 
@@ -575,17 +575,17 @@ MolBlender's featurization system is designed to handle common issues gracefully
 Featurizers are registered in MolBlender even if their underlying dependencies (like RDKit, Mordred, specific PLM libraries) are not installed. An error (typically `DependencyNotFoundError`) will only be raised when you try to *instantiate or use* such a featurizer.
 
 ```python
-import molblender as pm
+import molblender as mbl
 
 # Listing always works, showing all featurizers MolBlender *knows about*
-all_sm_featurizers = pm.list_available_featurizers()
+all_sm_featurizers = mbl.list_available_featurizers()
 print(f"Total registered small molecule featurizers: {len(all_sm_featurizers)}")
 
 # Attempting to get a featurizer whose dependencies are missing will fail
 # For example, if RDKit is not installed:
 # try:
-#     morgan_featurizer = pm.get_featurizer('morgan_fp_r2_1024')
-# except pm.DependencyNotFoundError as e:
+#     morgan_featurizer = mbl.get_featurizer('morgan_fp_r2_1024')
+# except mbl.DependencyNotFoundError as e:
 #     print(f"Dependency error: {e}")
 # Example Output if RDKit missing:
 # Dependency error: RDKit is required for RDKit MorganBitFP. Install RDKit (e.g., pip install rdkit-pypi).
@@ -595,13 +595,13 @@ print(f"Total registered small molecule featurizers: {len(all_sm_featurizers)}")
 When featurizing a batch of inputs, if some inputs are invalid (e.g., unparsable SMILES strings, sequences with invalid characters for a PLM), the `featurize()` method (with default `strict=False`) will return `None` for those specific items, allowing the rest of the batch to be processed.
 
 ```python
-import molblender as pm
+import molblender as mbl
 
-# Assume 'morgan_featurizer' is already defined (e.g., from pm.get_featurizer('morgan_fp_r2_1024'))
+# Assume 'morgan_featurizer' is already defined (e.g., from mbl.get_featurizer('morgan_fp_r2_1024'))
 # For this example, let's quickly get one if the previous block wasn't run:
 try:
-    morgan_featurizer = pm.get_featurizer('morgan_fp_r2_1024')
-except pm.RegistryError:
+    morgan_featurizer = mbl.get_featurizer('morgan_fp_r2_1024')
+except mbl.RegistryError:
     print("Skipping invalid input example as 'morgan_fp_r2_1024' is not available.")
     morgan_featurizer = None
 
@@ -630,7 +630,7 @@ If you set `strict=True` when calling `featurize(..., strict=True)` for parallel
 ### Fingerprint Comparison
 
 ```python
-import molblender as pm
+import molblender as mbl
 
 # Compare different types of fingerprints for the same molecule
 # Ensure these featurizer keys are registered in your MolBlender setup
@@ -640,13 +640,13 @@ example_smiles = "Cc1ccccc1O" # o-Cresol
 print(f"\\nComparing fingerprints for: {example_smiles}")
 for fp_key in fingerprint_keys:
     try:
-        featurizer = pm.get_featurizer(fp_key)
+        featurizer = mbl.get_featurizer(fp_key)
         features = featurizer(example_smiles) # Using __call__ shortcut for featurize
         if features is not None:
             print(f"  {fp_key}: shape {features.shape}, sum of bits {features.sum()}")
         else:
             print(f"  {fp_key}: Failed to featurize.")
-    except pm.RegistryError:
+    except mbl.RegistryError:
         print(f"  {fp_key}: Featurizer not available.")
 # Example Output:
 # Comparing fingerprints for: Cc1ccccc1O
@@ -658,28 +658,28 @@ for fp_key in fingerprint_keys:
 ### Descriptor Calculation
 
 ```python
-import molblender as pm
+import molblender as mbl
 
 # Calculate RDKit descriptors
 # Ensure 'rdkit_all_descriptors' is registered
 try:
-    rdkit_desc_calculator = pm.get_featurizer('rdkit_all_descriptors')
+    rdkit_desc_calculator = mbl.get_featurizer('rdkit_all_descriptors')
     ethanol_descriptors = rdkit_desc_calculator.featurize("CCO")
     if ethanol_descriptors is not None:
         print(f"\\nNumber of RDKit descriptors for Ethanol: {len(ethanol_descriptors)}")
         # Example Output: Number of RDKit descriptors for Ethanol: 210 (varies with RDKit version)
-except pm.RegistryError:
+except mbl.RegistryError:
     print("\\n'rdkit_all_descriptors' not available.")
 
 # Calculate Mordred descriptors (2D only)
 # Ensure 'mordred_descriptors_2d' is registered and Mordred is installed
 try:
-    mordred_desc_calculator = pm.get_featurizer('mordred_descriptors_2d')
+    mordred_desc_calculator = mbl.get_featurizer('mordred_descriptors_2d')
     ethanol_mordred_desc = mordred_desc_calculator.featurize("CCO")
     if ethanol_mordred_desc is not None:
         print(f"Number of Mordred 2D descriptors for Ethanol: {len(ethanol_mordred_desc)}")
         # Example Output: Number of Mordred 2D descriptors for Ethanol: 1613 (varies with Mordred version)
-except (pm.RegistryError, pm.DependencyNotFoundError):
+except (mbl.RegistryError, mbl.DependencyNotFoundError):
     print("\\n'mordred_descriptors_2d' not available or Mordred library missing.")
 
 ```
@@ -687,7 +687,7 @@ except (pm.RegistryError, pm.DependencyNotFoundError):
 ---
 ## 8. Best Practices
 
-1.  **Discover First**: Use `pm.list_available_featurizers()` or `pm.print_available_featurizers()` to see what's available and their registered names.
+1.  **Discover First**: Use `mbl.list_available_featurizers()` or `mbl.print_available_featurizers()` to see what's available and their registered names.
 2.  **Check Return Values**: When featurizing batches, always check for `None` in the returned list, as individual items might fail.
 3.  **Choose Appropriately**: Select featurizers based on your task:
     -   **Fingerprints** (e.g., Morgan, MACCS) are good for similarity searches, basic screening models.

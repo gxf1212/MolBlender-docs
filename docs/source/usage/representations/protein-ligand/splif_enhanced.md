@@ -30,11 +30,11 @@ Count-based encoding preserving interaction frequency information
 ## Quick Start
 
 ```python
-import molblender as pm
+import molblender as mbl
 import numpy as np
 
 # Basic pharmacophore interaction analysis
-featurizer = pm.get_featurizer('splif_enhanced')
+featurizer = mbl.get_featurizer('splif_enhanced')
 features = featurizer.featurize('CC(=O)Nc1ccc(O)cc1')  # acetaminophen
 print(f"Shape: {features.shape}")  # (2048,)
 print(f"Total interactions: {np.sum(features)}")
@@ -131,7 +131,7 @@ molecules = {
     'arginine': 'NC(CCCNC(N)=N)C(=O)O'       # Positive charge
 }
 
-featurizer = pm.get_featurizer('splif_enhanced')
+featurizer = mbl.get_featurizer('splif_enhanced')
 
 for name, smiles in molecules.items():
     features = featurizer.featurize(smiles)
@@ -159,7 +159,7 @@ drug_library = [
     'c1ccc(cc1)C(=O)O'                    # benzoic acid
 ]
 
-featurizer = pm.get_featurizer('splif_enhanced')
+featurizer = mbl.get_featurizer('splif_enhanced')
 
 # Parallel processing for large libraries
 features = featurizer.featurize_many(drug_library, n_jobs=4)
@@ -312,7 +312,7 @@ from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 
 # Cluster compounds by interaction patterns
-featurizer = pm.get_featurizer('splif_enhanced')
+featurizer = mbl.get_featurizer('splif_enhanced')
 features = featurizer.featurize_many(compound_library)
 
 # Focus on hydrogen bonding interactions (2-3Å range)

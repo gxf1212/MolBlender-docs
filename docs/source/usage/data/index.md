@@ -58,7 +58,7 @@ Intelligent feature caching and storage
 ### Creating Datasets
 
 ```python
-import molblender as pm
+import molblender as mbl
 from molblender.data import MolecularDataset
 
 # From SMILES list

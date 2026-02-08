@@ -21,6 +21,13 @@ pip install pubchempy
 pip install mol2vec
 ```
 
+Mol2Vec uses a pre-trained model. MolBlender will **auto-download and cache** it on first use
+(default cache: `~/.mol2vec`). If you're offline, download the model manually and pass
+`pretrain_model_path` when creating the featurizer.
+
+PubChem fingerprints require **network access**. In offline or restricted environments,
+`deepchem_pubchem` will be skipped with a warning.
+
 DeepChem installation can sometimes be complex due to its dependencies. If you encounter issues, consider using Conda:
 
 ```bash
@@ -90,6 +97,7 @@ count_fp = featurizer.featurize("CCO")  # Returns a dictionary of {feature_idx: 
 Mol2Vec is a word2vec-inspired model that generates continuous vector representations:
 
 ```python
+# Auto-download model on first use (cached in ~/.mol2vec)
 mol2vec = get_featurizer("deepchem_mol2vec")
 
 # Optional: specify a custom pre-trained model
@@ -145,7 +153,9 @@ custom_morgan = get_featurizer("deepchem_morgan_r2_2048",
 | `ModuleNotFoundError: No module named 'deepchem'` | DeepChem not installed | Install with `pip install deepchem` |
 | `DependencyNotFoundError: PubChemPy is required...` | Missing PubChemPy | Install with `pip install pubchempy` |
 | `DependencyNotFoundError: mol2vec is required...` | Missing mol2vec | Install with `pip install mol2vec` |
+| `Mol2Vec model download failed` | No network / blocked download | Manually download `model_300dim.pkl` and pass `pretrain_model_path` |
 | `ValueError: This class requires RDKit to be installed...` | RDKit missing | Install RDKit with `pip install rdkit` or via conda |
+| PubChem fingerprints unavailable | No network or PubChem blocked | Ensure connectivity or skip `deepchem_pubchem` |
 | Slow performance with PubChem fingerprints | Network requests | PubChem fingerprints may require internet connectivity |
 
 ## When to Use DeepChem Fingerprints

@@ -47,11 +47,11 @@ pip install biopython
 ## Quick Start
 
 ```python
-import molblender as pm
+import molblender as mbl
 from rdkit import Chem
 
 # Create Boltz-2 embedder
-embedder = pm.get_featurizer(
+embedder = mbl.get_featurizer(
     'Boltz2Embedder',
     embedding_type='global',  # 'global', 'token', or 'pairwise'
     pooling_method='mean',    # For token-level: 'mean' or 'max'
@@ -65,7 +65,7 @@ embedding = embedder.featurize([mol], protein_sequence=protein_seq)[0]
 print(f"Embedding shape: {embedding.shape}")  # (29,) for global
 
 # From CSV dataset
-dataset = pm.MolecularDataset.from_csv(
+dataset = mbl.MolecularDataset.from_csv(
     "data.csv",
     input_column='smiles',
     protein_sequence_column='protein_seq'
@@ -160,8 +160,8 @@ The global embedding captures comprehensive geometric properties:
 
 ```python
 # Global geometric features
-embedder_global = pm.get_featurizer('Boltz2Embedder', embedding_type='global')
-mol = pm.mol_from_input("CC(=O)Nc1ccc(O)cc1")  # acetaminophen
+embedder_global = mbl.get_featurizer('Boltz2Embedder', embedding_type='global')
+mol = mbl.mol_from_input("CC(=O)Nc1ccc(O)cc1")  # acetaminophen
 protein_seq = "MKLVWGSNKKAAYDILKHQRHGYIEGKQTMEWVMSGNKNSRYNMTFEKHKAQEEARKLFNEIAQMKEERGITLADQDSRKLSDMGFGFDLRSSGEKLLADGLMRFFKTMSALKLKERIDAKLENSGFNISGHYQFLVKRVNESDPKIKDFDFVMKFSLEELGREIEEFVNKYTKLEFQRQEVDEIIKTADQVNQMHDFVQTYKNFKEFGVEYLPHGGFVTNIDDWIKKLNQMPQEIAVDMVPGKPMCVESFSDYPPLGRFAVRDMRQTVAVGVIKAVDKKAAGAGKRK"
 
 embedding = embedder_global.featurize([mol], protein_sequence=protein_seq)[0]
@@ -176,13 +176,13 @@ print(f"Contacts at 3.5Å: {embedding[10]:.0f}")
 
 ```python
 # Extract per-atom features with different pooling
-embedder_token_mean = pm.get_featurizer(
+embedder_token_mean = mbl.get_featurizer(
     'Boltz2Embedder',
     embedding_type='token',
     pooling_method='mean'
 )
 
-embedder_token_max = pm.get_featurizer(
+embedder_token_max = mbl.get_featurizer(
     'Boltz2Embedder',
     embedding_type='token',
     pooling_method='max'
@@ -209,8 +209,8 @@ ligands = [
 
 protein_sequence = "MKLVWGSNKKAAYDIL..."
 
-embedder = pm.get_featurizer('Boltz2Embedder', embedding_type='global')
-mols = [pm.mol_from_input(smi) for smi in ligands]
+embedder = mbl.get_featurizer('Boltz2Embedder', embedding_type='global')
+mols = [mbl.mol_from_input(smi) for smi in ligands]
 
 # First call: Runs Boltz-2 predictions (~3-5 min each)
 embeddings_first = [embedder.featurize([mol], protein_sequence=protein_sequence)[0]
@@ -235,7 +235,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 
 # Load protein-ligand dataset with affinity values
-dataset = pm.MolecularDataset.from_csv(
+dataset = mbl.MolecularDataset.from_csv(
     "kinase_binding.csv",
     input_column='smiles',
     protein_sequence_column='protein_seq',
@@ -243,7 +243,7 @@ dataset = pm.MolecularDataset.from_csv(
 )
 
 # Generate Boltz-2 global embeddings
-embedder = pm.get_featurizer('Boltz2Embedder', embedding_type='global')
+embedder = mbl.get_featurizer('Boltz2Embedder', embedding_type='global')
 dataset.add_features(
     featurizer_inputs=embedder,
     feature_names='boltz2_global'
@@ -333,7 +333,7 @@ print(f"Extracted embedding: {embedding.shape}")
 from pathlib import Path
 
 # Use custom cache location
-embedder = pm.get_featurizer(
+embedder = mbl.get_featurizer(
     'Boltz2Embedder',
     embedding_type='global',
     cache_dir=Path("/scratch/boltz2_cache")
@@ -346,7 +346,7 @@ embedder = pm.get_featurizer(
 
 ```python
 # Access predictor and force re-prediction
-embedder = pm.get_featurizer('Boltz2Embedder')
+embedder = mbl.get_featurizer('Boltz2Embedder')
 
 structure_file = embedder.predictor.predict_structure(
     ligand_smiles="CCO",
@@ -377,7 +377,7 @@ print(f"New prediction: {structure_file}")
 
 ```python
 # Check cache status
-embedder = pm.get_featurizer('Boltz2Embedder')
+embedder = mbl.get_featurizer('Boltz2Embedder')
 cache_dir = embedder.predictor.cache_dir
 print(f"Cache directory: {cache_dir}")
 print(f"Cached structures: {len(list(cache_dir.glob('*.cif')))}")

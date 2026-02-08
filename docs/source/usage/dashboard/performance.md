@@ -195,6 +195,12 @@ May indicate:
 - Task difficulty
 ```
 
+### Specific Model Analysis (Category Filter)
+
+When you select a **model category** (anything other than "All Categories"), the dashboard
+adds a **Specific Model Analysis** chart that breaks down **individual models within that
+category**. Use this view to compare model distributions inside one family.
+
 ## Section 3: Representation Analysis
 
 Horizontal bar charts showing representation effectiveness, grouped by modality.

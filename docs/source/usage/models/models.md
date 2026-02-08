@@ -8,7 +8,10 @@ Models are organized by type, performance characteristics, and computational req
 
 | **Category** | **Models** | **Training Speed** | **When to Use** |
 |-------------|-----------|-------------------|----------------|
-| **Linear** (6) | Ridge, Lasso, ElasticNet, Logistic, LinearSVR, Bayesian | ⚡️ Fastest | Baseline, interpretability, large datasets |
+| **Linear** (4) | Ridge, Logistic, LinearSVR, Bayesian | ⚡️ Fastest | Baseline, interpretability, large datasets |
+
+```{note} Lasso and ElasticNet are currently disabled due to poor performance on small datasets (<500 samples). They may be re-enabled for larger datasets in future versions.
+```
 | **Tree** (3) | RandomForest, ExtraTrees, DecisionTree | ⚡️⚡️ Fast | Good accuracy-speed balance, feature importance |
 | **Boosting** (4) | GradientBoosting, XGBoost, LightGBM, AdaBoost | ⚡️⚡️ Fast | Highest accuracy on tabular data |
 | **Kernel** (2) | SVM_RBF, KNN | ⚡️⚡️⚡️ Medium | Non-linear patterns, small-medium datasets |
@@ -45,15 +48,19 @@ Fast, interpretable models with L1/L2 regularization. Best for baseline performa
 - **Scaling:** Required
 - **Time:** <1 second per fold
 
-**Lasso Regression**
+**Lasso Regression** ⚠️ *Disabled*
+- **Status:** Currently disabled due to poor performance on small datasets (Pearson R = 0.00)
 - **Use:** L1 regularization, feature selection
+- **When to Re-enable:** Large datasets (>1000 samples) where feature selection is beneficial
 - **Parameters:** `alpha=[0.01, 0.1, 1.0, 10.0]`
 - **Tasks:** Regression
 - **Scaling:** Required
 - **Time:** <1 second per fold
 
-**ElasticNet**
+**ElasticNet** ⚠️ *Disabled*
+- **Status:** Currently disabled due to poor performance on small datasets (Pearson R ≈ 0.00)
 - **Use:** Combined L1+L2, balanced feature selection
+- **When to Re-enable:** Large datasets (>1000 samples) where elastic net regularization is beneficial
 - **Parameters:** `alpha=[0.01, 0.1, 1.0]`, `l1_ratio=[0.1, 0.5, 0.9]`
 - **Tasks:** Regression
 - **Scaling:** Required
@@ -181,6 +188,10 @@ Multi-layer perceptron for complex non-linear patterns.
 
 Advanced neural architectures for raw strings, images, and matrices.
 
+**CUDA fallback policy**
+- If a CUDA error occurs during training, MolBlender falls back to CPU only when effective CPU cores ≥ 32.
+- If fewer cores are available, the error is raised (no silent fallback).
+
 **Transformer (Small)**
 - **Use:** Raw SMILES/SELFIES strings, pre-training
 - **Parameters:** `max_length=[256, 512]`, `learning_rate=[1e-4, 5e-5]`, `num_layers=[4, 6]`
@@ -269,7 +280,7 @@ Combine multiple models for improved performance.
 
 Models execute in parallel across different representation combinations:
 
-**Models:** Ridge, Lasso, ElasticNet, RandomForest, XGBoost, LightGBM, SVM, KNN, Logistic
+**Models:** Ridge, RandomForest, XGBoost, LightGBM, SVM, KNN, Logistic, LinearSVR, Bayesian Ridge
 
 **Resource Profile:**
 - CPU: Uses all available cores (16 cores = 16 parallel combinations)
@@ -310,7 +321,7 @@ Models execute sequentially with internal multi-core/GPU parallelism:
 - Ridge, Lasso, DecisionTree, RandomForest (feature importance)
 
 **Limited Memory (<2GB)**
-- Ridge, Lasso, DecisionTree
+- Ridge, DecisionTree, Bayesian Ridge
 
 **Large Datasets (>100K molecules)**
 - LightGBM, ExtraTrees, SGDRegressor
@@ -321,7 +332,7 @@ Models execute sequentially with internal multi-core/GPU parallelism:
 ### By Data Type
 
 **Fingerprints (VECTOR):** XGBoost > RandomForest > Ridge
-**Descriptors (VECTOR):** XGBoost > Ridge > Lasso
+**Descriptors (VECTOR):** XGBoost > Ridge > Bayesian Ridge
 **Pre-computed Embeddings (VECTOR):** RandomForest > XGBoost > SVM
 **Raw SMILES (STRING):** Transformer Small/Medium
 **Adjacency Matrices (MATRIX):** Matrix CNN > Flattened + XGBoost

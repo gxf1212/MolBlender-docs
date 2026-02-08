@@ -163,14 +163,14 @@
 
 ## Usage Example
 ```python
-import molblender as pm
+import molblender as mbl
 
 # Quick shape lookup
 def print_shapes_for_category(category):
-    featurizers = pm.select_featurizers_by_category(category)
+    featurizers = mbl.select_featurizers_by_category(category)
     print(f"\nShapes for {category}:")
     for name in sorted(featurizers):
-        info = pm.get_featurizer_info(name)
+        info = mbl.get_featurizer_info(name)
         if info:
             shape = info['shape']
             print(f"  {name}: {shape}")
@@ -180,8 +180,8 @@ print_shapes_for_category("maccs")
 
 # Find all 2048-dimensional representations
 all_2048 = []
-for name in pm.list_available_featurizers():
-    shape = pm.get_featurizer_shape(name)
+for name in mbl.list_available_featurizers():
+    shape = mbl.get_featurizer_shape(name)
     if shape == (2048,):
         all_2048.append(name)
 print(f"\nFound {len(all_2048)} featurizers with shape (2048,)")

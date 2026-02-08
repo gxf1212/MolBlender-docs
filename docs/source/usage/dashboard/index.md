@@ -136,7 +136,7 @@ Sortable, filterable table of all screening results.
 
 **What You'll Find:**
 - **Interactive Table** - Sort by any column, filter by thresholds
-- **Multi-column Display** - Model name, representation, all metrics, training time
+- **Multi-column Display** - Model name, representation, test metric, CV mean/std, best fold score, training time
 - **Export** - Download filtered results as CSV
 
 **Use For:** Finding specific combinations, exporting subsets, ranking by custom criteria

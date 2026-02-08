@@ -37,10 +37,10 @@ Handle large trajectories with memory efficiency
 ## Quick Start
 
 ```python
-import molblender as pm
+import molblender as mbl
 
 # Conformational ensemble analysis
-ensemble = pm.get_featurizer("conformer_ensemble")
+ensemble = mbl.get_featurizer("conformer_ensemble")
 flexibility_features = ensemble.featurize("CCCCCCCC")  # Flexible alkane chain
 
 print(f"Ensemble features shape: {flexibility_features.shape}")
@@ -48,7 +48,7 @@ print(f"Conformational diversity score: {flexibility_features[10]:.3f}")
 
 # MD trajectory analysis (requires trajectory files)
 try:
-    md_analyzer = pm.get_featurizer("md_trajectory_features")
+    md_analyzer = mbl.get_featurizer("md_trajectory_features")
     trajectory_features = md_analyzer.featurize("trajectory.dcd", "topology.pdb")
     print(f"Trajectory features: {trajectory_features.shape}")
 except FileNotFoundError:
@@ -67,10 +67,10 @@ pip install MDAnalysis
 ```
 
 ```python
-import molblender as pm
+import molblender as mbl
 
 # Initialize trajectory analyzer
-md_analyzer = pm.get_featurizer("md_trajectory_features", 
+md_analyzer = mbl.get_featurizer("md_trajectory_features", 
                                selection="protein",  # Atom selection
                                frame_step=10)        # Every 10th frame
 
@@ -106,7 +106,7 @@ The MD trajectory analyzer extracts comprehensive time-dependent features:
 
 ```python
 # Get detailed trajectory analysis
-md_analyzer = pm.get_featurizer("md_trajectory_features")
+md_analyzer = mbl.get_featurizer("md_trajectory_features")
 features = md_analyzer.featurize("trajectory.dcd", "topology.pdb")
 
 # Feature interpretation (example indices)
@@ -183,7 +183,7 @@ Analyze conformational flexibility by generating multiple conformers:
 
 ```python
 # Initialize ensemble analyzer
-ensemble = pm.get_featurizer("conformer_ensemble", 
+ensemble = mbl.get_featurizer("conformer_ensemble", 
                            n_conformers=50,      # Generate 50 conformers
                            energy_window=10.0)   # Within 10 kcal/mol
 
@@ -205,7 +205,7 @@ print(f"Rigid molecule diversity: {rigid_features[10]:.3f}")
 The ensemble analyzer computes various diversity measures:
 
 ```python
-ensemble = pm.get_featurizer("conformer_ensemble")
+ensemble = mbl.get_featurizer("conformer_ensemble")
 features = ensemble.featurize("CC(C)C(=O)O")  # Flexible carboxylic acid
 
 # Feature interpretation
@@ -464,7 +464,7 @@ def parallel_conformer_analysis(smiles_list, n_conformers=50):
     """Analyze conformational ensembles in parallel"""
     
     def analyze_single_molecule(smiles):
-        ensemble = pm.get_featurizer("conformer_ensemble", n_conformers=n_conformers)
+        ensemble = mbl.get_featurizer("conformer_ensemble", n_conformers=n_conformers)
         return ensemble.featurize(smiles)
     
     # Use all available CPUs
@@ -535,7 +535,7 @@ def monitor_memory_usage(func, *args, **kwargs):
     return result
 
 # Example
-ensemble = pm.get_featurizer("conformer_ensemble")
+ensemble = mbl.get_featurizer("conformer_ensemble")
 features = monitor_memory_usage(ensemble.featurize, "CCCCCCCC")
 ```
 
@@ -555,7 +555,7 @@ def benchmark_conformer_settings():
     ]
     
     for setting in settings:
-        ensemble = pm.get_featurizer("conformer_ensemble", **setting)
+        ensemble = mbl.get_featurizer("conformer_ensemble", **setting)
         
         start_time = time.time()
         features = ensemble.featurize(smiles)
