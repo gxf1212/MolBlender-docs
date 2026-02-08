@@ -113,7 +113,7 @@ You don't need to specify modalities manually. MolBlender automatically detects 
 
 ## Workflow Overview
 
-```mermaid
+```text
 graph LR
     A[Load Dataset] --> B[universal_screen]
     B --> C[Auto-detect Modalities]

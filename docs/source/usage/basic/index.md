@@ -76,5 +76,6 @@ print(f"Feature shape: {features.shape}")
 
 featurizers
 config
+cli
 shapes
 ```
