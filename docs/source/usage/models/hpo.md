@@ -134,7 +134,7 @@ results_stage2 = universal_screen(
     ```
 
 **Model Subtypes**:
-- **LINEAR**: Ridge, Lasso, ElasticNet, BayesianRidge
+- **LINEAR**: Ridge, BayesianRidge (Lasso/ElasticNet are currently disabled by default)
 - **TREE**: RandomForest, ExtraTrees, DecisionTree
 - **BOOSTING**: XGBoost, LightGBM, GradientBoosting, AdaBoost, CatBoost
 - **KERNEL**: SVM (RBF/Linear/Poly), KNN
@@ -655,6 +655,14 @@ ConvergenceWarning: Maximum iterations reached
 DataConversionWarning: A column-vector y was passed
 ```
 **Solution**: Ignore - handled internally by MolBlender
+
+### Problem: Stage 2 Resume Raises AttributeError
+
+**Symptoms**:
+- Errors mentioning missing `check_existing_hpo_result` during resumed HPO
+
+**Status**:
+- Fixed in recent builds. Stage 2 resume now relies on existing DB checks without calling the removed method.
 
 ## Next Steps
 

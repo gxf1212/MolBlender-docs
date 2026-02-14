@@ -1,6 +1,6 @@
 # Available Models
 
-MolBlender provides 28 machine learning models spanning traditional ML to deep learning, automatically matched to your data modality.
+MolBlender provides 26 active machine learning models spanning traditional ML to deep learning, automatically matched to your data modality.
 
 ## Model Categories
 
@@ -37,7 +37,7 @@ MolBlender automatically prevents invalid combinations (e.g., Ridge regression +
 
 ## Complete Model Catalog
 
-### Linear Models (6 models)
+### Linear Models (4 active models + 2 disabled)
 
 Fast, interpretable models with L1/L2 regularization. Best for baseline performance and large datasets.
 
@@ -48,7 +48,7 @@ Fast, interpretable models with L1/L2 regularization. Best for baseline performa
 - **Scaling:** Required
 - **Time:** <1 second per fold
 
-**Lasso Regression** ⚠️ *Disabled*
+**Lasso Regression** ⚠️ *Disabled by default*
 - **Status:** Currently disabled due to poor performance on small datasets (Pearson R = 0.00)
 - **Use:** L1 regularization, feature selection
 - **When to Re-enable:** Large datasets (>1000 samples) where feature selection is beneficial
@@ -57,7 +57,7 @@ Fast, interpretable models with L1/L2 regularization. Best for baseline performa
 - **Scaling:** Required
 - **Time:** <1 second per fold
 
-**ElasticNet** ⚠️ *Disabled*
+**ElasticNet** ⚠️ *Disabled by default*
 - **Status:** Currently disabled due to poor performance on small datasets (Pearson R ≈ 0.00)
 - **Use:** Combined L1+L2, balanced feature selection
 - **When to Re-enable:** Large datasets (>1000 samples) where elastic net regularization is beneficial
@@ -318,7 +318,7 @@ Models execute sequentially with internal multi-core/GPU parallelism:
 - XGBoost, Transformer, Ensemble methods
 
 **Interpretability Priority**
-- Ridge, Lasso, DecisionTree, RandomForest (feature importance)
+- Ridge, Bayesian Ridge, DecisionTree, RandomForest (feature importance)
 
 **Limited Memory (<2GB)**
 - Ridge, DecisionTree, Bayesian Ridge

@@ -30,6 +30,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - More stable on small datasets and symmetric for prediction evaluation
   - Files modified: `api.py`, `reporting.py`, `results_db.py`, `migration.py`
 
+- **Language Model Routing in Multimodal Screening** (2026-02-14)
+  - Prevented duplicate processing of language-model representations inside VECTOR workflow
+  - Ensures each modality is evaluated once with correct modality mapping
+
 ### Fixed
 
 - **skip_existing_results Empty Database Bug** (2026-02-07)
@@ -43,6 +47,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed network connectivity check that blocked Mol2Vec in offline environments
   - Now works with locally cached models without internet access
   - File modified: `config/dependencies.py`
+
+- **HPO Stage 2 Resume Stability** (2026-02-14)
+  - Removed call to non-existent `check_existing_hpo_result` during resumed optimization
+  - Stage 2 now resumes using the standard DB existence checks
+
+- **Offline/Feature Robustness Improvements** (2026-02-14)
+  - Improved handling for offline environments and count-based fingerprint edge cases
+  - Reduced modality failures caused by degenerate feature arrays
 
 ### Added
 

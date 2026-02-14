@@ -90,6 +90,9 @@ def universal_screen(
   ]
   ```
 
+Notes:
+- `LANGUAGE_MODEL` representations are handled in their own modality path and are no longer double-processed through VECTOR routing.
+
 `combinations`: `str` or `List`, default=`"auto"`
 : Model selection strategy. Options:
   - `"auto"` **(recommended)** - Automatic selection based on modality
@@ -346,7 +349,7 @@ def quick_screen(
 ```
 
 **Key Differences from `universal_screen()`:**
-- Tests only 5-10 essential models (RF, XGBoost, Ridge, Lasso, KNN)
+- Tests only 5-10 essential models (RF, XGBoost, Ridge, Bayesian Ridge, KNN)
 - Uses 3 CV folds instead of 5 for speed
 - No deep learning models (CNN, Transformers)
 - Optimized for datasets < 10K molecules
