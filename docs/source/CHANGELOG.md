@@ -56,6 +56,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Improved handling for offline environments and count-based fingerprint edge cases
   - Reduced modality failures caused by degenerate feature arrays
 
+- **Cross-Session Stage 1 Result Loading** (2026-02-17)
+  - Fixed `skip_existing_results` to load Stage 1 results from all sessions, not just current session
+  - Fixed exception handler to preserve existing results when partial screening fails
+  - Result: HPO Stage 2 now correctly uses all available Stage 1 results (193 → 1425 results)
+
+- **HPO 56-Core Parallelization** (2026-02-17)
+  - Fixed GridSearchCV to use all available CPU cores via `parallel_backend`
+  - Force estimator `n_jobs=1` to prevent thread conflicts with GridSearchCV parallelism
+  - Result: 240 parameter fits in 30.1s (vs 20min before), CPU utilization 98.9%
+
+- **Train/Test Indices Persistence** (2026-02-17)
+  - Save train/test indices to screening_sessions table for user_provided splits
+  - HPO now correctly reconstructs training data across sessions
+  - Fixed train/test split consistency between Stage 1 and Stage 2
+
 ### Added
 
 - **Mol2Vec Auto-Download Enhancement** (2026-02-07)
