@@ -7,7 +7,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Specific Pairs Mode for Precise Combination Control** (2026-02-23)
+  - New `combinations.representations` parameter for precise "representation + model" pair specification
+  - Auto-detection of `specific_pairs_mode` when combinations specify both representations and models
+  - Added `run_combination_screening()` utility function in multimodal utils
+  - Supports all modality handlers: vector, string, matrix, image, language_model
+  - Temporarily disables `skip_existing_results` to ensure specified combinations are re-run
+  - Fixed result extraction: uses `screener.results` (ModelResult objects) instead of formatted dict
+  - Verification on remote server 209: Stage 1 (15 results), Stage 2 HPO (756 results)
+  - Best result: datamol_avalon + decision_tree (R² = 0.7859)
+  - Files added: `src/molblender/models/api/multimodal/utils.py` (run_combination_screening)
+  - Files modified: `src/molblender/models/api/core/base.py` (specific_pairs_mode flag),
+    `src/molblender/models/api/multimodal/api.py` (auto-detection),
+    `src/molblender/models/api/multimodal/modality_handlers/*.py` (all handlers)
+
+- **Model Export CLI** (2026-02-19)
+  - New `molblender export` command for exporting model recreation scripts from database
+  - Subcommands: `export best`, `export model`, `export top`
+  - Generates complete Python scripts with all parameters from screening
+  - Supports absolute path resolution and CSV pre-defined splits
+  - Files added: `src/molblender/utils/export_cli.py`
+
 ### Changed
+
+- **Database Schema Enhancement** (2026-02-19)
+  - Added `split_column` field to `screening_sessions` table
+  - Added `input_column` field to `screening_sessions` table
+  - Enhanced `create_session()` to save split configuration metadata
+  - Modified `load_dataset_with_split()` to return input_column information
+  - Improved export code generation to read from database instead of guessing
+  - Files modified: `models/api/utils/results_db.py`, `models/api/multimodal/processors/database.py`,
+    `dashboard/components/model_inspection/export.py`, `utils/export_cli.py`
+
+- **Dashboard Performance Optimization** (2026-02-18)
+  - Added permanent caching to `create_results_dataframe()` with `@st.cache_data`
+  - Optimized `MetricsCalculator.enrich_dataframe_with_metrics()` with filtering and tqdm progress
+  - Files modified: `dashboard/data/processors.py`, `dashboard/metrics/central.py`
+
+### Fixed
+
+- **Database NULL Handling** (2026-02-18)
+  - Fixed NoneType error when accessing NULL all_metrics fields
+  - Uses `(result.get("all_metrics") or {})` instead of `result.get("all_metrics", {})`
+  - Fixed None checks for `dataset_info` and `merged_dataset_info`
+  - Files modified: `dashboard/data/loaders.py`
 
 - **Disabled Lasso and ElasticNet Models** (2026-02-08)
   - Removed lasso and elastic_net from available models due to poor performance on small datasets
