@@ -9,6 +9,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **HPO Module Refactoring** (2026-03-03)
+  - Split `hpo.py` (1220 lines) into modular `hpo/` directory
+  - New structure: `processor.py` (workflow), `selection.py` (model selection), `results.py` (data reconstruction)
+  - Added utility function `serialize_indices()` for JSON serialization of train/test indices
+  - Added `_create_model_for_task()` method to eliminate duplicate model instantiation code
+  - Unified target extraction using existing `extract_targets_from_dataset()` function
+  - Eliminated ~30 lines of repeated code across processors
+  - Improved code maintainability: single point of change vs scattered modifications
+  - Files added: `processors/hpo/__init__.py`, `processors/hpo/processor.py`,
+    `processors/hpo/selection.py`, `processors/hpo/results.py`
+  - Files modified: `processors/data_converter.py` (serialize_indices),
+    `processors/hpo/processor.py` (refactored),
+    `processors/hpo/results.py` (unified target extraction)
+
+- **DeepChem Graph Neural Network Integration** (2026-03-02)
+  - Plan B GNN mode implementation with full DeepChem graph support
+  - Graph converters: ConvMol → GraphData, WeaveMol → GraphData
+  - Smart routing: auto-detect GNN vs vector mode based on user categories
+  - Supported GNN models: GCN, GAT (DeepChem 2.8.0 compatible)
+  - Supported graph featurizers: ConvMol, MolGraphConv, Weave
+  - Files added: `models/deepchem/gnn.py`, `models/api/multimodal/modality_handlers/graph_converter.py`
+  - Files modified: `representations/graph/__init__.py`, `models/api/multimodal/modality_handlers/graph.py`
+  - Test results: Plan A (vector mode) 26 results, best: deepchem_graphconv_vector + xgboost (Pearson r = 0.379)
+
+- **Splito Integration for Advanced Splitting** (2026-02-24)
+  - Unified API for splito cluster-level splitting strategies via `DataSplitter`
+  - New strategies: `splito_perimeter`, `splito_molecular_weight`, `splito_max_dissimilarity`, `splito_scaffold`
+  - Cluster-level algorithms (K-means based) vs molecular-level algorithms
+  - Files modified: `models/api/core/splitting/strategies.py`
+
 - **Specific Pairs Mode for Precise Combination Control** (2026-02-23)
   - New `combinations.representations` parameter for precise "representation + model" pair specification
   - Auto-detection of `specific_pairs_mode` when combinations specify both representations and models
@@ -31,6 +61,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Files added: `src/molblender/utils/export_cli.py`
 
 ### Changed
+
+- **CDK Fingerprint Defaults: `cdk_sub` native size + `cdk_signature` default disable** (2026-03-03)
+  - `cdk_sub` now uses CDK native 307-bit shape (removed project-level zero-padding-to-1024 behavior)
+  - `cdk_signature` remains implemented but is no longer registered by default
+  - Rationale: raw Signature fingerprint outputs are variable-token and need explicit vocabulary alignment before ML
+  - Files modified: `src/molblender/representations/fingerprints/cdk.py`,
+    `tests/representations/fingerprints/test_cdk.py`,
+    `docs/source/usage/representations/fingerprints/cdk.md`
+
+- **Splitting Strategy Naming Clarity** (2026-02-24)
+  - Renamed `max_dissimilarity_split` → `sequential_max_dissimilarity_split`
+  - Clarifies molecular-level (sequential) vs cluster-level (splito) algorithms
+  - Backward compatibility maintained with alias
+  - Files modified: `models/api/core/splitting/diversity.py`, `models/api/core/splitting/strategies.py`
 
 - **Database Schema Enhancement** (2026-02-19)
   - Added `split_column` field to `screening_sessions` table
@@ -80,6 +124,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Ensures each modality is evaluated once with correct modality mapping
 
 ### Fixed
+
+- **CV Scoring Metric: Pearson R instead of neg_MSE** (2026-03-01)
+  - Changed cross-validation scoring from `neg_mean_squared_error` to `pearson_r`
+  - Ensures CV evaluation uses same metric as final model assessment
+  - Provides more interpretable results (correlation strength vs squared error)
+  - Files modified: `models/api/core/metrics.py`, `models/api/multimodal/modality_handlers/vector.py`
+
+- **Per-Fold CV Scores Storage for HPO Stage 2** (2026-03-01)
+  - Fixed per-fold CV scores not being saved to database for HPO Stage 2 results
+  - Now stores all fold scores in `all_metrics['cv_fold_scores']`
+  - Enables detailed fold-level analysis in dashboard
+  - Files modified: `models/api/multimodal/processors/database.py`
+
+- **Primary Metric Renaming** (2026-03-01)
+  - Refactored internal variable name from `score` to `primary_metric` across package
+  - Improves code clarity and distinguishes from model.score() method
+  - Files modified: Multiple files across `models/` and `dashboard/`
+
+- **Dashboard Progress Bar Cleanup** (2026-02-28)
+  - Fixed progress bar not being cleaned up properly after completion
+  - Progress bar now rendered inside container for proper cleanup
+  - Files modified: `dashboard/app.py`
+
+- **Dashboard Loading Placeholder** (2026-02-28)
+  - Fixed loading placeholder not being cleared after success message
+  - Improves user experience by removing redundant UI elements
+  - Files modified: `dashboard/app.py`
+
+- **Hyperparameter Chart Performance** (2026-02-27)
+  - Optimized parameter extraction with progress indicator
+  - Reduced loading time for Individual Model page with 200k+ results
+  - Files modified: `dashboard/components/charts/hyperparameters/main.py`
+
+- **Dashboard Special Characters** (2026-02-27)
+  - Sanitized special characters in sunburst chart colorbar labels
+  - Fixed rendering issues with underscores and special characters
+  - Files modified: `dashboard/components/model_inspection/sunburst.py`
 
 - **skip_existing_results Empty Database Bug** (2026-02-07)
   - Fixed bug where `skip_existing_results=True` would skip all screening when database is empty
