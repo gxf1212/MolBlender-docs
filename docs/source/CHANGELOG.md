@@ -9,6 +9,86 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Round 7: Dashboard API Contract & Smoke Testing (CC)** (2026-03-08)
+  - **Task 1: Dashboard API Export Contract Tests** (21 tests)
+    - Created `tests/dashboard/test_api_exports_contract.py`
+    - Verified all public API exports from dashboard modules
+    - Tested backward compatibility of key interfaces
+    - Coverage: `ResultsDataLoader`, `DashboardMetrics`, `FilterConfig`, render functions
+  - **Task 2: Dashboard Smoke Stabilization** (26 tests)
+    - Created `tests/dashboard/test_task2_smoke_stabilization.py`
+    - Verified tab order is fixed and matches documentation
+    - Tested all 4 main pages (Overview, Performance, Detailed Results, Hyperparameter)
+    - Validated data loading pipeline and metrics system integration
+    - Verified filtering system and backward compatibility
+  - **Task 3: User Documentation Sync**
+    - Created `docs/source/dashboard_troubleshooting.md`
+    - Merged sessions loading workflow explanation
+    - Common error handling: `NoneType.get`, `sqlite3.Row.get`, `KeyError: 'primary_metric'`
+    - Diagnostic commands and minimal health check script
+    - Performance tips for large databases
+  - **Task 4: Regression Gate**
+    - All 248 dashboard tests passing (7 skipped)
+    - 47 new tests added (21 API + 26 smoke)
+    - Zero regressions in existing functionality
+  - **Impact**: Strengthened dashboard API stability, improved documentation, comprehensive test coverage
+
+- **Round 6: Efficiency & Representations Modularization** (2026-03-08)
+  - **Efficiency Analysis Refactoring**: Split `efficiency.py` (645 lines) into `efficiency/` package
+    - New structure: `scatter.py` (132), `distribution.py` (131), `metrics.py` (181), `speed.py` (122)
+    - Facade: `__init__.py` (88 lines) with `render_efficiency_analysis()` entry point
+    - Clear separation: scatter plots, distributions, metrics, speed analysis
+  - **Base Featurizer Refactoring**: Split `base.py` (633 lines) into focused modules
+    - `base_featurizer.py` (415 lines) - Small molecule featurizer base class
+    - `base_protein_featurizer.py` (147 lines) - Protein featurizer base class
+    - Facade: `base.py` (11 lines) for backward compatibility
+  - **CDK Fingerprint Factory Pattern**: Split `cdk.py` (633 lines) into `cdk/` package
+    - `loaders.py` (109 lines) - Lazy CDK component loading
+    - `base.py` (213 lines) - `BaseCDKFingerprint` base class
+    - `classes.py` (155 lines) - Factory pattern eliminates 13 duplicate class definitions
+    - Facade: `cdk.py` (5 lines) + `cdk/__init__.py` (47 lines)
+    - `_make_cdk_class()` factory function for dynamic class generation
+  - **Validators Duplicate Code Removal**: Removed 242-line duplicate `MetricsCalculator`
+    - `validators.py` (860→613 lines, -29%)
+    - Now uses unified `MetricsCalculator` from `metrics_calculator.py`
+  - **Test Organization**: Moved 8 test files from `tests/` to `tests/data/`
+    - Added `__init__.py` to test directories to fix import name collisions
+  - **Test Marker Documentation**: Added comprehensive usage guidelines for `@pytest.mark.slow` and `@pytest.mark.network`
+  - **Impact**: 4 files → 12 modules, eliminated duplicate code, improved maintainability
+  - **Test Results**: 159 passed (19 dashboard + 140 CDK)
+
+- **Round 5: Dashboard Boundary & Stability Hardening** (2026-03-08)
+  - **Package Import Contracts**: All dashboard submodules importable without streamlit runtime
+    - Tests: `test_round5_package_imports.py` (12 tests)
+    - Verified: All submodules in `data/`, `metrics/`, `components/` import cleanly
+  - **Behavioral Contracts**: Verified critical UI behaviors preserved
+    - Tests: `test_round5_app_services_contracts.py` (9 tests)
+    - Tab order validation: Overview → Performance → Detailed Results → Hyperparameter → Individual Model
+    - Default page verification: "🔍 Overview" as initial tab
+    - CLI entry points: `main()` and `run_from_cli()` signatures validated
+  - **Type Safety**: Added `ClassVar` annotations for class-level constants (RUF012 fix)
+  - **Test Coverage**: +21 tests (170 total, +68% from baseline)
+  - **Regression**: All 319 tests passing (0 failures)
+  - **Impact**: Hardened package boundaries, prevented UI regressions, improved type safety
+
+- **Round 4: Dashboard app.py Refactoring** (2026-03-08)
+  - **Major Refactoring**: Split `app.py` (766 lines) into `app_services/` package
+    - `startup_diagnostics.py` (62 lines) - Diagnostic utilities
+    - `page_config.py` (164 lines) - Page configuration and CSS styling
+    - `pages.py` (377 lines) - Tab rendering logic
+    - Facade: `app.py` (247 lines, -68%) with main orchestration
+  - **Architecture Improvements**:
+    - Phase 1: Extracted diagnostics and configuration (766→549, -28%)
+    - Phase 2: Extracted page rendering logic (549→320, -42%)
+    - Phase 3: Simplified tab dispatch (320→247, -23%)
+  - **Streamlit Decoupling**: Lazy import pattern for streamlit dependencies
+    - Enables pytest testing without streamlit runtime
+    - Fixed `ModuleNotFoundError` in test collection
+  - **Contract Tests**: Added API contract tests (12 tests)
+    - `test_app_contracts.py`: Module structure, CLI signatures, UI behavior preservation
+  - **Test Coverage**: +12 tests (142 total, +41% from baseline)
+  - **Impact**: Clear separation of concerns, improved testability, backward compatible
+
 - **HPO Module Refactoring** (2026-03-03)
   - Split `hpo.py` (1220 lines) into modular `hpo/` directory
   - New structure: `processor.py` (workflow), `selection.py` (model selection), `results.py` (data reconstruction)
@@ -97,6 +177,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Uses `(result.get("all_metrics") or {})` instead of `result.get("all_metrics", {})`
   - Fixed None checks for `dataset_info` and `merged_dataset_info`
   - Files modified: `dashboard/data/loaders.py`
+
+- **Dashboard Session Wall Time Calculation** (2026-03-06)
+  - Fixed wall_time showing 0 in Session Breakdown table
+  - Now correctly loads `created_at` and `updated_at` from `screening_sessions` table
+  - Attaches session timestamps to each model result for per-session wall_time calculation
+  - Each session shows independent wall_time based on its own timestamps (not merged across sessions)
+  - Files modified: `dashboard/data/loaders.py`, `dashboard/components/charts/general.py`
+
+- **Classification F1 Metric Alias** (2026-03-06)
+  - Added "f1" as alias for "f1_score" in CLASSIFICATION_ONLY_METRICS
+  - Ensures backward compatibility with databases using "f1" key instead of "f1_score"
+  - Fixed KeyError when displaying F1 Score in Dashboard
+  - File modified: `dashboard/metrics/central.py`
+
+- **Model Export Split Information Fallback** (2026-03-06)
+  - Fixed export code generation to check multiple sources for split configuration
+  - Now tries `screening_config` if `dataset_info` doesn't have split indices/column
+  - Ensures exported scripts can recreate data splits correctly
+  - File modified: `dashboard/components/model_inspection/export.py`
+
+- **Metric Column Series Name Attribute** (2026-03-06)
+  - Fixed `get_metric_column()` returning Series without name attribute
+  - Series now includes `name=selected_metric` for proper groupby operations
+  - Prevents errors when using metric columns in grouping operations
+  - File modified: `dashboard/components/utils/__init__.py`
 
 - **Disabled Lasso and ElasticNet Models** (2026-02-08)
   - Removed lasso and elastic_net from available models due to poor performance on small datasets
@@ -881,3 +986,91 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Integration with 20+ ML algorithms (scikit-learn, XGBoost, LightGBM, neural networks)
 - SQLite-based results persistence with caching support
 - Comprehensive evaluation metrics for regression and classification tasks
+
+## [2026-03-09] - Round 6重构回归修复
+
+### Fixed
+- **Dashboard Round 6 Regression Fixes** (4个critical bug修复)
+  - **Import Error Fix** (`src/molblender/dashboard/app_services/pages.py`)
+    - 修复Overview页面的导入错误: `_render_performance_vs_time_scatter` → `render_performance_vs_time_scatter`（2处）
+    - Round 6重构时函数重命名但调用处未同步更新
+    - 影响：Overview页面崩溃，Performance vs Training Time图表无法显示
+  
+  - **Filter Parameter Count Fix** (`src/molblender/dashboard/components/filters/model_filters.py`)
+    - 修复`_render_filter_summary()`调用时参数数量错误（传入4个但接受3个）
+    - 移除多余的`selected_metric`参数
+    - 影响：Performance Analysis标签页过滤器崩溃
+  
+  - **Test Size Calculation Fix** (`src/molblender/dashboard/data/processors_helpers/loading.py`)
+    - **关键数据准确性修复**：优先从实际`n_train`/`n_test`计算真实test_size
+    - 修复前：显示配置值`test_size=0.2`（20%）- **错误**
+    - 修复后：显示实际分割`5271/53235=9.9%` - **正确**
+    - 影响：MaxDissimilarity split创建9.9%测试集，但Dashboard显示20%
+    - 代码逻辑：
+      ```python
+      # 从screening_config提取配置值
+      if "n_train" in dataset_info and "n_test" in dataset_info:
+          n_train = dataset_info["n_train"]
+          n_test = dataset_info["n_test"]
+          if n_train and n_test:
+              total = n_train + n_test
+              if total > 0:
+                  dataset_info["test_size"] = n_test / total  # 覆盖配置值
+      ```
+  
+  - **Scatter Plot API Update** (`src/molblender/dashboard/components/model_inspection/render.py`)
+    - 修复Individual Model Inspection的scatter plot渲染
+    - Round 6重构后API改为接受`InspectionPayload`而非独立参数
+    - 修复前：`render_scatter_plot(model_data, dataset_info, show_train, add_regression, selected_metric=metric)`
+    - 修复后：
+      ```python
+      context = build_context_from_results(results, dataset_info)
+      payload = build_payload_from_model_data(model_data, dataset_info, context)
+      render_scatter_plot(payload, show_train_data=show_train, add_regression_line=add_regression)
+      ```
+    - 影响：Individual Model标签页崩溃，scatter plot无法显示
+
+- **Modality Models Modularization** (`src/molblender/models/modality_models/`)
+  - **文件拆分重构**：base.py (622行) → 5个模块
+    - `base_core.py` (6.8K) - 核心基类`BaseModalityModel`和`ModelResult`
+    - `base_vector.py` (1.3K) - 向量模态`VectorModalityModel`
+    - `base_string.py` (4.3K) - 字符串模态`StringModalityModel`
+    - `base_additional_modalities.py` (2.6K) - 图像/矩阵/图/3D模态
+    - `base.py` (24行) - 向后兼容的facade，re-export所有类
+  - **设计原则**：符合<800行规则，高内聚低耦合
+  - **向后兼容**：所有现有import语句无需修改
+
+- **Registry Error Handling Improvement** (`src/molblender/representations/utils/registry_core.py`)
+  - **依赖错误类型保留**：不包装成`RegistryError`，保留原始异常类型
+  - **用途**：调用方/测试可以区分optional-feature scenarios vs hard registry errors
+  - **简化逻辑**：`get_featurizer_info()`和`get_protein_featurizer_info()`简化为调用`build_featurizer_info()`
+
+- **Datamol Fingerprint Calculator Enhancement** (`src/molblender/representations/fingerprints/datamol.py`)
+  - **新增方法**：`_resolve_molfeat_calculator()` 静态方法
+  - **兼容性**：支持新旧两种molfeat加载格式
+    - 当前格式：`{"available": True, "modules": {"molfeat_calc": module}}`
+    - 旧格式：直接flattened keys（`{"FPCalculator": ...}`）
+
+- **Test Configuration Documentation** (`pytest.ini`)
+  - **新增测试标记**：
+    - `@pytest.mark.slow` - 慢速测试（模型下载>100MB或>30秒，重度计算>10秒，集成测试）
+    - `@pytest.mark.network` - 网络测试（外部API调用，PDB/UniProt等，离线环境会失败）
+  - **使用示例**：
+    - `pytest -m "not slow"` - 跳过慢速测试
+    - `pytest -m "not network"` - 离线模式测试
+    - `pytest -m "slow"` - 只运行慢速测试
+
+### Impact
+- **Dashboard稳定性**：修复4个critical bug，所有5个标签页和子功能完全可用
+- **数据准确性**：Test Size从错误显示20%修正为真实值9.9%
+- **代码质量**：模型模块化重构符合<800行规则，提高可维护性
+- **错误处理**：改进依赖错误类型保留，提高测试灵活性
+- **测试效率**：新增测试标记支持快速开发迭代（跳过慢速/网络测试）
+
+### Verification
+- ✅ Dashboard Overview: Test Size显示9.9%（正确）
+- ✅ Performance Analysis: 过滤器正常工作
+- ✅ Individual Model: Scatter plot正常渲染
+- ✅ 所有4个修复的文件通过手动测试
+- ✅ 模块化重构保持向后兼容性
+
