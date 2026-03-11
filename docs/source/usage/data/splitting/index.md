@@ -4,7 +4,7 @@ Comprehensive guide to data splitting and cross-validation strategies in MolBlen
 
 ## Overview
 
-MolBlender provides **14 professional-grade splitting strategies** designed for molecular machine learning, ranging from standard ML practices to advanced drug discovery scenarios.
+MolBlender provides **18 professional-grade splitting strategies** designed for molecular machine learning, ranging from standard ML practices to advanced drug discovery scenarios.
 
 ```{admonition} Key Features
 :class: tip
@@ -72,18 +72,31 @@ Splitting based on molecular properties and chemical space diversity.
 |----------|----------|----------|---------------|
 | `dnr` | Rough SAR analysis | Testing on challenging molecules | {doc}`property_strategies` |
 | `maxmin` | Diversity testing | Chemical space extrapolation | {doc}`property_strategies` |
+| `max_dissimilarity` | Molecular-level selection | Sequential greedy selection | {doc}`property_strategies` |
 
 **→ See {doc}`property_strategies` for details**
 
 ### Advanced Strategies (Splito-based)
 Research-grade splitting for rigorous out-of-distribution evaluation.
 
-| Strategy | Use Case | OOD Challenge | Documentation |
-|----------|----------|---------------|---------------|
-| `perimeter` | Virtual screening | Test on chemical space perimeter | {doc}`advanced_strategies` |
-| `molecular_weight` | Fragment-to-lead | Generalization across MW ranges | {doc}`advanced_strategies` |
-| `mood` | Deployment-aware | Optimized for target space | {doc}`advanced_strategies` |
-| `lead_opt` | SAR exploration | Test on similar molecule clusters | {doc}`advanced_strategies` |
+| Strategy | Use Case | OOD Challenge | Algorithm Type | Documentation |
+|----------|----------|---------------|----------------|---------------|
+| `perimeter` | Virtual screening | Test on chemical space perimeter | Cluster-level | {doc}`advanced_strategies` |
+| `molecular_weight` | Fragment-to-lead | Generalization across MW ranges | Property-based | {doc}`advanced_strategies` |
+| `mood` | Deployment-aware | Optimized for target space | Model-optimized | {doc}`advanced_strategies` |
+| `lead_opt` | SAR exploration | Test on similar molecule clusters | Similarity-based | {doc}`advanced_strategies` |
+
+**→ See {doc}`advanced_strategies` for details**
+
+### Unified Splito Integration
+Cluster-level splitting via unified `DataSplitter` API.
+
+| Strategy | Use Case | Algorithm | Documentation |
+|----------|----------|-----------|---------------|
+| `splito_perimeter` | Extrapolation testing | K-means + cluster assignment | {doc}`advanced_strategies` |
+| `splito_molecular_weight` | MW generalization | Property-based split | {doc}`advanced_strategies` |
+| `splito_max_dissimilarity` | Cluster-level diversity | K-means clustering | {doc}`advanced_strategies` |
+| `splito_scaffold` | Scaffold-based split | Scaffold grouping | {doc}`chemical_strategies` |
 
 **→ See {doc}`advanced_strategies` for details**
 

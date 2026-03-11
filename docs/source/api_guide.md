@@ -4,6 +4,152 @@
 
 MolBlender 提供统一的 API 层 (`molblender.api`)，整合了表征生成、模型筛选、Dashboard 等所有核心功能。
 
+## API 层级
+
+MolBlender 提供多层级 API，用户可以根据需求选择合适的入口：
+
+### 推荐入口：molblender.api（统一 Facade）
+
+**适用场景**：新代码、快速上手、常用功能
+
+`molblender.api` 是统一的便利入口（Facade 模式），提供最常用功能的简洁接口：
+
+```python
+from molblender.api import (
+    # 表征
+    get_featurizer,
+    list_featurizers,
+    # 模型筛选
+    screen_models,
+    load_results,
+    # 可视化
+    run_dashboard,
+)
+```
+
+**优点**：
+- 简洁易用
+- 统一入口
+- 向后兼容保证
+
+### 领域 API：更丰富的功能
+
+对于需要更多控制或高级功能的场景，可以直接使用领域 API：
+
+#### molblender.models（ML 筛选领域 API）
+
+**适用场景**：需要完整的 ML 筛选功能
+
+```python
+from molblender.models import (
+    # 基础筛选（与 molblender.api 相同）
+    screen_models,
+    quick_screen,
+    thorough_screen,
+    # 分析功能（richer API）
+    analyze_results,
+    compare_models,
+    compare_representations,
+    # 可视化
+    plot_screening_results,
+    create_performance_dashboard,
+)
+```
+
+**额外功能**：
+- 多种筛选策略（quick/thorough/interpretable）
+- 结果分析和对比
+- 统计检验
+- 性能可视化
+
+#### molblender.representations（表征领域 API）
+
+**适用场景**：需要详细的表征器信息
+
+```python
+from molblender.representations import (
+    # 基础功能（与 molblender.api 相同）
+    get_featurizer,
+    list_available_featurizers,
+    # 详细信息（richer API）
+    get_featurizer_info,
+    print_available_featurizers,
+    # 类别选择
+    get_category_info,
+    select_featurizers_by_category,
+    # 子模块访问
+    fingerprints,
+    descriptors,
+    graph,
+)
+```
+
+**额外功能**：
+- 表征器详细元数据
+- 类别浏览和筛选
+- 直接访问子模块
+
+#### molblender.drawings（静态绘图工具）
+
+**适用场景**：生成出版物质量的静态图表
+
+```python
+from molblender.drawings import (
+    # 核心配置
+    PlotConfig,
+    set_plot_style,
+    # 绘图函数
+    plot_histogram,
+    plot_scatter_fit,
+    plot_heatmap,
+    # 主题
+    set_scientific_publication_style,
+    set_presentation_style,
+)
+```
+
+**定位**：静态绘图工具（matplotlib/seaborn），不等同于 interactive dashboard
+
+#### molblender.dashboard（交互式探索）
+
+**适用场景**：交互式数据探索和结果分析
+
+```python
+from molblender.dashboard import run_dashboard
+
+# 启动交互式 Dashboard
+run_dashboard()
+```
+
+**定位**：基于 Streamlit 的交互式 Web UI
+
+### 顶层 molblender（最常用功能）
+
+顶层 `import molblender` 暴露最常用的函数：
+
+```python
+import molblender
+
+# 推荐使用（unified facade）
+molblender.screen_models(...)
+molblender.get_featurizer(...)
+molblender.run_dashboard(...)
+
+# 兼容入口（直接从子模块导入）
+molblender.list_available_featurizers(...)
+molblender.analyze_results(...)  # 需要更丰富的 API
+```
+
+### 选择指南
+
+| 需求 | 推荐入口 | 备选方案 |
+|------|----------|----------|
+| **新代码/快速上手** | `molblender.api` | 顶层 `molblender` |
+| **完整 ML 筛选** | `molblender.models` | `molblender.api.screen_models` |
+| **表征器详细信息** | `molblender.representations` | `molblender.api.get_featurizer_info` |
+| **静态图表** | `molblender.drawings` | - |
+| **交互式探索** | `molblender.dashboard` | - |
+
 ## 快速开始
 
 ### 安装

@@ -7,10 +7,33 @@ A comprehensive end-to-end example demonstrating how to use MolBlender for molec
 This tutorial walks through a complete molecular machine learning workflow:
 
 1. **Data Loading & Validation** - Import molecular datasets from various formats
-2. **Representation Generation** - Create diverse molecular features  
+2. **Representation Generation** - Create diverse molecular features
 3. **Automated Model Screening** - Find optimal model+representation combinations
 4. **Results Visualization** - Generate publication-quality plots
 5. **Model Deployment** - Save and use trained models for predictions
+
+## Choosing the Right API
+
+MolBlender provides multiple API layers. For this tutorial, we use:
+
+```python
+# Recommended: Unified API (molblender.api)
+from molblender.api import screen_models, get_featurizer
+
+# For richer features: Domain APIs
+from molblender.models import analyze_results  # ML analysis
+from molblender.representations import get_featurizer_info  # Detailed info
+from molblender.drawings import plot_publication_regression  # Static plots
+from molblender.dashboard import run_dashboard  # Interactive UI
+```
+
+**Quick guide**:
+- **New code**: Use `molblender.api` for common tasks
+- **Advanced features**: Use domain APIs (`molblender.models`, `molblender.representations`)
+- **Static plots**: Use `molblender.drawings`
+- **Interactive exploration**: Use `molblender.dashboard`
+
+See [API Guide](api_guide.md) for detailed API layer documentation.
 
 ## Dataset: Predicting Molecular Solubility
 

@@ -125,7 +125,48 @@ molblender view ./final_merged.db
 
 ---
 
-### 4. `molblender info` - Show Package Information
+### 4. `molblender calculate_metrics` - Pre-Calculate Metrics ⭐ NEW
+
+Pre-calculate missing regression metrics (pearson_r, rmse, mae, etc.) from predictions in database.
+
+```bash
+# Calculate metrics for database
+molblender calculate_metrics ./screening_results.db
+
+# Custom batch size
+molblender calculate_metrics ./screening_results.db --batch-size 500
+```
+
+**Options**:
+- `--batch-size`: Number of rows to update per transaction (default: 1000)
+
+**Features**:
+- **Performance Optimization**: Pre-calculates metrics to speed up Dashboard loading
+- **Automatic Detection**: Only processes rows with missing metrics
+- **Batch Processing**: Efficiently updates database in configurable batches
+- **Format Support**: Handles both dict and array prediction formats
+- **Progress Tracking**: Displays progress bar during calculation
+
+**When to use**:
+- **Before Dashboard Launch**: Run on large databases (>100K results) to improve loading speed
+- **After HPO Completion**: Calculate metrics for all hyperparameter optimization results
+- **Database Migration**: Update old databases to include all_metrics field
+
+**Example**:
+```bash
+# Scenario: HPO completed with 200K results
+# Dashboard is slow because metrics calculated on-demand
+
+# Pre-calculate all metrics (takes 2-5 minutes)
+molblender calculate_metrics screening_hpo_results.db
+
+# Now dashboard loads instantly
+molblender view ./screening_hpo_results.db
+```
+
+---
+
+### 5. `molblender info` - Show Package Information
 
 Display version and installation information.
 

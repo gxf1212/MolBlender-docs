@@ -121,15 +121,26 @@ For a complete explanation of data splitting, cross-validation, and evaluation m
 : Maximum CPU cores to use
   - `-1` = Use all available cores
   - `n` = Use n cores (e.g., `-2` leaves 2 cores free)
+  - Saved results expose this resolved value as `resolved_workers`
 
 `max_workers_per_model`: `int`, default=`1`
 : Parallelism within individual models (for sklearn models)
+  - This is a per-estimator cap, not the total screening CPU budget
+
+`n_jobs`: deprecated compatibility alias
+: Kept only for older scripts. New code should use `max_cpu_cores` and
+  `max_workers_per_model` explicitly.
 
 `execution_preference`: `str`, default=`"balanced"`
 : Resource allocation strategy
   - `"speed"` - Maximize parallel execution
   - `"memory"` - Minimize memory usage
   - `"balanced"` - Balance speed and memory
+
+Runtime terminology:
+- `resolved_workers`: Combination-level worker count derived from `max_cpu_cores`
+- `max_workers_per_model`: Internal parallelism limit for a single estimator
+- These values are stored separately in result/session metadata on purpose
 
 **CUDA Fallback Behavior**
 

@@ -25,6 +25,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Validated lazy imports: transformers not loaded on package import
   - Impact: Stable public API, better import performance, clearer module boundaries
 
+- **Drawings Package Positioning** (2026-03-11)
+  - Clarified drawings as "static plotting utilities" layer
+  - Verified drawings does NOT export dashboard/interactive components
+  - Added 23 API contract tests for drawings/models/dashboard separation
+  - Updated module documentation to distinguish drawings (static) vs dashboard (interactive)
+  - Impact: Clearer package boundaries, easier to choose right visualization tool
+
+- **Public API Layer Audit** (2026-03-11)
+  - Added 33 public API contract tests
+  - Verified molblender.api = unified convenience facade
+  - Verified molblender.models = richer ML domain API
+  - Verified molblender.representations = richer featurizer API
+  - Updated top-level molblender documentation with API layer explanation
+  - Distinguished RECOMMENDED (unified facade) vs COMPATIBILITY (direct imports) in __all__
+  - Impact: Clearer API usage guidance, better developer experience
+
+- **Architecture Role Contract Tests** (2026-03-11)
+  - Added 27 package role contract tests
+  - Verified drawings = static plotting layer (not dashboard)
+  - Verified models.api.core = screening engine core components
+  - Verified models.api.infrastructure = runtime policy/telemetry/error policy
+  - Verified molblender.api = facade (doesn't contain implementation details)
+  - Impact: Architectural boundaries locked down, prevents future drift
+
 ### Changed
 
 - **Telemetry Module Organization**
@@ -59,6 +83,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Telemetry import isolation verified
   - Import consistency confirmed
   - Lazy imports validated
+
+- Added `tests/drawings/test_api_exports_contract.py` (23 tests)
+  - Drawings public API exports verified
+  - Drawings does NOT export dashboard components verified
+  - Optional imports handled gracefully confirmed
+  - Drawings vs dashboard separation validated
+
+- Added `tests/core/test_public_api_contract.py` (33 tests)
+  - Top-level molblender API verified
+  - molblender.api as unified facade validated
+  - molblender.models as richer domain API confirmed
+  - molblender.representations as richer featurizer API confirmed
+  - API layer distinction verified
+
+- Added `tests/core/test_package_roles.py` (27 tests)
+  - Drawings as static plotting layer role verified
+  - models.api.core as screening engine role confirmed
+  - models.api.infrastructure as runtime policy role verified
+  - molblender.api as facade (no implementation) validated
+  - Package boundaries separation confirmed
 
 ### Technical Details
 

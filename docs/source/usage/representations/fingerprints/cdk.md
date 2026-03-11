@@ -41,17 +41,18 @@ MolBlender provides access to the following CDK fingerprints:
 | `cdk_estate` | E-State fingerprint | Variable | Electrotopological state indices |
 | `cdk_maccs` | MACCS keys | **166** | MDL MACCS key-based substructure patterns |
 | `cdk_pubchem` | PubChem CACTVS fingerprint | **881** | PubChem's CACTVS-based substructure keys |
-| `cdk_sub` | Substructure fingerprint | Variable | Predefined chemical substructure patterns |
+| `cdk_sub` | Substructure fingerprint | **307** | Predefined chemical substructure patterns (CDK native key set) |
 | `cdk_kr` | Klekota-Roth fingerprint | Variable | Substructures from Klekota-Roth, useful for bioactivity |
 | `cdk_ap2d` | Atom Pairs 2D fingerprint | Variable | Atom-pair relationships and distances |
 | `cdk_hybrid` | Hybridization fingerprint | Variable | Atom hybridization state patterns |
 | `cdk_lingo` | Lingo fingerprint | Variable | N-character SMILES substrings as features |
 | `cdk_shortest_path` | Shortest Path fingerprint | Variable | Path-based descriptors between atoms |
-| `cdk_signature` | Signature fingerprint | Variable | Atom environment signatures |
+| `cdk_signature` | Signature fingerprint | Disabled by default | Variable raw token space; requires explicit vocabulary alignment for ML |
 | `cdk_circular` | Circular (ECFP-like) fingerprint | Variable | Morgan/ECFP-like circular environments |
 
 **Notes**:
-- Only MACCS and PubChem have fixed, guaranteed sizes
+- `cdk_maccs` (166), `cdk_pubchem` (881), and `cdk_sub` (307) use fixed CDK-native sizes
+- `cdk_signature` is intentionally not registered by default to avoid silent feature misalignment in ML workflows
 - Other fingerprints' lengths may vary based on molecule complexity
 - All CDK fingerprints are returned as binary (0/1) arrays of type uint8
 
