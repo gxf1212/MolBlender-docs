@@ -9,6 +9,155 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Infrastructure: Telemetry Package Modularization** (2026-03-11)
+  - Replaced monolithic `telemetry.py` (755 lines) with modular `telemetry/` package
+  - New structure: `types.py`, `backends.py`, `emitter.py`, `global_emitter.py`, `legacy.py`
+  - Maintained 100% backward compatibility - all old imports still work
+  - Export contract tests: 16 tests passing
+  - Infrastructure tests: 33 tests passing
+  - Impact: Better code organization, clearer separation of concerns, improved maintainability
+
+- **Representations: Public API Consolidation** (2026-03-11)
+  - Added comprehensive API export contract tests (23 tests)
+  - Verified tool_registry purity: metadata management only, no UI logic
+  - Added import isolation tests (14 tests)
+  - Confirmed no circular imports in representations module
+  - Validated lazy imports: transformers not loaded on package import
+  - Impact: Stable public API, better import performance, clearer module boundaries
+
+### Changed
+
+- **Telemetry Module Organization**
+  - Old: Single file `telemetry.py` with all implementations
+  - New: Modular package with separate files for types, backends, emitter, global functions
+  - Benefit: Easier to maintain and extend, clearer code organization
+
+- **Representations Import Behavior**
+  - Confirmed: Heavy dependencies (torch, transformers) loaded lazily, not on import
+  - Confirmed: Multiple imports consistent, no side effects
+  - Benefit: Faster imports, lower memory footprint for basic usage
+
+### Tests
+
+- Added `tests/models/api/infrastructure/test_telemetry_exports.py` (16 tests)
+  - Public API exports verified
+  - Import patterns tested (from infrastructure, from telemetry package, from submodules)
+  - Backend classes verified
+  - EventEmitter availability confirmed
+  - Package structure validated
+
+- Added `tests/representations/test_api_exports_contract.py` (23 tests)
+  - Core utilities availability verified
+  - Base classes and exceptions confirmed
+  - Tool registry purity validated
+  - No heavy imports on package import confirmed
+  - No side effects on import verified
+  - Circular import prevention confirmed
+
+- Added `tests/core/test_import_isolation.py` (14 tests)
+  - Representations import isolation verified
+  - Telemetry import isolation verified
+  - Import consistency confirmed
+  - Lazy imports validated
+
+### Technical Details
+
+**Telemetry Package Structure**:
+```
+infrastructure/telemetry/
+├── __init__.py         # Unified exports (backward compatible)
+├── types.py            # EventType, EventSeverity enums
+├── backends.py         # EventBackend, JSONFileBackend, LogFileBackend, etc.
+├── emitter.py          # EventEmitter class
+├── global_emitter.py   # get_global_emitter(), configure_global_emitter(), emit_event()
+└── legacy.py           # build_event(), emit_legacy_event()
+```
+
+**Representations Public API**:
+- Core utilities: `get_featurizer`, `list_available_featurizers`, `get_featurizer_info`
+- Base classes: `BaseFeaturizer`, `BaseProteinFeaturizer`
+- Exceptions: `FeaturizationError`, `InvalidInputError`, `RegistryError`
+- Tool registry: `ToolInfo`, `ToolRegistry` (pure metadata, no UI logic)
+- Enhanced registry: `FeaturizerInfo`, `FeaturizerCatalog`, `get_featurizer_recommendations`
+
+### Migration Notes
+
+**For Telemetry Users**:
+- No changes required - all old imports still work
+- New modular imports available for finer control:
+  ```python
+  # Old way (still works)
+  from molblender.models.api.infrastructure import emit_event, EventType
+  
+  # New way (more granular)
+  from molblender.models.api.infrastructure.telemetry.types import EventType
+  from molblender.models.api.infrastructure.telemetry.global_emitter import emit_event
+  ```
+
+**For Representations Users**:
+- No changes required - public API unchanged
+- Tool registry now available for advanced metadata queries:
+  ```python
+  from molblender.representations.tool_registry import ToolRegistry
+  
+  registry = ToolRegistry()
+  gpu_featurizers = registry.list(tags=["gpu"])
+  protein_featurizers = registry.list(category="protein")
+  ```
+
+
+- **Phase 3-4: Configuration Management & Deprecated Code Cleanup** (2026-03-10)
+  - **Phase 3: Configuration Management Unification**
+    - Created `config/core.py` (309 lines): Unified ConfigManager singleton
+    - Dataclasses: `CacheConfig`, `ModelConfig`, `LoggingConfig`
+    - Centralized environment variable reading with validation
+    - Runtime configuration update: `set_cache_dir()`, `get_cache_dir()`
+    - Backward compatibility: Legacy `settings` exports preserved with `_legacy` suffix
+    - Tests: 12 ConfigManager tests passing, 73 total config tests passing
+  - **Phase 4: Deprecated Code Cleanup**
+    - Deleted `models/api/utils/resource_scheduler.py` (102-line shim)
+    - Removed `timeout_context` from `evaluation/utilities.py` (~100 lines)
+    - Updated `evaluation/__init__.py`: Removed timeout_context from `__all__` and `__getattr__`
+    - Deleted test files: `test_resource_scheduler_compat.py`, `test_timeout_context_shim.py`
+    - Updated guard tests: Removed resource_scheduler and resource_profiles tests
+    - All infrastructure and evaluation tests passing (4 passed)
+  - **Documentation**
+    - Created `config_manager_guide.md`: ConfigManager usage and best practices
+    - Created `migration_guide.md`: API migration guide from old to new API
+    - Created `api_guide.md`: Unified API layer usage guide
+  - **Impact**: Unified configuration management, removed ~200 lines deprecated code, 306 total tests passing
+
+- **Round 8: Dashboard State Management & Resource Tracking** (2026-03-09)
+  - **Task 1: Dashboard状态管理模块化**
+    - Created `dashboard/state/` package with three manager classes
+    - `SessionManager`: Manages session-wide state (cache, files, refresh)
+    - `NavigationManager`: Manages navigation state (active tab, history)
+    - `FilterManager`: Manages filter state (metrics, models, representations)
+    - Total: 459 lines across 3 modules
+  - **Task 2: Dashboard缓存分层改造**
+    - Created `dashboard/cache/policies.py` with CachePolicies system
+    - Clear separation: `st.cache_data` (DataFrame, dict) vs `st.cache_resource` (connections)
+    - Predefined strategies: SESSION_DATA, SHORT_LIVED_DATA, FEATURIZER, CONNECTION
+    - `@cache_with_policy` decorator for easy policy application
+  - **Task 3: CI矩阵与门禁配置**
+    - Created `.github/workflows/dashboard_smoke.yml`
+    - Python 3.9/3.10 matrix testing
+    - Test suites: state management, cache manager, API contracts, dashboard smoke
+  - **Task 4: Dashboard集成资源追踪系统**
+    - Created `dashboard/components/resource_tracking/` package
+    - `representation_selector.py` (192 lines): Type selector, comparison table, parameter info
+    - `cache_statistics.py` (273 lines): Sidebar stats, management page, helper functions
+    - Updated `app.py`: Added 2 new tabs (Resource Management, Representation Types)
+    - Total tabs: 5 → 7
+  - **Phase 5: 自动发现增强**
+    - Enhanced `representations/registry/` with dependency checking and availability flags
+    - Created `representations/registry/validation.py` (320 lines): Parameter validation framework
+    - Auto-discovery now detects dependencies and sets `is_available` flag
+    - Parameter validation with type checking, choices, min/max values
+    - Helper functions: `sanitize_representation_params()`, `get_representation_summary()`
+  - **Tests**: 290 tests passing (12 Phase 4 + 19 Phase 5 + 259 previous)
+  - **Impact**: Improved dashboard modularity, cache observability, resource tracking, auto-discovery
+
 - **Round 7: Dashboard API Contract & Smoke Testing (CC)** (2026-03-08)
   - **Task 1: Dashboard API Export Contract Tests** (21 tests)
     - Created `tests/dashboard/test_api_exports_contract.py`

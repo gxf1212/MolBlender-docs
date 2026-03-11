@@ -120,7 +120,8 @@ screening_results = thorough_screen(
     stage2_top_n=3,                 # Report top 3 models
     
     # Performance settings
-    n_jobs=4,                       # Parallel execution
+    max_cpu_cores=4,                # Total CPU budget for screening
+    max_workers_per_model=1,        # Per-model worker cap
     cv_folds=5,                     # 5-fold cross-validation
     
     # Output settings  
@@ -303,7 +304,8 @@ This workflow demonstrates MolBlender's key capabilities:
 
 **Model Screening:**
 - Enable multi-stage optimization for best results
-- Use parallel processing (`n_jobs`) to speed up screening
+- Use `max_cpu_cores` for total screening parallelism and
+  `max_workers_per_model` for model-internal parallelism
 - Save screening results for reproducibility
 
 **Results Analysis:**
@@ -356,3 +358,45 @@ detailed_results = mbl.models.api.thorough_screen(
 - Extend to multi-task and multi-modal learning
 
 This complete workflow showcases MolBlender's power in automating molecular machine learning while maintaining flexibility and interpretability.
+
+### Advanced: Tool Registry for Featurizer Discovery
+
+For advanced featurizer discovery and metadata queries, use the unified tool registry:
+
+```python
+from molblender.representations.tool_registry import ToolRegistry, get_tool_registry
+
+# Get global registry instance
+registry = get_tool_registry()
+
+# List all available featurizers
+all_featurizers = registry.list_all()
+print(f"Total featurizers: {len(all_featurizers)}")
+
+# Filter by category
+from molblender.representations.tool_registry import ToolRegistry
+registry = ToolRegistry()
+
+# Get fingerprint featurizers
+fingerprints = registry.list(category="fingerprints")
+print(f"Fingerprint featurizers: {[f.name for f in fingerprints]}")
+
+# Filter by tag
+gpu_featurizers = registry.list(tags=["gpu"])
+print(f"GPU featurizers: {[f.name for f in gpu_featurizers]}")
+
+# Get detailed metadata
+info = registry.get("ecfp")
+if info:
+    print(f"Name: {info.name}")
+    print(f"Category: {info.category}")
+    print(f"Description: {info.description}")
+    print(f"Dependencies: {info.dependencies}")
+    print(f"Is available: {info.is_available}")
+
+# Search featurizers
+results = registry.search("fingerprint")
+for info in results:
+    print(f"{info.name}: {info.description}")
+```
+
