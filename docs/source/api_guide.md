@@ -347,7 +347,7 @@ results = screen_models(
 
 ```python
 from molblender.api import create_screener
-from molblender.models.api.core import ScreeningConfig
+from molblender.models import ScreeningConfig
 
 # 创建配置
 config = ScreeningConfig(
@@ -503,7 +503,7 @@ results = screen_models(
 
 ```python
 from molblender.api import create_screener
-from molblender.models.api.core import ScreeningConfig
+from molblender.models import ScreeningConfig
 
 # 创建高级配置
 config = ScreeningConfig(
@@ -513,7 +513,8 @@ config = ScreeningConfig(
     cv_folds=5,
     test_size=0.2,
     split_strategy="scaffold_split",  # 使用骨架分割
-    n_jobs=-1,
+    max_cpu_cores=-1,
+    max_workers_per_model=1,
     enable_hpo=False,
     combinations="auto",  # 使用主要路径 + 备用路径
     auto_resource_optimization=True,  # 自动资源优化
@@ -658,7 +659,8 @@ results = screen_models(
     smiles_data=large_smiles_list,
     representations=["morgan_fp"],
     models=["random_forest"],
-    n_jobs=-1,  # 使用所有CPU核心
+    max_cpu_cores=-1,          # 总 CPU 预算
+    max_workers_per_model=1,   # 单模型内部并行上限
 )
 ```
 
@@ -686,7 +688,7 @@ results = screen_models(
 ### 3. 资源优化
 
 ```python
-from molblender.models.api.core import ScreeningConfig
+from molblender.models import ScreeningConfig
 
 # 自动资源优化
 config = ScreeningConfig(

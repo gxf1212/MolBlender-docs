@@ -504,8 +504,7 @@ def compare_representations(
 For fine-grained control, use `Combination` objects:
 
 ```python
-from molblender.models import universal_screen
-from molblender.models.api.core import Combination
+from molblender.models import Combination, universal_screen
 
 custom_combinations = [
     Combination(

@@ -22,7 +22,7 @@ MolBlender now exposes package-role metadata directly in code. The main roles ar
 
 | Package | Role | Stability |
 |---------|------|-----------|
-| `molblender` | Top-level convenience surface | Recommended |
+| `molblender` | Top-level convenience/discovery surface | Supported |
 | `molblender.api` | Unified public facade | Recommended |
 | `molblender.models` | Domain models facade | Recommended |
 | `molblender.representations` | Domain representations facade | Recommended |
@@ -46,6 +46,11 @@ catalog = get_package_role_catalog()
 recommended = get_recommended_entrypoints()
 execution_layers = get_execution_layer_decisions()
 ```
+
+For day-to-day workflow code, prefer `molblender.api`, `molblender.models`, or
+`molblender.representations`. The top-level `molblender` package remains a
+supported discovery surface, but it is no longer the primary recommended entry
+layer for user examples.
 
 For tooling or CI diagnostics, MolBlender can emit a JSON architecture snapshot:
 
