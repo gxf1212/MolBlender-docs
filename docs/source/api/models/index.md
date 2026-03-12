@@ -14,7 +14,7 @@ The models module provides comprehensive machine learning capabilities:
 ## Quick Example
 
 ```python
-from molblender.models.api import universal_screen
+from molblender.models import universal_screen
 from molblender.data import MolecularDataset
 
 # Load dataset

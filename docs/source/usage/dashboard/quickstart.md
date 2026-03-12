@@ -83,7 +83,7 @@ Create your first screening results to explore in the dashboard.
 
 ```python
 from molblender.data import MolecularDataset
-from molblender.models.api import quick_screen
+from molblender.models import quick_screen
 
 # 1. Prepare sample dataset (or use your own)
 sample_data = """SMILES,logP
@@ -118,7 +118,7 @@ print(f"Screening completed! Best R²: {results['best_score']:.3f}")
 ### Example: Universal Screening (Recommended)
 
 ```python
-from molblender.models.api import universal_screen
+from molblender.models import universal_screen
 
 # Run comprehensive screening
 results = universal_screen(
@@ -392,7 +392,7 @@ ls -lh results.db
 sqlite3 results.db "SELECT COUNT(*) FROM model_results;"
 
 # If file is empty, run screening first:
-from molblender.models.api import quick_screen
+from molblender.models import quick_screen
 # ... your screening code ...
 ```
 
@@ -492,7 +492,7 @@ molblender view ./results --port 8503        # Custom port
 molblender view ./results --verbose             # Debug mode
 
 # Python essentials
-from molblender.models.api import quick_screen
+from molblender.models import quick_screen
 results = quick_screen(dataset, target_column="logP")
 best_model = results['best_estimator']
 ```

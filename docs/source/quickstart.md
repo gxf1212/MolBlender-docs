@@ -57,7 +57,7 @@ import pandas as pd
 import numpy as np
 import molblender as mbl
 from molblender.data import MolecularDataset
-from molblender.models.api import thorough_screen
+from molblender.models import thorough_screen
 from molblender.drawings import plot_publication_regression
 
 # Load solubility dataset (example data)

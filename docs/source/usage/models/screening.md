@@ -21,7 +21,7 @@ MolBlender provides multiple screening functions optimized for different use cas
 ### Basic Usage
 
 ```python
-from molblender.models.api import universal_screen
+from molblender.models import universal_screen
 
 results = universal_screen(
     dataset=dataset,
@@ -335,7 +335,7 @@ Fast screening with essential models for initial exploration.
 ### Basic Usage
 
 ```python
-from molblender.models.api import quick_screen
+from molblender.models import quick_screen
 
 results = quick_screen(
     dataset=dataset,
@@ -384,7 +384,7 @@ Test a single model quickly without comprehensive screening.
 ### Basic Usage
 
 ```python
-from molblender.models.api import simple_evaluate
+from molblender.models import simple_evaluate
 
 result = simple_evaluate(
     dataset=dataset,
@@ -423,7 +423,7 @@ Compare multiple models on the same representation.
 ### Basic Usage
 
 ```python
-from molblender.models.api import compare_models
+from molblender.models import compare_models
 
 results = compare_models(
     dataset=dataset,
@@ -469,7 +469,7 @@ Compare multiple representations on the same model.
 ### Basic Usage
 
 ```python
-from molblender.models.api import compare_representations
+from molblender.models import compare_representations
 
 results = compare_representations(
     dataset=dataset,
@@ -504,7 +504,7 @@ def compare_representations(
 For fine-grained control, use `Combination` objects:
 
 ```python
-from molblender.models.api import universal_screen
+from molblender.models import universal_screen
 from molblender.models.api.core import Combination
 
 custom_combinations = [

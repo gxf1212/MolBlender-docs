@@ -18,7 +18,7 @@ The models module automates the entire ML pipeline from data preprocessing to mo
 
 ```python
 from molblender.data import MolecularDataset
-from molblender.models.api import universal_screen
+from molblender.models import universal_screen
 
 # Load dataset
 dataset = MolecularDataset.from_csv(
@@ -183,7 +183,7 @@ MolBlender intelligently manages CPU/GPU resources:
 
 ```python
 from molblender.data import MolecularDataset
-from molblender.models.api import universal_screen
+from molblender.models import universal_screen
 import pandas as pd
 
 # 1. Prepare data

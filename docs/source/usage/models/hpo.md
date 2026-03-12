@@ -16,7 +16,7 @@ This approach is **far more efficient** than optimizing every model upfront, esp
 ### Basic HPO Usage
 
 ```python
-from molblender.models.api import universal_screen
+from molblender.models import universal_screen
 
 # Enable HPO for top 5 models
 results = universal_screen(

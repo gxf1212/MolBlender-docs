@@ -17,7 +17,7 @@ MolBlender uses **SQLite databases** as the primary storage format for screening
 ### Enabling Database Storage
 
 ```python
-from molblender.models.api import universal_screen
+from molblender.models import universal_screen
 
 results = universal_screen(
     dataset=dataset,

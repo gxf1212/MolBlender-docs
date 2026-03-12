@@ -59,7 +59,7 @@ pip install streamlit plotly scipy
 ### 2. Run Screening
 
 ```python
-from molblender.models.api import universal_screen
+from molblender.models import universal_screen
 
 results = universal_screen(
     dataset=dataset,
