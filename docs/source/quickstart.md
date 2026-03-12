@@ -33,7 +33,18 @@ from molblender.dashboard import run_dashboard  # Interactive UI
 - **Static plots**: Use `molblender.drawings`
 - **Interactive exploration**: Use `molblender.dashboard`
 
+Notes:
+- `import molblender` and `import molblender.api` are both lightweight lazy facades.
+- The screening runtime layer lives under `molblender.models.api.infrastructure`; most users should not import it directly.
+- `molblender.models.execution` is kept for compatibility with older code, not as the primary runtime layer.
+
 See [API Guide](api_guide.md) for detailed API layer documentation.
+
+If you want a machine-readable summary of the current package roles and recommended entrypoints:
+
+```bash
+python -m molblender.architecture_roles
+```
 
 ## Dataset: Predicting Molecular Solubility
 
@@ -422,4 +433,3 @@ results = registry.search("fingerprint")
 for info in results:
     print(f"{info.name}: {info.description}")
 ```
-

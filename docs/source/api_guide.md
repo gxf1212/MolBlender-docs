@@ -4,6 +4,15 @@
 
 MolBlender 提供统一的 API 层 (`molblender.api`)，整合了表征生成、模型筛选、Dashboard 等所有核心功能。
 
+自 2026-03 的架构收口后，当前推荐的使用方式是：
+
+- `molblender.api`：统一便利入口，适合新代码和教程示例
+- `molblender.models` / `molblender.representations`：领域 API，适合需要更完整控制的场景
+- `molblender.drawings`：静态绘图工具
+- `molblender.dashboard`：交互式分析 UI
+
+顶层 `import molblender` 和 `import molblender.api` 现在都采用 lazy facade，不会在导入时立刻拉起整层子包。这使得交互式探索和脚本启动更轻量，同时保持旧入口兼容。
+
 ## API 层级
 
 MolBlender 提供多层级 API，用户可以根据需求选择合适的入口：
@@ -31,6 +40,7 @@ from molblender.api import (
 - 简洁易用
 - 统一入口
 - 向后兼容保证
+- 导入更轻量（lazy facade）
 
 ### 领域 API：更丰富的功能
 
@@ -140,6 +150,11 @@ molblender.list_available_featurizers(...)
 molblender.analyze_results(...)  # 需要更丰富的 API
 ```
 
+**说明**：
+- 顶层 `molblender` 适合 notebook 和快速脚本
+- 新代码若需要清晰表达意图，仍优先推荐 `molblender.api` 或对应领域子包
+- 顶层 facade 不暴露 runtime-policy internals 或 legacy execution helpers
+
 ### 选择指南
 
 | 需求 | 推荐入口 | 备选方案 |
@@ -149,6 +164,39 @@ molblender.analyze_results(...)  # 需要更丰富的 API
 | **表征器详细信息** | `molblender.representations` | `molblender.api.get_featurizer_info` |
 | **静态图表** | `molblender.drawings` | - |
 | **交互式探索** | `molblender.dashboard` | - |
+
+### 运行时与执行层说明
+
+绝大多数用户不需要直接导入执行层，但为了避免混淆，当前执行相关层的定位如下：
+
+| 层 | 当前定位 | 适用对象 |
+|----|----------|----------|
+| `molblender.models.api.infrastructure` | Screening 主运行时层 | 包内部、进阶开发者 |
+| `molblender.execution` | 通用执行/批处理辅助工具 | 需要独立批处理工具的开发者 |
+| `molblender.models.execution` | 兼容层（legacy） | 旧代码迁移 |
+
+一般用户应优先使用 `screen_models()`、`universal_screen()`、`run_dashboard()` 等 workflow 入口，而不是直接拼装 execution/runtime 组件。
+
+### 可编程架构快照
+
+如果你需要检查当前推荐入口、执行层角色或迁移建议，可以直接从代码读取：
+
+```python
+from molblender.architecture_roles import (
+    get_package_role_catalog,
+    get_recommended_entrypoints,
+    get_execution_layer_decisions,
+)
+
+print(get_recommended_entrypoints())
+print(get_execution_layer_decisions())
+```
+
+也可以在终端中输出 JSON 快照：
+
+```bash
+python -m molblender.architecture_roles
+```
 
 ## 快速开始
 
@@ -656,7 +704,7 @@ screener = create_screener(config)
 - [迁移指南](migration_guide.md) - 从旧 API 迁移
 - [ConfigManager 指南](config_manager_guide.md) - 配置管理
 - [快速开始](quickstart.md) - 新手入门
-- [架构诊断报告](../../Archive/ARCHITECTURE_DIAGNOSIS.md) - 架构详情
+- [架构概览](development/architecture.md) - 当前公开层级与内部边界
 
 ---
 
@@ -740,4 +788,3 @@ if info and info.is_available:
     print(f"Default radius: {info.default_kwargs.get('radius', 'N/A')}")
     print(f"Default n_bits: {info.default_kwargs.get('n_bits', 'N/A')}")
 ```
-

@@ -254,7 +254,7 @@ export MOLBLENDER_CACHE_ENABLED=false
 
 ## 相关文档
 
-- [架构诊断报告](../../Archive/ARCHITECTURE_DIAGNOSIS.md) - 架构优化详情
+- [架构概览](development/architecture.md) - 当前架构与分层说明
 - [API使用指南](api_guide.md) - 统一API层使用
 - [迁移指南](migration_guide.md) - 从旧API迁移到新API
 

@@ -138,7 +138,7 @@ print(cache_config.hf_home)
 
 ### 5. Infrastructure 层迁移
 
-#### 旧方式（deprecated）
+#### 旧方式（已删除 / removed）
 
 ```python
 from molblender.models.api.core.evaluation.utilities import timeout_context
@@ -247,11 +247,19 @@ from molblender.models.api.infrastructure import (
 
 ### Q1: 我必须立即迁移到新 API 吗？
 
-**A**: 不必须。旧 API 仍然完全可用，新 API 提供了更一致的接口。您可以逐步迁移，或者继续使用旧 API。
+**A**: 取决于你使用的是哪一层 API。
+
+- 顶层 workflow API（如 `molblender.api`、`molblender.models`）仍然可用，通常可以渐进迁移
+- 但本文列出的低层内部入口里，有些已经删除，例如 `timeout_context` 和 `resource_scheduler`
+- 如果你的代码直接依赖这些已删除入口，就需要立即切到 `ExecutionContext` / `ResourcePolicy`
 
 ### Q2: 迁移后性能会变化吗？
 
-**A**: 不会。新 API 只是重新组织了导入路径，底层实现完全相同。
+**A**: 对大多数用户工作流来说，行为目标不变；但运行时管理已经统一到了 Infrastructure 层，因此导入路径和内部执行组织方式确实发生了变化。收益主要是：
+
+1. 更一致的资源策略
+2. 更清晰的错误和 telemetry 语义
+3. 更轻量的顶层导入
 
 ### Q3: 如何处理已删除的 API？
 
@@ -338,7 +346,7 @@ def main():
 ## 相关文档
 
 - [ConfigManager 使用指南](config_manager_guide.md) - 配置管理详情
-- [架构诊断报告](../../Archive/ARCHITECTURE_DIAGNOSIS.md) - 架构优化详情
+- [架构概览](development/architecture.md) - 当前架构与迁移背景
 - [快速开始指南](quickstart.md) - 新手入门指南
 
 ---

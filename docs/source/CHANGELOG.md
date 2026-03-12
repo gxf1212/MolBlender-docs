@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Architecture Role Catalog & Executable Snapshot** (2026-03-12)
+  - Added machine-readable package role metadata across top-level facades, domain APIs, visualization layers, and execution layers
+  - Added `molblender.architecture_roles` helpers for:
+    - package role catalog
+    - recommended entrypoints
+    - execution layer decisions
+    - visualization layer decisions
+    - migration guidance
+  - Added `python -m molblender.architecture_roles` JSON snapshot output
+  - Impact: Architecture guidance is now executable, testable, and CI-friendly
+
+- **Execution Layer Boundary Contracts** (2026-03-12)
+  - Added contract tests to lock the distinction between:
+    - `molblender.models.api.infrastructure` (primary screening runtime)
+    - `molblender.execution` (generic execution helpers)
+    - `molblender.models.execution` (compatibility layer)
+  - Added import-isolation and public-surface tests to prevent legacy executor leakage into recommended APIs
+  - Impact: Clearer long-term migration path and lower risk of architectural drift
+
 - **Infrastructure: Telemetry Package Modularization** (2026-03-11)
   - Replaced monolithic `telemetry.py` (755 lines) with modular `telemetry/` package
   - New structure: `types.py`, `backends.py`, `emitter.py`, `global_emitter.py`, `legacy.py`
@@ -50,6 +69,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Impact: Architectural boundaries locked down, prevents future drift
 
 ### Changed
+
+- **Top-Level Facades Now Use Lazy Imports**
+  - `molblender` and `molblender.api` now use lazy facade exports
+  - Importing the top-level package no longer eagerly loads large subpackages such as representations, models, dashboard, or drawings
+  - Workflow subfacades (`molblender.api.models`, `molblender.api.representations`, `molblender.api.dashboard`) also use lighter import paths
+  - Impact: Faster startup, lower import overhead, and cleaner package boundaries
+
+- **Execution and Architecture Documentation Refined**
+  - Updated source README files and developer-facing docs to distinguish current recommended layers from historical compatibility layers
+  - Clarified that `models.api.core` is the screening engine core, not the project-wide core
+  - Clarified that `drawings` is for static plotting while `dashboard` is the interactive UI
+  - Impact: Easier navigation for contributors and clearer package roles for users
 
 - **Telemetry Module Organization**
   - Old: Single file `telemetry.py` with all implementations
@@ -1266,4 +1297,3 @@ infrastructure/telemetry/
 - ✅ Individual Model: Scatter plot正常渲染
 - ✅ 所有4个修复的文件通过手动测试
 - ✅ 模块化重构保持向后兼容性
-

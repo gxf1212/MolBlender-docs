@@ -213,11 +213,13 @@ MolBlender now uses `KFold(random_state=42)` for cross-validation, ensuring **co
 
 After cross-validation, the model is trained on the **entire training set** to maximize performance.
 
-**Code Location**: `evaluator.py:167-183`
+**Code Location**: `models/api/core/evaluation/evaluator.py`
 
 ```python
 # Train final model using ALL training data
-with timeout_context(train_timeout, f"Train {model_name}+{representation_name}"):
+execution_context = ExecutionContext.from_screening_config(config)
+
+with execution_context.timeout_context(timeout=train_timeout):
     n_samples = X_train.shape[0]  # 800 samples
     logger.debug(f"Training {model_name} on {n_samples} samples")
 
@@ -225,6 +227,8 @@ with timeout_context(train_timeout, f"Train {model_name}+{representation_name}")
     model.fit(X_train, y_train)
     training_time = time.time() - start_time
 ```
+
+MolBlender now routes timeout and runtime policy through `molblender.models.api.infrastructure.ExecutionContext` rather than the removed standalone `timeout_context` helper.
 
 ### Test Set Evaluation
 

@@ -11,6 +11,48 @@ MolBlender is built around four core principles:
 3. **Lazy Loading**: Dependencies loaded only when needed
 4. **Type Safety**: Comprehensive type hints throughout
 
+Since the 2026-03 architecture consolidation, MolBlender also follows two packaging rules:
+
+5. **Facade First**: public entrypoints stay lightweight and stable
+6. **Explicit Role Boundaries**: workflow facades, engine internals, runtime infrastructure, and compatibility layers are separated
+
+## Current Package Roles
+
+MolBlender now exposes package-role metadata directly in code. The main roles are:
+
+| Package | Role | Stability |
+|---------|------|-----------|
+| `molblender` | Top-level convenience surface | Recommended |
+| `molblender.api` | Unified public facade | Recommended |
+| `molblender.models` | Domain models facade | Recommended |
+| `molblender.representations` | Domain representations facade | Recommended |
+| `molblender.drawings` | Static plotting utilities | Supported |
+| `molblender.dashboard` | Interactive dashboard UI | Supported |
+| `molblender.models.api.core` | Screening engine core | Internal |
+| `molblender.models.api.infrastructure` | Screening runtime infrastructure | Internal |
+| `molblender.execution` | Generic execution helpers | Supported |
+| `molblender.models.execution` | Legacy model execution | Compatibility |
+
+This metadata can be queried programmatically:
+
+```python
+from molblender.architecture_roles import (
+    get_package_role_catalog,
+    get_recommended_entrypoints,
+    get_execution_layer_decisions,
+)
+
+catalog = get_package_role_catalog()
+recommended = get_recommended_entrypoints()
+execution_layers = get_execution_layer_decisions()
+```
+
+For tooling or CI diagnostics, MolBlender can emit a JSON architecture snapshot:
+
+```bash
+python -m molblender.architecture_roles
+```
+
 ## Core Components
 
 ### 1. Representations System
@@ -65,8 +107,9 @@ Automated machine learning with multi-modal support.
 **Components:**
 - **Model Corpus**: Pre-defined model configurations with parameter grids
 - **Modality Detector**: Automatic detection of data modalities
-- **Parallel Executor**: Smart parallelization (light tasks in parallel, heavy tasks sequential)
-- **Checkpoint Manager**: Crash recovery and incremental updates
+- **Screening Engine Core**: Dataset handling, evaluation, HPO, result processing
+- **Runtime Infrastructure**: ExecutionContext, ResourcePolicy, telemetry, error classification
+- **Compatibility Layers**: Legacy execution helpers kept for backward compatibility
 
 **Screening Workflow:**
 1. Detect available modalities in dataset
@@ -127,6 +170,18 @@ SQLite Database
 Dashboard Visualization
 ```
 
+### Execution Layer Decisions
+
+Execution-related code now has three distinct layers:
+
+| Layer | Status | Purpose |
+|-------|--------|---------|
+| `molblender.models.api.infrastructure` | Primary | Active runtime policy for screening workflows |
+| `molblender.execution` | Supported | Generic execution/batching helpers outside the screening engine |
+| `molblender.models.execution` | Compatibility | Legacy executor/checkpoint APIs retained for older imports |
+
+This distinction matters because the public workflow APIs should depend on `models.api.infrastructure`, not on the legacy executor packages.
+
 ## Extension Points
 
 ### Adding New Featurizers
@@ -161,13 +216,13 @@ See {doc}`adding_features/modalities` for details.
 ### Parallelization Strategy
 
 **Light Tasks** (fingerprints, descriptors):
-- Parallel across all combinations
+- Parallel across combinations when allowed by runtime policy
 - CPU-bound, benefit from multiprocessing
 
 **Heavy Tasks** (CNN, Transformers):
-- Sequential execution
-- GPU utilization within each task
-- Prevents GPU memory conflicts
+- Often routed through more conservative execution modes
+- GPU utilization happens inside each task
+- Runtime policy avoids oversubscription and GPU memory conflicts
 
 ### Caching Strategy
 
@@ -185,7 +240,7 @@ See {doc}`adding_features/modalities` for details.
 
 ```
 src/molblender/
-├── representations/     # Feature generators
+├── representations/     # Feature generators and representation catalogs
 │   ├── fingerprints/   # Traditional fingerprints
 │   ├── descriptors/    # Molecular descriptors
 │   ├── sequential/     # Language models
@@ -199,13 +254,27 @@ src/molblender/
 │   ├── dataset/        # Dataset classes
 │   └── io.py           # Input handling
 ├── models/             # ML models
-│   ├── api/            # User-facing API
+│   ├── api/            # Screening engine, runtime infrastructure, results DB
 │   ├── corpus/         # Model definitions
 │   ├── modality_models/ # Modality-specific wrappers
-│   └── execution/      # Parallel execution
+│   └── execution/      # Legacy execution compatibility layer
+├── execution/          # Generic execution helpers
+├── drawings/           # Static plotting utilities
 ├── config/             # Global configuration
 └── dashboard/          # Streamlit visualization
 ```
+
+## Public Surface Recommendations
+
+For user-facing code, prefer:
+
+- `molblender.api` for quick scripts and tutorials
+- `molblender.models` for richer screening workflows
+- `molblender.representations` for deeper featurizer work
+- `molblender.drawings` for static figures
+- `molblender.dashboard` for interactive result exploration
+
+Avoid using internal packages such as `molblender.models.api.core` or `molblender.models.api.infrastructure` unless you are extending MolBlender itself.
 
 ## Design Patterns
 
