@@ -295,6 +295,7 @@ the other.
 | `molblender.data.protein` | 蛋白对象与序列/PDB 读取 | Supported |
 | `molblender.data.diagnostics` | 数据质量分析 | Specialized |
 | `molblender.data.cache` | 缓存实现 | Supported |
+| `molblender.data.cache.multimodal` | 多模态专用缓存与特殊存储后端 | Supported |
 | `molblender.data.preprocessing` | 特征预处理、平衡、时间分割等辅助工具 | Supported |
 
 这些子域现在都采用 lazy facade，导入顶层 `molblender.data` 不会自动把它们全部拉进内存。

@@ -32,6 +32,7 @@ MolBlender now exposes package-role metadata directly in code. The main roles ar
 | `molblender.data.protein` | Protein subdomain | Supported |
 | `molblender.data.diagnostics` | Data diagnostics subdomain | Specialized |
 | `molblender.data.cache` | Data cache subdomain | Supported |
+| `molblender.data.cache.multimodal` | Multimodal cache subdomain | Supported |
 | `molblender.data.preprocessing` | Data preprocessing subdomain | Supported |
 | `molblender.drawings` | Static plotting utilities | Supported |
 | `molblender.dashboard` | Interactive dashboard UI | Supported |
@@ -114,6 +115,7 @@ Current data packaging is split into three primary layers plus one supporting ut
 - `molblender.data.protein`: protein objects and sequence/PDB helpers
 - `molblender.data.diagnostics`: dataset-quality analysis
 - `molblender.data.cache`: cache implementations
+- `molblender.data.cache.multimodal`: specialized modality-aware cache storage
 - `molblender.data.preprocessing`: feature preparation, balancing, and temporal split helpers
 
 **Key Classes:**
