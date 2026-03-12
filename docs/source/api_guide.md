@@ -291,6 +291,8 @@ the other.
 | 子域 | 定位 | 推荐级别 |
 |------|------|----------|
 | `molblender.data.dataset` | 数据集结构与 public splitting helpers | Recommended |
+| `molblender.data.molecule` | 单分子对象与文件读取 | Supported |
+| `molblender.data.protein` | 蛋白对象与序列/PDB 读取 | Supported |
 | `molblender.data.diagnostics` | 数据质量分析 | Specialized |
 | `molblender.data.cache` | 缓存实现 | Supported |
 | `molblender.data.preprocessing` | 特征预处理、平衡、时间分割等辅助工具 | Supported |
