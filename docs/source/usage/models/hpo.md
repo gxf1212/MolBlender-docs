@@ -233,7 +233,8 @@ results = universal_screen(
     db_path="optimization.db"
 )
 
-# Then manually run Optuna on top 3 models using OptunaOptimizer
+# Advanced internal hook: manually run Optuna on top models only if you are
+# extending MolBlender beyond the standard universal_screen() workflow.
 from molblender.models.api.core.hpo.optuna_optimizer import create_optimizer
 
 optuna = create_optimizer(
@@ -242,6 +243,10 @@ optuna = create_optimizer(
     pruning=True               # Early stopping enabled
 )
 ```
+
+The `create_optimizer()` path above is an advanced internal hook. For normal
+user workflows, stop at `universal_screen(enable_hpo=True, ...)` unless you
+explicitly need custom Stage 3 optimization control.
 
 **When to Use Optuna**:
 - ✅ **Top models** (top 3) from coarse grid deserve focused optimization
