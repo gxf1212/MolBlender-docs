@@ -368,7 +368,7 @@ print(f"Test MW range: {np.mean([...]):.1f}")
 
 ```python
 # First: Scaffold split to get novel scaffolds
-from molblender.models.api.core.splitting import scaffold_split
+from molblender.data.dataset.splitting import scaffold_split
 
 scaffold_result = scaffold_split(
     X=dataset.features.values,
@@ -381,7 +381,7 @@ scaffold_result = scaffold_split(
 scaffold_test_idx = scaffold_result['test_indices']
 scaffold_test_dataset = dataset.subset(scaffold_test_idx)
 
-from molblender.models.api.core.splitting import dnr_split
+from molblender.data.dataset.splitting import dnr_split
 dnr_result = dnr_split(
     dataset=scaffold_test_dataset,
     mode="threshold",

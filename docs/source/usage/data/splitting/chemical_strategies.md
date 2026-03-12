@@ -80,7 +80,7 @@ Assign entire scaffold groups to train or test
 Extracts the core ring system and linker atoms, removing all side chains.
 
 ```python
-from molblender.models.api.core.splitting import compute_bemis_murcko_scaffolds
+from molblender.data.dataset.splitting import compute_bemis_murcko_scaffolds
 
 smiles = [
     "c1ccccc1CCO",      # Benzene + ethanol side chain
@@ -99,7 +99,7 @@ scaffolds = compute_bemis_murcko_scaffolds(smiles)
 Further abstracts by replacing all atoms with carbons and all bonds with single bonds.
 
 ```python
-from molblender.models.api.core.splitting import compute_generic_scaffolds
+from molblender.data.dataset.splitting import compute_generic_scaffolds
 
 smiles = [
     "c1ccccc1CCO",    # Aromatic benzene ring
@@ -151,7 +151,7 @@ result = scaffold_split(
 ### Direct Usage
 
 ```python
-from molblender.models.api.core.splitting import scaffold_split
+from molblender.data.dataset.splitting import scaffold_split
 import numpy as np
 
 # Your data
@@ -310,7 +310,7 @@ Leave-cluster-out validation
 ### Direct Usage
 
 ```python
-from molblender.models.api.core.splitting import butina_split
+from molblender.data.dataset.splitting import butina_split
 
 # Perform Butina clustering split
 result = butina_split(
@@ -473,7 +473,7 @@ results = universal_screen(
 #### Example 1: User-Provided Features (3D Embeddings)
 
 ```python
-from molblender.models.api.core.splitting import feature_clustering_split
+from molblender.data.dataset.splitting import feature_clustering_split
 from molblender.representations import SomeEmbeddingGenerator
 
 # Generate custom embeddings

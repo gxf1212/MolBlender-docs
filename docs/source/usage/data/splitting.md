@@ -412,7 +412,7 @@ Assign entire scaffold groups to train or test
 Extracts the core ring system and linker atoms, removing all side chains.
 
 ```python
-from molblender.models.api.core.splitting import compute_bemis_murcko_scaffolds
+from molblender.data.dataset.splitting import compute_bemis_murcko_scaffolds
 
 smiles = [
     "c1ccccc1CCO",      # Benzene + ethanol side chain
@@ -429,7 +429,7 @@ scaffolds = compute_bemis_murcko_scaffolds(smiles)
 Further abstracts by replacing all atoms with carbons and all bonds with single bonds, focusing purely on topology.
 
 ```python
-from molblender.models.api.core.splitting import compute_generic_scaffolds
+from molblender.data.dataset.splitting import compute_generic_scaffolds
 
 smiles = [
     "c1ccccc1CCO",    # Aromatic benzene ring
@@ -517,7 +517,7 @@ print(f"Test R²: {results['best_model']['test_r2']:.3f}")
 For more control, use the scaffold split function directly:
 
 ```python
-from molblender.models.api.core.splitting import scaffold_split
+from molblender.data.dataset.splitting import scaffold_split
 import numpy as np
 
 # Your data
@@ -685,7 +685,7 @@ Leave-cluster-out validation
 #### Direct Usage
 
 ```python
-from molblender.models.api.core.splitting import butina_split
+from molblender.data.dataset.splitting import butina_split
 
 # Perform Butina clustering split
 result = butina_split(
@@ -855,7 +855,7 @@ results = universal_screen(
 #### Direct Usage
 
 ```python
-from molblender.models.api.core.splitting import feature_clustering_split
+from molblender.data.dataset.splitting import feature_clustering_split
 from molblender.data import MolecularDataset
 
 # Example 1: User-provided features (3D embeddings)
@@ -1210,7 +1210,7 @@ assert (results1['test_indices'] == results2['test_indices']).all()
 If you need specialized splitting logic not covered by the built-in strategies, use the `user_provided` strategy:
 
 ```python
-from molblender.models.api.core.splitting import validate_user_splits
+from molblender.data.dataset.splitting import validate_user_splits
 
 # Your custom splitting logic
 def my_custom_split(dataset, test_ratio=0.2):
@@ -2040,4 +2040,3 @@ Advanced splitting strategies adapted from the **splito package**:
 
 All `datamol` dependencies have been replaced with direct RDKit calls for compatibility.
 ```
-

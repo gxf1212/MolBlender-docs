@@ -133,7 +133,7 @@ splits = dnr_split(
 ### Direct Usage
 
 ```python
-from molblender.models.api.core.splitting import dnr_split
+from molblender.data.dataset.splitting import dnr_split
 
 # Threshold mode
 splits = dnr_split(
@@ -334,7 +334,7 @@ splits = maxmin_split(
 ### Direct Usage
 
 ```python
-from molblender.models.api.core.splitting import maxmin_split
+from molblender.data.dataset.splitting import maxmin_split
 
 # Unfriendly mode (diverse test set)
 splits = maxmin_split(
