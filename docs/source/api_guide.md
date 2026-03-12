@@ -165,6 +165,109 @@ molblender.analyze_results(...)  # 需要更丰富的 API
 | **静态图表** | `molblender.drawings` | - |
 | **交互式探索** | `molblender.dashboard` | - |
 
+## Dashboard Tools Comparison
+
+MolBlender provides two independent Dashboard tools for different purposes:
+
+### Top-Level Dashboard (`molblender view`)
+
+**Purpose**: Screening results analysis and visualization
+
+**When to use**: After model training
+
+**Launch**:
+```bash
+# CLI
+molblender view /path/to/results
+
+# Or specify database file
+molblender view screening_results.db
+
+# Python API
+from molblender.api import run_dashboard
+run_dashboard(db_path="screening_results.db")
+```
+
+**Key Features**:
+- Model performance comparison visualization
+- Hyperparameter analysis
+- Experiment comparison and ranking
+- Results export
+- Interactive data exploration
+
+**Typical Use Cases**:
+- View best models after screening
+- Compare performance across representations
+- Analyze hyperparameter effects
+- Select optimal model for production
+
+### Diagnostics Dashboard (`molblender-diagnostics`)
+
+**Purpose**: Dataset quality diagnostics
+
+**When to use**: Before model training
+
+**Launch**:
+```bash
+# CLI (upload dataset in UI)
+molblender-diagnostics
+
+# Or specify dataset file
+molblender-diagnostics dataset.csv
+
+# Custom column names
+molblender-diagnostics data.csv --input-column SMILES --label-column pIC50
+
+# Python module
+python -m molblender.data.diagnostics.dashboard data.csv
+```
+
+**Key Features**:
+- DNR (Different Neighbor Ratio) analysis
+- Activity cliffs detection
+- Molecular diversity analysis
+- Data quality report generation
+- Dataset statistics and visualization
+
+**Typical Use Cases**:
+- Assess dataset quality before modeling
+- Detect problematic regions in dataset
+- Identify chemical space gaps
+- Understand potential model failure reasons
+
+### Dashboard Selection Guide
+
+| Need | Tool | Input Format |
+|------|------|--------------|
+| Analyze screening results | Top-Level Dashboard | SQLite database (.db) |
+| Diagnose data quality | Diagnostics Dashboard | CSV dataset |
+| Visualize model performance | Top-Level Dashboard | SQLite database (.db) |
+| Detect activity cliffs | Diagnostics Dashboard | CSV dataset |
+| Compare experiments | Top-Level Dashboard | SQLite database (.db) |
+| Evaluate molecular diversity | Diagnostics Dashboard | CSV dataset |
+
+### Workflow Example
+
+Typical workflow uses both Dashboards sequentially:
+
+```bash
+# 1. Before modeling: diagnose data quality
+molblender-diagnostics my_dataset.csv
+# → Identify high-DNR regions, decide to add more data
+
+# 2. Run model screening
+from molblender.api import screen_models
+results = screen_models(...)
+
+# 3. After modeling: analyze screening results
+molblender view screening_results.db
+# → View best models, analyze performance
+```
+
+**Note**: The two Dashboards are completely independent tools in different modules:
+- Top-Level Dashboard: `molblender/dashboard/`
+- Diagnostics Dashboard: `molblender/data/diagnostics/dashboard/`
+
 ### 运行时与执行层说明
 
 绝大多数用户不需要直接导入执行层，但为了避免混淆，当前执行相关层的定位如下：
