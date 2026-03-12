@@ -4,7 +4,7 @@ This guide covers common issues and solutions when using the MolBlender Dashboar
 
 ## Table of Contents
 
-1. [🚀 Quick Troubleshooting Path](#quick-troubleshooting-path) - NEW
+1. {ref}`🚀 Quick Troubleshooting Path <quick-troubleshooting-path>` - NEW
 2. [Merged Sessions Loading](#merged-sessions-loading)
 3. [Common Error Messages](#common-error-messages)
 4. [Diagnostic Commands](#diagnostic-commands)
@@ -12,6 +12,7 @@ This guide covers common issues and solutions when using the MolBlender Dashboar
 
 ---
 
+(quick-troubleshooting-path)=
 ## 🚀 Quick Troubleshooting Path
 
 **Get your Dashboard working in 3 steps or less.**

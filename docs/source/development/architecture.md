@@ -52,6 +52,11 @@ For day-to-day workflow code, prefer `molblender.api`, `molblender.models`, or
 supported discovery surface, but it is no longer the primary recommended entry
 layer for user examples.
 
+Likewise, `molblender.models.execution` remains available for compatibility,
+but package-level imports such as `from molblender.models.execution import
+ParallelExecutor` now emit deprecation warnings that point new screening runtime
+work toward `molblender.models.api.infrastructure`.
+
 For tooling or CI diagnostics, MolBlender can emit a JSON architecture snapshot:
 
 ```bash

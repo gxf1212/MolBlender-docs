@@ -655,7 +655,7 @@ print(f"Cohen's d: {cohens_d:.3f}")
 
 ## API Reference
 
-See {doc}`/api/models/lead_sensitivity` for complete API documentation.
+See {doc}`lead_sensitivity` for the complete user-facing guide and examples.
 
 ## Next Steps
 
