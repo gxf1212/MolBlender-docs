@@ -128,10 +128,14 @@ from molblender.drawings import (
 from molblender.dashboard import run_dashboard
 
 # 启动交互式 Dashboard
-run_dashboard()
+run_dashboard("screening_results.db")
 ```
 
-**定位**：基于 Streamlit 的交互式 Web UI
+**定位**：基于 Streamlit 的交互式 Web UI 启动层
+
+**说明**：
+- `molblender.dashboard.run_dashboard(...)` 是 UI package 自己的低层启动入口
+- 常规工作流代码更推荐使用 `molblender.api.run_dashboard(...)`
 
 ### 顶层 molblender（最常用功能）
 
@@ -185,7 +189,7 @@ molblender view screening_results.db
 
 # Python API
 from molblender.api import run_dashboard
-run_dashboard(db_path="screening_results.db")
+run_dashboard("screening_results.db")
 ```
 
 **Key Features**:
@@ -233,7 +237,7 @@ python -m molblender.data.diagnostics.dashboard data.csv
 ```python
 from molblender.data import diagnostics
 
-diagnostics.dashboard.run_diagnostics_dashboard()
+diagnostics.dashboard.run_diagnostics_dashboard("dataset.csv")
 ```
 
 **Typical Use Cases**:
@@ -289,7 +293,7 @@ the other.
 | `molblender.execution` | 通用执行/批处理辅助工具 | 需要独立批处理工具的开发者 |
 | `molblender.models.execution` | 兼容层（legacy） | 旧代码迁移 |
 
-一般用户应优先使用 `screen_models()`、`universal_screen()`、`run_dashboard()` 等 workflow 入口，而不是直接拼装 execution/runtime 组件。
+一般用户应优先使用 `screen_models()`、`universal_screen()`、`molblender.api.run_dashboard()` 等 workflow 入口，而不是直接拼装 execution/runtime 组件。
 
 ### 数据子域说明
 
@@ -545,18 +549,20 @@ print(f"最佳分数: {best_result['primary_metric']}")
 from molblender.api import run_dashboard
 
 # 启动 Dashboard（默认端口 8501）
-run_dashboard()
+run_dashboard("screening_results.db")
 
 # 指定数据库和端口
 run_dashboard(
-    db_path="screening_results.db",
+    "screening_results.db",
     port=8502,
+    no_browser=True,
 )
 ```
 
 **参数**:
-- `db_path` (`str | None`): 数据库路径
+- `results_path` (`str | Path`): 结果数据库或结果目录路径
 - `port` (`int`): Web 服务端口
+- `no_browser` (`bool`): 不自动打开浏览器
 
 #### load_dashboard_data()
 
@@ -607,7 +613,7 @@ results = screen_models(
 print(f"完成 {len(results)} 个模型-表征组合筛选")
 
 # 4. 启动 Dashboard 可视化
-run_dashboard(db_path="results.db")
+run_dashboard("results.db")
 ```
 
 ### 示例2: 分类任务

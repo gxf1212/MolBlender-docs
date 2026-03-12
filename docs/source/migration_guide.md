@@ -17,6 +17,8 @@ from molblender.models import screen_models
 
 # Dashboard相关
 from molblender.dashboard import run_dashboard
+
+run_dashboard("screening_results.db")
 ```
 
 ### 新 API（统一入口）
@@ -28,6 +30,8 @@ from molblender.api import (
     screen_models,
     run_dashboard,
 )
+
+run_dashboard("screening_results.db")
 ```
 
 ## 详细迁移指南

@@ -62,6 +62,12 @@ For day-to-day workflow code, prefer `molblender.api`, `molblender.models`, or
 supported discovery surface, but it is no longer the primary recommended entry
 layer for user examples.
 
+The workflow facade `molblender.api.dashboard.run_dashboard()` delegates
+directly to the same `view` command implementation used by the CLI, instead of
+mutating `sys.argv` or relying on a separate dashboard-only CLI module.
+The UI package itself, `molblender.dashboard.run_dashboard()`, remains a
+lower-level Streamlit launcher that can optionally accept a results path.
+
 Likewise, `molblender.models.execution` remains available for compatibility,
 but package-level imports such as `from molblender.models.execution import
 ParallelExecutor` now emit deprecation warnings that point new screening runtime

@@ -13,7 +13,7 @@ The model corpus contains definitions for 28+ machine learning models with optim
 Model Corpus
 ------------
 
-.. automodule:: molblender.models.corpus.model_corpus
+.. automodule:: molblender.models.corpus
    :members:
    :undoc-members:
    :show-inheritance:
@@ -21,7 +21,7 @@ Model Corpus
 Parameter Grids
 ---------------
 
-.. automodule:: molblender.models.corpus.parameter_grids
+.. automodule:: molblender.models.corpus.grids
    :members:
    :undoc-members:
    :show-inheritance:

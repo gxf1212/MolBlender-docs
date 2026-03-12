@@ -18,13 +18,12 @@ MolBlender provides multiple API layers. For this tutorial, we use:
 
 ```python
 # Recommended: Unified API (molblender.api)
-from molblender.api import screen_models, get_featurizer
+from molblender.api import get_featurizer, run_dashboard, screen_models
 
 # For richer features: Domain APIs
 from molblender.models import analyze_results  # ML analysis
 from molblender.representations import get_featurizer_info  # Detailed info
 from molblender.drawings import plot_publication_regression  # Static plots
-from molblender.dashboard import run_dashboard  # Interactive UI
 ```
 
 **Quick guide**:
@@ -32,7 +31,7 @@ from molblender.dashboard import run_dashboard  # Interactive UI
 - **Advanced features**: Use domain APIs (`molblender.models`, `molblender.representations`)
 - **Data loading and diagnostics**: Use `molblender.data`
 - **Static plots**: Use `molblender.drawings`
-- **Interactive exploration**: Use `molblender.dashboard`
+- **Interactive exploration**: Use `molblender.api.run_dashboard(...)` or `molblender view`
 
 Notes:
 - `import molblender` and `import molblender.api` are both lightweight lazy facades.

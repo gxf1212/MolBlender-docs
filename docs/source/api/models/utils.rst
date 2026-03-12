@@ -37,10 +37,10 @@ GPU Management
    :undoc-members:
    :show-inheritance:
 
-Resource Scheduling
--------------------
+Result Storage
+--------------
 
-.. automodule:: molblender.models.api.utils.resource_scheduler
+.. automodule:: molblender.models.api.utils.storage
    :members:
    :undoc-members:
    :show-inheritance:
