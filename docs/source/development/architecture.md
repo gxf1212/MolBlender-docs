@@ -73,6 +73,15 @@ but package-level imports such as `from molblender.models.execution import
 ParallelExecutor` now emit deprecation warnings that point new screening runtime
 work toward `molblender.models.api.infrastructure`.
 
+(metadata_routing)=
+## Scikit-learn Metadata Routing
+
+Some MolBlender splitters inherit scikit-learn estimator helpers that expose
+metadata-routing methods such as `set_split_request()`. The generated API docs
+may cross-reference this section when documenting inherited scikit-learn
+behavior. These routing helpers are implementation details of estimator
+interoperability, not a separate MolBlender runtime layer.
+
 For tooling or CI diagnostics, MolBlender can emit a JSON architecture snapshot:
 
 ```bash
