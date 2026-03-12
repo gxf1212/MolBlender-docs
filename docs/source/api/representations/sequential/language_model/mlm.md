@@ -1,159 +1,121 @@
-# Masked Language Model API
+# Molecular Language Model API
 
-API reference for masked language modeling functionality with SMILES.
+API reference for SMILES language-model featurizers exposed through
+`molblender.representations.sequential.language_model`.
 
 ## Overview
 
-This module provides masked language modeling capabilities for SMILES strings, enabling pre-training and fine-tuning of transformer models on molecular data.
+MolBlender currently exposes **featurizers** built on top of pretrained
+molecular language models. This page documents the public featurizer surface,
+not historical pretraining-only MLM helper classes.
 
-## Classes
+## Core Base Class
+
+### BaseMolecularLM
+
+```{eval-rst}
+.. autoclass:: molblender.representations.sequential.language_model.BaseMolecularLM
+   :members:
+   :no-index:
+   :show-inheritance:
+```
+
+## BERT-Family Featurizers
 
 ### ChemBERTFeaturizer
 
 ```{eval-rst}
-.. autoclass:: molblender.representations.sequential.language_model.mlm.ChemBERTFeaturizer
+.. autoclass:: molblender.representations.sequential.language_model.ChemBERTFeaturizer
    :members:
+   :no-index:
    :show-inheritance:
 ```
 
 ### ChemBERTaFeaturizer
 
 ```{eval-rst}
-.. autoclass:: molblender.representations.sequential.language_model.mlm.ChemBERTaFeaturizer
+.. autoclass:: molblender.representations.sequential.language_model.ChemBERTaFeaturizer
    :members:
+   :no-index:
    :show-inheritance:
 ```
 
-### BaseMolecularLM
+### MolBERTFeaturizer
 
 ```{eval-rst}
-.. autoclass:: molblender.representations.sequential.language_model.mlm.BaseMolecularLM
+.. autoclass:: molblender.representations.sequential.language_model.MolBERTFeaturizer
    :members:
+   :no-index:
    :show-inheritance:
 ```
 
-## Functions
-
-### MLM Training Utilities
+### SMILESBERTFeaturizer
 
 ```{eval-rst}
-.. automodule:: molblender.representations.sequential.language_model.mlm
+.. autoclass:: molblender.representations.sequential.language_model.SMILESBERTFeaturizer
    :members:
+   :no-index:
+   :show-inheritance:
+```
+
+## Transformer-Family Featurizers
+
+### MolFormerFeaturizer
+
+```{eval-rst}
+.. autoclass:: molblender.representations.sequential.language_model.MolFormerFeaturizer
+   :members:
+   :no-index:
+   :show-inheritance:
+```
+
+### XMOLFeaturizer
+
+```{eval-rst}
+.. autoclass:: molblender.representations.sequential.language_model.XMOLFeaturizer
+   :members:
+   :no-index:
+   :show-inheritance:
+```
+
+### SELFormerFeaturizer
+
+```{eval-rst}
+.. autoclass:: molblender.representations.sequential.language_model.SELFormerFeaturizer
+   :members:
+   :no-index:
    :show-inheritance:
 ```
 
 ## Usage Examples
 
-### Basic MLM Usage
+### Basic ChemBERTa Usage
 
 ```python
-from molblender.representations.sequential.language_model import SmilesMLMFeaturizer
+from molblender.representations.sequential.language_model import ChemBERTaFeaturizer
 
-# Create MLM featurizer
-mlm_model = SmilesMLMFeaturizer(
-    model_name="chemberta-mlm",
-    mask_probability=0.15
+featurizer = ChemBERTaFeaturizer(
+    model_name="seyonec/ChemBERTa-zinc-base-v1",
+    pooling="mean",
 )
 
-# Generate masked predictions
-smiles = "CC(=O)OC1=CC=CC=C1C(=O)O"  # Aspirin
-masked_predictions = mlm_model.predict_masked(smiles)
+embeddings = featurizer.featurize(["CCO", "c1ccccc1"])
 ```
 
-### Fine-tuning on Custom Data
+### MolFormer Usage
 
 ```python
-from molblender.representations.sequential.language_model import ChemBERTaMLM
+from molblender.representations.sequential.language_model import MolFormerFeaturizer
 
-# Initialize model for fine-tuning
-model = ChemBERTaMLM(
-    pretrained_model="chemberta-base",
-    vocab_size=1000,
-    max_length=512
+featurizer = MolFormerFeaturizer(
+    model_name="ibm/MoLFormer-XL-both-10pct",
+    pooling="cls",
 )
 
-# Fine-tune on custom SMILES dataset
-training_smiles = ["CCO", "c1ccccc1", "CC(=O)O", ...]
-model.fine_tune(training_smiles, epochs=10, batch_size=32)
+embeddings = featurizer.featurize(["CC(=O)O", "CCN(CC)CC"])
 ```
-
-### Custom MLM Configuration
-
-```python
-from molblender.representations.sequential.language_model import SMILESBERTMLMConfig
-
-# Custom configuration
-config = SMILESBERTMLMConfig(
-    vocab_size=2000,
-    hidden_size=768,
-    num_hidden_layers=12,
-    num_attention_heads=12,
-    intermediate_size=3072,
-    max_position_embeddings=512,
-    mask_token_id=103,
-    pad_token_id=0
-)
-
-# Use config to initialize model
-model = ChemBERTaMLM(config=config)
-```
-
-## Model Architecture
-
-### Transformer Components
-
-The MLM models use standard transformer architecture:
-
-- **Embedding Layer**: Converts tokens to embeddings
-- **Positional Encoding**: Adds positional information
-- **Transformer Blocks**: Multi-head attention + feed-forward
-- **MLM Head**: Predicts masked tokens
-
-### Training Objectives
-
-- **Masked Language Modeling**: Predict randomly masked tokens
-- **Token Type Prediction**: Distinguish different token types
-- **Position Prediction**: Learn positional relationships
-
-## Configuration Parameters
-
-### Model Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `vocab_size` | int | 1000 | Size of the vocabulary |
-| `hidden_size` | int | 768 | Hidden dimension size |
-| `num_hidden_layers` | int | 12 | Number of transformer layers |
-| `num_attention_heads` | int | 12 | Number of attention heads |
-| `intermediate_size` | int | 3072 | Feed-forward intermediate size |
-| `max_position_embeddings` | int | 512 | Maximum sequence length |
-
-### Training Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `mask_probability` | float | 0.15 | Probability of masking tokens |
-| `replace_probability` | float | 0.8 | Probability of replacing with [MASK] |
-| `random_probability` | float | 0.1 | Probability of random replacement |
-| `learning_rate` | float | 1e-4 | Learning rate for training |
-| `batch_size` | int | 32 | Training batch size |
-
-## Performance Considerations
-
-### Memory Usage
-
-- **Model Size**: ~110M parameters for base model
-- **Training Memory**: 4-8GB GPU memory recommended
-- **Inference**: 1-2GB for typical batch sizes
-
-### Training Tips
-
-1. **Data Preparation**: Clean and canonicalize SMILES
-2. **Batch Size**: Start with smaller batches, increase gradually
-3. **Learning Rate**: Use warmup scheduling
-4. **Validation**: Monitor perplexity and reconstruction accuracy
 
 ## See Also
 
 - {doc}`../../../../usage/representations/sequential/mlm` - Usage guide
-- {doc}`../../../../usage/representations/sequential/language_model` - Language model usage
+- {doc}`../index` - Sequential representations index

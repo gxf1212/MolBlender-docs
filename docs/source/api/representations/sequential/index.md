@@ -17,9 +17,9 @@ language_model/mlm
 
 ## Language Models
 
-SMILES-based language models for molecular representation learning.
+SMILES-based molecular language-model featurizers for representation learning.
 
-- {doc}`language_model/mlm` - Masked language modeling
+- {doc}`language_model/mlm` - Pretrained language-model featurizers
 
 ## See Also
 
