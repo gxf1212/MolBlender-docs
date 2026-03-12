@@ -118,6 +118,10 @@ Current data packaging is split into three primary layers plus one supporting ut
 - `molblender.data.cache.multimodal`: specialized modality-aware cache storage
 - `molblender.data.preprocessing`: feature preparation, balancing, and temporal split helpers
 
+The diagnostics subdomain also lazily exposes its specialized UI as
+`molblender.data.diagnostics.dashboard`, keeping pre-modeling dataset analysis
+separate from the main results dashboard.
+
 **Key Classes:**
 - `Molecule`: Single molecule wrapper with lazy evaluation
 - `MolecularDataset`: Collection of molecules with features

@@ -229,6 +229,13 @@ python -m molblender.data.diagnostics.dashboard data.csv
 - Data quality report generation
 - Dataset statistics and visualization
 
+**Python entrypoint**:
+```python
+from molblender.data import diagnostics
+
+diagnostics.dashboard.run_diagnostics_dashboard()
+```
+
 **Typical Use Cases**:
 - Assess dataset quality before modeling
 - Detect problematic regions in dataset
