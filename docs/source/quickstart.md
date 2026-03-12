@@ -30,11 +30,13 @@ from molblender.dashboard import run_dashboard  # Interactive UI
 **Quick guide**:
 - **New code**: Use `molblender.api` for common tasks
 - **Advanced features**: Use domain APIs (`molblender.models`, `molblender.representations`)
+- **Data loading and diagnostics**: Use `molblender.data`
 - **Static plots**: Use `molblender.drawings`
 - **Interactive exploration**: Use `molblender.dashboard`
 
 Notes:
 - `import molblender` and `import molblender.api` are both lightweight lazy facades.
+- `molblender.data` is also a lazy facade over dataset, diagnostics, cache, and preprocessing subdomains.
 - The screening runtime layer lives under `molblender.models.api.infrastructure`; most users should not import it directly.
 - `molblender.models.execution` is kept for compatibility with older code, not as the primary runtime layer.
 

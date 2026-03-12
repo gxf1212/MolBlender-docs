@@ -268,6 +268,10 @@ molblender view screening_results.db
 - Top-Level Dashboard: `molblender/dashboard/`
 - Diagnostics Dashboard: `molblender/data/diagnostics/dashboard/`
 
+Diagnostics Dashboard belongs to the `molblender.data` domain and is intentionally
+separate from the results dashboard. Importing one should not be required to use
+the other.
+
 ### 运行时与执行层说明
 
 绝大多数用户不需要直接导入执行层，但为了避免混淆，当前执行相关层的定位如下：
@@ -279,6 +283,19 @@ molblender view screening_results.db
 | `molblender.models.execution` | 兼容层（legacy） | 旧代码迁移 |
 
 一般用户应优先使用 `screen_models()`、`universal_screen()`、`run_dashboard()` 等 workflow 入口，而不是直接拼装 execution/runtime 组件。
+
+### 数据子域说明
+
+`molblender.data` 当前包含三个主层级和一个辅助子域：
+
+| 子域 | 定位 | 推荐级别 |
+|------|------|----------|
+| `molblender.data.dataset` | 数据集结构与 public splitting helpers | Recommended |
+| `molblender.data.diagnostics` | 数据质量分析 | Specialized |
+| `molblender.data.cache` | 缓存实现 | Supported |
+| `molblender.data.preprocessing` | 特征预处理、平衡、时间分割等辅助工具 | Supported |
+
+这些子域现在都采用 lazy facade，导入顶层 `molblender.data` 不会自动把它们全部拉进内存。
 
 ### 可编程架构快照
 

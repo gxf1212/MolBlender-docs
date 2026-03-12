@@ -26,8 +26,14 @@ MolBlender now exposes package-role metadata directly in code. The main roles ar
 | `molblender.api` | Unified public facade | Recommended |
 | `molblender.models` | Domain models facade | Recommended |
 | `molblender.representations` | Domain representations facade | Recommended |
+| `molblender.data` | Data-domain facade | Recommended |
+| `molblender.data.dataset` | Dataset subdomain | Recommended |
+| `molblender.data.diagnostics` | Data diagnostics subdomain | Specialized |
+| `molblender.data.cache` | Data cache subdomain | Supported |
+| `molblender.data.preprocessing` | Data preprocessing subdomain | Supported |
 | `molblender.drawings` | Static plotting utilities | Supported |
 | `molblender.dashboard` | Interactive dashboard UI | Supported |
+| `molblender.data.diagnostics.dashboard` | Interactive diagnostics dashboard | Specialized |
 | `molblender.models.api.core` | Screening engine core | Internal |
 | `molblender.models.api.infrastructure` | Screening runtime infrastructure | Internal |
 | `molblender.execution` | Generic execution helpers | Supported |
@@ -98,6 +104,13 @@ class MorganFingerprint(BaseFeaturizer):
 ### 2. Data Management
 
 Handles molecular data loading, validation, and preprocessing.
+
+Current data packaging is split into three primary layers plus one supporting utility subdomain:
+
+- `molblender.data.dataset`: dataset structures and public splitting helpers
+- `molblender.data.diagnostics`: dataset-quality analysis
+- `molblender.data.cache`: cache implementations
+- `molblender.data.preprocessing`: feature preparation, balancing, and temporal split helpers
 
 **Key Classes:**
 - `Molecule`: Single molecule wrapper with lazy evaluation
