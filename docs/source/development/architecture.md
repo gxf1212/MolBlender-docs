@@ -28,6 +28,7 @@ MolBlender now exposes package-role metadata directly in code. The main roles ar
 | `molblender.representations` | Domain representations facade | Recommended |
 | `molblender.data` | Data-domain facade | Recommended |
 | `molblender.data.dataset` | Dataset subdomain | Recommended |
+| `molblender.data.io` | IO support module | Supported |
 | `molblender.data.molecule` | Molecule subdomain | Supported |
 | `molblender.data.protein` | Protein subdomain | Supported |
 | `molblender.data.diagnostics` | Data diagnostics subdomain | Specialized |
@@ -111,6 +112,7 @@ Handles molecular data loading, validation, and preprocessing.
 Current data packaging is split into three primary layers plus one supporting utility subdomain:
 
 - `molblender.data.dataset`: dataset structures and public splitting helpers
+- `molblender.data.io`: shared input typing and compatibility parsing
 - `molblender.data.molecule`: single-molecule objects and file loading
 - `molblender.data.protein`: protein objects and sequence/PDB helpers
 - `molblender.data.diagnostics`: dataset-quality analysis
@@ -121,6 +123,7 @@ Current data packaging is split into three primary layers plus one supporting ut
 The diagnostics subdomain also lazily exposes its specialized UI as
 `molblender.data.diagnostics.dashboard`, keeping pre-modeling dataset analysis
 separate from the main results dashboard.
+Likewise, `molblender.data.cache` lazily exposes its `multimodal` cache submodule.
 
 **Key Classes:**
 - `Molecule`: Single molecule wrapper with lazy evaluation

@@ -298,6 +298,7 @@ the other.
 | 子域 | 定位 | 推荐级别 |
 |------|------|----------|
 | `molblender.data.dataset` | 数据集结构与 public splitting helpers | Recommended |
+| `molblender.data.io` | 共享输入类型与兼容解析 helper | Supported |
 | `molblender.data.molecule` | 单分子对象与文件读取 | Supported |
 | `molblender.data.protein` | 蛋白对象与序列/PDB 读取 | Supported |
 | `molblender.data.diagnostics` | 数据质量分析 | Specialized |
@@ -306,6 +307,8 @@ the other.
 | `molblender.data.preprocessing` | 特征预处理、平衡、时间分割等辅助工具 | Supported |
 
 这些子域现在都采用 lazy facade，导入顶层 `molblender.data` 不会自动把它们全部拉进内存。
+其中 `molblender.data.cache` 懒暴露 `multimodal` 子模块，`molblender.data.diagnostics`
+也懒暴露 specialized `dashboard` 子模块。
 
 ### 可编程架构快照
 
