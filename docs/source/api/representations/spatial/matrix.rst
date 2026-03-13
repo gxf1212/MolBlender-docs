@@ -26,9 +26,10 @@ The following classes are available for generating matrix-based representations:
    Inherits from :py:class:`~molblender.representations.utils.base.BaseFeaturizer`.
 
    .. automethod:: _featurize
-   .. automethod:: get_feature_names
-      *Overridden to reflect that feature names are typically not applicable or are highly numerous and non-standard for raw matrices.*
    .. automethod:: get_output_info
+
+   ``get_feature_names()`` is overridden because raw matrix outputs typically do
+   not have a compact, semantically meaningful feature-name list.
 
 
 .. py:class:: CoulombMatrixEig(max_atoms: int = 30, remove_hydrogens: bool = False, backend: Optional[str] = None, seed: Optional[int] = None, **kwargs)
@@ -38,9 +39,11 @@ The following classes are available for generating matrix-based representations:
    Requires 3D coordinates.
    Inherits from :py:class:`CoulombMatrix`.
 
-   .. automethod:: _featurize 
-      *(Inherited and specialized via constructor parameters passed to CoulombMatrix)*
+   .. automethod:: _featurize
    .. automethod:: get_output_info
+
+   ``_featurize()`` is inherited from the Coulomb-matrix implementation and
+   specialized through the constructor parameters of :py:class:`CoulombMatrix`.
 
 
 .. py:class:: AdjacencyMatrix(max_atoms: int = 30, remove_hydrogens: bool = True, flatten: bool = True, **kwargs)
@@ -75,4 +78,3 @@ Helper Functions
 ----------------
 
 The module also contains internal helper functions for dependency checking (e.g., `_ensure_rdkit_loaded`, `_ensure_deepchem_loaded`, `_ensure_dscribe_loaded`), which are not part of the public API for featurization.
-

@@ -1,5 +1,6 @@
 .. automodule:: molblender.representations.protein.sequence.plm
    :members:
+   :no-index:
    :undoc-members:
    :show-inheritance:
    :inherited-members: BaseFeaturizer
@@ -96,4 +97,3 @@ Related Base Classes
    :noindex:
 
    (If defined) A potential future base class specifically for protein featurizers, possibly inheriting from `BaseFeaturizer`.
-
