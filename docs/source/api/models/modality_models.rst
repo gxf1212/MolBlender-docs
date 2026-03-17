@@ -21,7 +21,7 @@ Modality Detector
 CNN Models
 ----------
 
-.. automodule:: molblender.models.modality_models.cnn_models
+.. automodule:: molblender.models.modality_models.cnn
    :members:
    :undoc-members:
    :show-inheritance:
@@ -29,7 +29,7 @@ CNN Models
 VAE Models
 ----------
 
-.. automodule:: molblender.models.modality_models.vae_models
+.. automodule:: molblender.models.modality_models.vae
    :members:
    :undoc-members:
    :show-inheritance:
@@ -45,7 +45,7 @@ String Models
 Base Classes
 ------------
 
-.. automodule:: molblender.models.modality_models.base
+.. automodule:: molblender.models.modality_models.core
    :members:
    :undoc-members:
    :show-inheritance:
