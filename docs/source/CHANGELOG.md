@@ -103,7 +103,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Execution Layer Boundary Contracts** (2026-03-12)
   - Added contract tests to lock the distinction between:
     - `molblender.models.api.infrastructure` (primary screening runtime)
-    - `molblender.execution` (generic execution helpers)
+    - `molblender.representations.utils` (generic batching/caching helpers)
     - `molblender.models.execution` (compatibility layer)
   - Added import-isolation and public-surface tests to prevent legacy executor leakage into recommended APIs
   - Impact: Clearer long-term migration path and lower risk of architectural drift
@@ -283,28 +283,28 @@ infrastructure/telemetry/
   - **Impact**: Unified configuration management, removed ~200 lines deprecated code, 306 total tests passing
 
 - **Round 8: Dashboard State Management & Resource Tracking** (2026-03-09)
-  - **Task 1: Dashboard状态管理模块化**
+  - **Task 1: Dashboard State Management Modularization**
     - Created `dashboard/state/` package with three manager classes
     - `SessionManager`: Manages session-wide state (cache, files, refresh)
     - `NavigationManager`: Manages navigation state (active tab, history)
     - `FilterManager`: Manages filter state (metrics, models, representations)
     - Total: 459 lines across 3 modules
-  - **Task 2: Dashboard缓存分层改造**
+  - **Task 2: Dashboard Cache Hierarchical Refactoring**
     - Created `dashboard/cache/policies.py` with CachePolicies system
     - Clear separation: `st.cache_data` (DataFrame, dict) vs `st.cache_resource` (connections)
     - Predefined strategies: SESSION_DATA, SHORT_LIVED_DATA, FEATURIZER, CONNECTION
     - `@cache_with_policy` decorator for easy policy application
-  - **Task 3: CI矩阵与门禁配置**
+  - **Task 3: CI Matrix and Gate Configuration**
     - Created `.github/workflows/dashboard_smoke.yml`
     - Python 3.9/3.10 matrix testing
     - Test suites: state management, cache manager, API contracts, dashboard smoke
-  - **Task 4: Dashboard集成资源追踪系统**
+  - **Task 4: Dashboard Integrated Resource Tracking System**
     - Created `dashboard/components/resource_tracking/` package
     - `representation_selector.py` (192 lines): Type selector, comparison table, parameter info
     - `cache_statistics.py` (273 lines): Sidebar stats, management page, helper functions
     - Updated `app.py`: Added 2 new tabs (Resource Management, Representation Types)
     - Total tabs: 5 → 7
-  - **Phase 5: 自动发现增强**
+  - **Phase 5: Auto-discovery Enhancement**
     - Enhanced `representations/registry/` with dependency checking and availability flags
     - Created `representations/registry/validation.py` (320 lines): Parameter validation framework
     - Auto-discovery now detects dependencies and sets `is_available` flag
@@ -1291,92 +1291,92 @@ infrastructure/telemetry/
 - SQLite-based results persistence with caching support
 - Comprehensive evaluation metrics for regression and classification tasks
 
-## [2026-03-09] - Round 6重构回归修复
+## [2026-03-09] - Round 6 Refactoring Regression Fixes
 
 ### Fixed
-- **Dashboard Round 6 Regression Fixes** (4个critical bug修复)
+- **Dashboard Round 6 Regression Fixes** (4 critical bug fixes)
   - **Import Error Fix** (`src/molblender/dashboard/app_services/pages.py`)
-    - 修复Overview页面的导入错误: `_render_performance_vs_time_scatter` → `render_performance_vs_time_scatter`（2处）
-    - Round 6重构时函数重命名但调用处未同步更新
-    - 影响：Overview页面崩溃，Performance vs Training Time图表无法显示
+    - Fix Overview page import error: `_render_performance_vs_time_scatter` → `render_performance_vs_time_scatter` (2 locations)
+    - During Round 6 refactoring, function was renamed but call sites were not updated
+    - Impact: Overview page crashes, Performance vs Training Time chart cannot display
   
   - **Filter Parameter Count Fix** (`src/molblender/dashboard/components/filters/model_filters.py`)
-    - 修复`_render_filter_summary()`调用时参数数量错误（传入4个但接受3个）
-    - 移除多余的`selected_metric`参数
-    - 影响：Performance Analysis标签页过滤器崩溃
+    - Fix parameter count error in `_render_filter_summary()` call (passed 4 but accepts 3)
+    - Remove redundant `selected_metric` parameter
+    - Impact: Performance Analysis tab filter crashes
   
   - **Test Size Calculation Fix** (`src/molblender/dashboard/data/processors_helpers/loading.py`)
-    - **关键数据准确性修复**：优先从实际`n_train`/`n_test`计算真实test_size
-    - 修复前：显示配置值`test_size=0.2`（20%）- **错误**
-    - 修复后：显示实际分割`5271/53235=9.9%` - **正确**
-    - 影响：MaxDissimilarity split创建9.9%测试集，但Dashboard显示20%
-    - 代码逻辑：
+    - **Critical data accuracy fix**: Prioritize calculating actual test_size from real `n_train`/`n_test`
+    - Before fix: Display configured value `test_size=0.2` (20%) - **Incorrect**
+    - After fix: Display actual split `5271/53235=9.9%` - **Correct**
+    - Impact: MaxDissimilarity split creates 9.9% test set, but Dashboard displays 20%
+    - Code logic:
       ```python
-      # 从screening_config提取配置值
+      # Extract configured value from screening_config
       if "n_train" in dataset_info and "n_test" in dataset_info:
           n_train = dataset_info["n_train"]
           n_test = dataset_info["n_test"]
           if n_train and n_test:
               total = n_train + n_test
               if total > 0:
-                  dataset_info["test_size"] = n_test / total  # 覆盖配置值
+                  dataset_info["test_size"] = n_test / total  # Override configured value
       ```
   
   - **Scatter Plot API Update** (`src/molblender/dashboard/components/model_inspection/render.py`)
-    - 修复Individual Model Inspection的scatter plot渲染
-    - Round 6重构后API改为接受`InspectionPayload`而非独立参数
-    - 修复前：`render_scatter_plot(model_data, dataset_info, show_train, add_regression, selected_metric=metric)`
-    - 修复后：
+    - Fix Individual Model Inspection scatter plot rendering
+    - After Round 6 refactoring, API changed to accept `InspectionPayload` instead of individual parameters
+    - Before fix:`render_scatter_plot(model_data, dataset_info, show_train, add_regression, selected_metric=metric)`
+    - After fix:
       ```python
       context = build_context_from_results(results, dataset_info)
       payload = build_payload_from_model_data(model_data, dataset_info, context)
       render_scatter_plot(payload, show_train_data=show_train, add_regression_line=add_regression)
       ```
-    - 影响：Individual Model标签页崩溃，scatter plot无法显示
+    - Impact: Individual Model tab crashes, scatter plot cannot display
 
 - **Modality Models Modularization** (`src/molblender/models/modality_models/`)
-  - **文件拆分重构**：base.py (622行) → 5个模块
-    - `base_core.py` (6.8K) - 核心基类`BaseModalityModel`和`ModelResult`
-    - `base_vector.py` (1.3K) - 向量模态`VectorModalityModel`
-    - `base_string.py` (4.3K) - 字符串模态`StringModalityModel`
-    - `base_additional_modalities.py` (2.6K) - 图像/矩阵/图/3D模态
-    - `base.py` (24行) - 向后兼容的facade，re-export所有类
-  - **设计原则**：符合<800行规则，高内聚低耦合
-  - **向后兼容**：所有现有import语句无需修改
+  - **File splitting refactoring**: base.py (622 lines) → 5 modules
+    - `base_core.py` (6.8K) - Core base classes `BaseModalityModel` and `ModelResult`
+    - `base_vector.py` (1.3K) - Vector modality `VectorModalityModel`
+    - `base_string.py` (4.3K) - String modality `StringModalityModel`
+    - `base_additional_modalities.py` (2.6K) - Image/matrix/graph/3D modalities
+    - `base.py` (24 lines) - Backward compatible facade, re-exports all classes
+  - **Design principles**: Comply with <800 lines rule, high cohesion low coupling
+  - **Backward compatibility**: All existing import statements require no changes
 
 - **Registry Error Handling Improvement** (`src/molblender/representations/utils/registry_core.py`)
-  - **依赖错误类型保留**：不包装成`RegistryError`，保留原始异常类型
-  - **用途**：调用方/测试可以区分optional-feature scenarios vs hard registry errors
-  - **简化逻辑**：`get_featurizer_info()`和`get_protein_featurizer_info()`简化为调用`build_featurizer_info()`
+  - **Dependency error type preservation**: Don't wrap into `RegistryError`, preserve original exception types
+  - **Purpose**: Callers/tests can distinguish optional-feature scenarios vs hard registry errors
+  - **Simplified logic**: `get_featurizer_info()` and `get_protein_featurizer_info()` simplified to call `build_featurizer_info()`
 
 - **Datamol Fingerprint Calculator Enhancement** (`src/molblender/representations/fingerprints/datamol.py`)
-  - **新增方法**：`_resolve_molfeat_calculator()` 静态方法
-  - **兼容性**：支持新旧两种molfeat加载格式
-    - 当前格式：`{"available": True, "modules": {"molfeat_calc": module}}`
-    - 旧格式：直接flattened keys（`{"FPCalculator": ...}`）
+  - **New method**: `_resolve_molfeat_calculator()` static method
+  - **Compatibility**: Support both new and old molfeat loading formats
+    - Current format: `{"available": True, "modules": {"molfeat_calc": module}}`
+    - Old format: Directly flattened keys (`{"FPCalculator": ...}`)
 
 - **Test Configuration Documentation** (`pytest.ini`)
-  - **新增测试标记**：
-    - `@pytest.mark.slow` - 慢速测试（模型下载>100MB或>30秒，重度计算>10秒，集成测试）
-    - `@pytest.mark.network` - 网络测试（外部API调用，PDB/UniProt等，离线环境会失败）
-  - **使用示例**：
-    - `pytest -m "not slow"` - 跳过慢速测试
-    - `pytest -m "not network"` - 离线模式测试
-    - `pytest -m "slow"` - 只运行慢速测试
+  - **New test markers**:
+    - `@pytest.mark.slow` - Slow tests (model download >100MB or >30s, heavy computation >10s, integration tests)
+    - `@pytest.mark.network` - Network tests (external API calls, PDB/UniProt, etc., fail in offline environments)
+  - **Usage examples**:
+    - `pytest -m "not slow"` - Skip slow tests
+    - `pytest -m "not network"` - Offline mode testing
+    - `pytest -m "slow"` - Only run slow tests
 
 ### Impact
-- **Dashboard稳定性**：修复4个critical bug，所有5个标签页和子功能完全可用
-- **数据准确性**：Test Size从错误显示20%修正为真实值9.9%
-- **代码质量**：模型模块化重构符合<800行规则，提高可维护性
-- **错误处理**：改进依赖错误类型保留，提高测试灵活性
-- **测试效率**：新增测试标记支持快速开发迭代（跳过慢速/网络测试）
+- **Dashboard stability**: Fixed 4 critical bugs, all 5 tabs and sub-functions fully available
+- **Data accuracy**: Test Size corrected from incorrectly displaying 20% to actual value 9.9%
+- **Code quality**: Model modularization refactoring complies with <800 lines rule, improves maintainability
+- **Error handling**: Improved dependency error type preservation, increases test flexibility
+- **Testing efficiency**: New test markers support rapid development iteration (skip slow/network tests)
 
 ### Verification
-- ✅ Dashboard Overview: Test Size显示9.9%（正确）
-- ✅ Performance Analysis: 过滤器正常工作
-- ✅ Individual Model: Scatter plot正常渲染
-- ✅ 所有4个修复的文件通过手动测试
-- ✅ 模块化重构保持向后兼容性
+- ✅ Dashboard Overview: Test Size displays 9.9% (correct)
+- ✅ Performance Analysis: Filters work correctly
+- ✅ Individual Model: Scatter plot renders correctly
+- ✅ All 4 fixed files pass manual testing
+- ✅ Modularization refactoring maintains backward compatibility
 
 ### Removed
 

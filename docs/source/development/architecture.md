@@ -40,7 +40,7 @@ MolBlender now exposes package-role metadata directly in code. The main roles ar
 | `molblender.data.diagnostics.dashboard` | Interactive diagnostics dashboard | Specialized |
 | `molblender.models.api.core` | Screening engine core | Internal |
 | `molblender.models.api.infrastructure` | Screening runtime infrastructure | Internal |
-| `molblender.execution` | Generic execution helpers | Supported |
+| `molblender.representations.utils` | Generic batching/caching helpers | Supported |
 | `molblender.models.execution` | Legacy model execution | Compatibility |
 
 This metadata can be queried programmatically:
@@ -230,7 +230,7 @@ Execution-related code now has three distinct layers:
 | Layer | Status | Purpose |
 |-------|--------|---------|
 | `molblender.models.api.infrastructure` | Primary | Active runtime policy for screening workflows |
-| `molblender.execution` | Supported | Generic execution/batching helpers outside the screening engine |
+| `molblender.representations.utils` | Supported | Generic batching/caching helpers outside the screening engine |
 | `molblender.models.execution` | Compatibility | Legacy executor/checkpoint APIs retained for older imports |
 
 This distinction matters because the public workflow APIs should depend on `models.api.infrastructure`, not on the legacy executor packages.

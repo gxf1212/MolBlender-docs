@@ -1,173 +1,173 @@
-# MolBlender 统一 API 使用指南
+# MolBlender Unified API Guide
 
-## 概述
+## Overview
 
-MolBlender 提供统一的 API 层 (`molblender.api`)，整合了表征生成、模型筛选、Dashboard 等所有核心功能。
+MolBlender provides a unified API layer (`molblender.api`), integrating all core functionalities including representation generation, model screening, Dashboard, and more.
 
-自 2026-03 的架构收口后，当前推荐的使用方式是：
+Since the architecture consolidation in 2026-03, the recommended usage is:
 
-- `molblender.api`：统一便利入口，适合新代码和教程示例
-- `molblender.models` / `molblender.representations`：领域 API，适合需要更完整控制的场景
-- `molblender.drawings`：静态绘图工具
-- `molblender.dashboard`：交互式分析 UI
+- `molblender.api`: Unified convenience entry point, suitable for new code and tutorial examples
+- `molblender.models` / `molblender.representations`: Domain APIs, suitable for scenarios requiring more complete control
+- `molblender.drawings`: Static plotting tools
+- `molblender.dashboard`: Interactive analysis UI
 
-顶层 `import molblender` 和 `import molblender.api` 现在都采用 lazy facade，不会在导入时立刻拉起整层子包。这使得交互式探索和脚本启动更轻量，同时保持旧入口兼容。
+The top-level `import molblender` and `import molblender.api` now both use lazy facades, which do not immediately pull up entire subpackages upon import. This makes interactive exploration and script startup lighter while maintaining backward compatibility with old entry points.
 
-## API 层级
+## API Layers
 
-MolBlender 提供多层级 API，用户可以根据需求选择合适的入口：
+MolBlender provides multi-layered APIs, and users can choose the appropriate entry point based on their needs:
 
-### 推荐入口：molblender.api（统一 Facade）
+### Recommended Entry: molblender.api (Unified Facade)
 
-**适用场景**：新代码、快速上手、常用功能
+**Use Case**: New code, quick start, common functionalities
 
-`molblender.api` 是统一的便利入口（Facade 模式），提供最常用功能的简洁接口：
+`molblender.api` is a unified convenience entry point (Facade pattern) that provides concise interfaces for the most commonly used functionalities:
 
 ```python
 from molblender.api import (
-    # 表征
+    # Representations
     get_featurizer,
     list_featurizers,
-    # 模型筛选
+    # Model screening
     screen_models,
     load_results,
-    # 可视化
+    # Visualization
     run_dashboard,
 )
 ```
 
-**优点**：
-- 简洁易用
-- 统一入口
-- 向后兼容保证
-- 导入更轻量（lazy facade）
+**Advantages**:
+- Simple and easy to use
+- Unified entry point
+- Backward compatibility guaranteed
+- Lighter imports (lazy facade)
 
-### 领域 API：更丰富的功能
+### Domain APIs: Richer Functionality
 
-对于需要更多控制或高级功能的场景，可以直接使用领域 API：
+For scenarios requiring more control or advanced features, you can directly use domain APIs:
 
-#### molblender.models（ML 筛选领域 API）
+#### molblender.models (ML Screening Domain API)
 
-**适用场景**：需要完整的 ML 筛选功能
+**Use Case**: Need complete ML screening functionality
 
 ```python
 from molblender.models import (
-    # 基础筛选（与 molblender.api 相同）
+    # Basic screening (same as molblender.api)
     screen_models,
     quick_screen,
     thorough_screen,
-    # 分析功能（richer API）
+    # Analysis functions (richer API)
     analyze_results,
     compare_models,
     compare_representations,
-    # 可视化
+    # Visualization
     plot_screening_results,
     create_performance_dashboard,
 )
 ```
 
-**额外功能**：
-- 多种筛选策略（quick/thorough/interpretable）
-- 结果分析和对比
-- 统计检验
-- 性能可视化
+**Additional Features**:
+- Multiple screening strategies (quick/thorough/interpretable)
+- Result analysis and comparison
+- Statistical tests
+- Performance visualization
 
-#### molblender.representations（表征领域 API）
+#### molblender.representations (Representation Domain API)
 
-**适用场景**：需要详细的表征器信息
+**Use Case**: Need detailed representation information
 
 ```python
 from molblender.representations import (
-    # 基础功能（与 molblender.api 相同）
+    # Basic functions (same as molblender.api)
     get_featurizer,
     list_available_featurizers,
-    # 详细信息（richer API）
+    # Detailed information (richer API)
     get_featurizer_info,
     print_available_featurizers,
-    # 类别选择
+    # Category selection
     get_category_info,
     select_featurizers_by_category,
-    # 子模块访问
+    # Submodule access
     fingerprints,
     descriptors,
     graph,
 )
 ```
 
-**额外功能**：
-- 表征器详细元数据
-- 类别浏览和筛选
-- 直接访问子模块
+**Additional Features**:
+- Detailed representation metadata
+- Category browsing and filtering
+- Direct submodule access
 
-#### molblender.drawings（静态绘图工具）
+#### molblender.drawings (Static Plotting Tools)
 
-**适用场景**：生成出版物质量的静态图表
+**Use Case**: Generate publication-quality static plots
 
 ```python
 from molblender.drawings import (
-    # 核心配置
+    # Core configuration
     PlotConfig,
     set_plot_style,
-    # 绘图函数
+    # Plotting functions
     plot_histogram,
     plot_scatter_fit,
     plot_heatmap,
-    # 主题
+    # Themes
     set_scientific_publication_style,
     set_presentation_style,
 )
 ```
 
-**定位**：静态绘图工具（matplotlib/seaborn），不等同于 interactive dashboard
+**Position**: Static plotting tools (matplotlib/seaborn), not equivalent to interactive dashboard
 
-#### molblender.dashboard（交互式探索）
+#### molblender.dashboard (Interactive Exploration)
 
-**适用场景**：交互式数据探索和结果分析
+**Use Case**: Interactive data exploration and result analysis
 
 ```python
 from molblender.dashboard import run_dashboard
 
-# 启动交互式 Dashboard
+# Launch interactive Dashboard
 run_dashboard("screening_results.db")
 ```
 
-**定位**：基于 Streamlit 的交互式 Web UI 启动层
+**Position**: Streamlit-based interactive web UI launch layer
 
-**说明**：
-- `molblender.dashboard.run_dashboard(...)` 是 UI package 自己的低层启动入口
-- 常规工作流代码更推荐使用 `molblender.api.run_dashboard(...)`
+**Notes**:
+- `molblender.dashboard.run_dashboard(...)` is the low-level launch entry point of the UI package itself
+- For regular workflow code, `molblender.api.run_dashboard(...)` is recommended
 
-### 顶层 molblender（最常用功能）
+### Top-level molblender (Most Common Features)
 
-顶层 `import molblender` 暴露最常用的函数：
+The top-level `import molblender` exposes the most commonly used functions:
 
 ```python
 import molblender
 
-# 推荐使用（unified facade）
+# Recommended (unified facade)
 molblender.screen_models(...)
 molblender.get_featurizer(...)
 molblender.run_dashboard(...)
 
-# 兼容入口（直接从子模块导入）
+# Compatibility entries (direct import from submodules)
 molblender.list_available_featurizers(...)
-molblender.analyze_results(...)  # 需要更丰富的 API
+molblender.analyze_results(...)  # Need richer API
 ```
 
-**说明**：
-- 顶层 `molblender` 适合 notebook 和快速脚本
-- 新代码若需要清晰表达意图，仍优先推荐 `molblender.api` 或对应领域子包
-- 顶层 facade 不暴露 runtime-policy internals 或 legacy execution helpers
+**Notes**:
+- The top-level `molblender` is suitable for notebooks and quick scripts
+- For new code that needs to clearly express intent, `molblender.api` or corresponding domain subpackages are still recommended
+- The top-level facade does not expose runtime-policy internals or legacy execution helpers
 
-### 选择指南
+### Selection Guide
 
-| 需求 | 推荐入口 | 备选方案 |
+| Need | Recommended Entry | Alternative |
 |------|----------|----------|
-| **新代码/快速上手** | `molblender.api` | 顶层 `molblender` |
-| **完整 ML 筛选** | `molblender.models` | `molblender.api.screen_models` |
-| **表征器详细信息** | `molblender.representations` | `molblender.api.get_featurizer_info` |
-| **静态图表** | `molblender.drawings` | - |
-| **交互式探索** | `molblender.dashboard` | - |
+| **New code/Quick start** | `molblender.api` | Top-level `molblender` |
+| **Complete ML screening** | `molblender.models` | `molblender.api.screen_models` |
+| **Detailed representation info** | `molblender.representations` | `molblender.api.get_featurizer_info` |
+| **Static plots** | `molblender.drawings` | - |
+| **Interactive exploration** | `molblender.dashboard` | - |
 
 ## Dashboard Tools Comparison
 
@@ -283,40 +283,40 @@ Diagnostics Dashboard belongs to the `molblender.data` domain and is intentional
 separate from the results dashboard. Importing one should not be required to use
 the other.
 
-### 运行时与执行层说明
+### Execution Layer Guide
 
-绝大多数用户不需要直接导入执行层，但为了避免混淆，当前执行相关层的定位如下：
+Most users do not need to import execution layers directly. To avoid confusion, the current positioning of execution-related layers is as follows:
 
-| 层 | 当前定位 | 适用对象 |
-|----|----------|----------|
-| `molblender.models.api.infrastructure` | Screening 主运行时层 | 包内部、进阶开发者 |
-| `molblender.execution` | 通用执行/批处理辅助工具 | 需要独立批处理工具的开发者 |
-| `molblender.models.execution` | 兼容层（legacy） | 旧代码迁移 |
+| Layer | Current Position | Target Audience |
+|------|------------------|-----------------|
+| `molblender.models.api.infrastructure` | Primary screening runtime layer | Package internal, advanced developers |
+| `molblender.representations.utils` | Generic batching/caching helpers | Developers needing direct control over representation batching |
+| `molblender.models.execution` | Compatibility layer (legacy) | Legacy code migration |
 
-一般用户应优先使用 `screen_models()`、`universal_screen()`、`molblender.api.run_dashboard()` 等 workflow 入口，而不是直接拼装 execution/runtime 组件。
+Most users should prioritize using workflow entry points like `screen_models()`, `universal_screen()`, `molblender.api.run_dashboard()`, rather than directly assembling execution/runtime components.
 
-### 数据子域说明
+### Data Subdomain Guide
 
-`molblender.data` 当前包含三个主层级和一个辅助子域：
+`molblender.data` currently contains three main tiers and one auxiliary subdomain:
 
-| 子域 | 定位 | 推荐级别 |
-|------|------|----------|
-| `molblender.data.dataset` | 数据集结构与 public splitting helpers | Recommended |
-| `molblender.data.io` | 共享输入类型与兼容解析 helper | Supported |
-| `molblender.data.molecule` | 单分子对象与文件读取 | Supported |
-| `molblender.data.protein` | 蛋白对象与序列/PDB 读取 | Supported |
-| `molblender.data.diagnostics` | 数据质量分析 | Specialized |
-| `molblender.data.cache` | 缓存实现 | Supported |
-| `molblender.data.cache.multimodal` | 多模态专用缓存与特殊存储后端 | Supported |
-| `molblender.data.preprocessing` | 特征预处理、平衡、时间分割等辅助工具 | Supported |
+| Subdomain | Position | Recommendation Level |
+|-----------|----------|---------------------|
+| `molblender.data.dataset` | Dataset structures and public splitting helpers | Recommended |
+| `molblender.data.io` | Shared input types and compatible parsing helpers | Supported |
+| `molblender.data.molecule` | Single-molecule objects and file I/O | Supported |
+| `molblender.data.protein` | Protein objects and sequence/PDB I/O | Supported |
+| `molblender.data.diagnostics` | Data quality analysis | Specialized |
+| `molblender.data.cache` | Cache implementation | Supported |
+| `molblender.data.cache.multimodal` | Multimodal-specific caching and special storage backends | Supported |
+| `molblender.data.preprocessing` | Feature preprocessing, balancing, time splitting, and other helper tools | Supported |
 
-这些子域现在都采用 lazy facade，导入顶层 `molblender.data` 不会自动把它们全部拉进内存。
-其中 `molblender.data.cache` 懒暴露 `multimodal` 子模块，`molblender.data.diagnostics`
-也懒暴露 specialized `dashboard` 子模块。
+All these subdomains now use lazy facades—importing the top-level `molblender.data` will not automatically pull them all into memory.
+Among them, `molblender.data.cache` lazy exposes the `multimodal` submodule, and `molblender.data.diagnostics`
+also lazy exposes the specialized `dashboard` submodule.
 
-### 可编程架构快照
+### Programmatic Architecture Snapshot
 
-如果你需要检查当前推荐入口、执行层角色或迁移建议，可以直接从代码读取：
+If you need to check current recommended entry points, execution layer roles, or migration recommendations, you can read directly from the code:
 
 ```python
 from molblender.architecture_roles import (
@@ -329,21 +329,21 @@ print(get_recommended_entrypoints())
 print(get_execution_layer_decisions())
 ```
 
-也可以在终端中输出 JSON 快照：
+You can also output a JSON snapshot in the terminal:
 
 ```bash
 python -m molblender.architecture_roles
 ```
 
-## 快速开始
+## Quick Start
 
-### 安装
+### Installation
 
 ```bash
 pip install molblender
 ```
 
-### 基本使用
+### Basic Usage
 
 ```python
 from molblender.api import (
@@ -357,80 +357,80 @@ from molblender.api import (
 )
 ```
 
-## API 模块
+## API Modules
 
-### 1. 表征 API
+### 1. Representation API
 
 #### list_featurizers()
 
-列出所有可用的分子表征生成器。
+List all available molecular representation generators.
 
 ```python
 from molblender.api import list_featurizers
 
-# 列出所有表征器
+# List all representations
 all_featurizers = list_featurizers()
-print(f"可用表征器数量: {len(all_featurizers)}")
+print(f"Available representations: {len(all_featurizers)}")
 
-# 列出特定类别的表征器
+# List representations in a specific category
 fingerprint_featurizers = list_featurizers(category="fingerprints")
 protein_featurizers = list_featurizers(category="protein")
 ```
 
-**返回**: `list[str]` - 表征器名称列表
+**Returns**: `list[str]` - List of representation names
 
 #### get_featurizer()
 
-获取分子表征生成器实例。
+Get a molecular representation generator instance.
 
 ```python
 from molblender.api import get_featurizer
 
-# 获取指纹表征器
+# Get fingerprint representation
 morgan_featurizer = get_featurizer("morgan_fp")
 rdkit_featurizer = get_featurizer("rdkit_fp")
 
-# 获取蛋白质表征器
+# Get protein representation
 prot_featurizer = get_featurizer("prot_bert")
 
-# 生成表征
+# Generate representations
 smiles = ["CCO", "c1ccccc1", "CC(C)CC"]
 features = morgan_featurizer.featurize(smiles)
-print(f"特征形状: {features.shape}")
+print(f"Feature shape: {features.shape}")
 ```
 
-**参数**:
-- `name` (`str`): 表征器名称
+**Parameters**:
+- `name` (`str`): representation name
 
-**返回**: `BaseFeaturizer` - 表征器实例
+**Returns**: `BaseFeaturizer` - Featurizer instance
 
 #### get_featurizer_info()
 
-获取表征器的详细信息。
+Get detailed information about the representation.
 
 ```python
 from molblender.api import get_featurizer_info
 
-# 获取表征器信息
+# Get representation information
 info = get_featurizer_info("morgan_fp")
-print(f"名称: {info['name']}")
-print(f"类别: {info['category']}")
-print(f"输出形状: {info['output_shape']}")
-print(f"描述: {info['description']}")
+print(f"Name: {info['name']}")
+print(f"Category: {info['category']}")
+print(f"Output shape: {info['output_shape']}")
+print(f"Description: {info['description']}")
 ```
 
-**返回**: `dict` - 包含表征器详细信息的字典
+**Returns**: `dict` - Dictionary containing detailed representation information
 
-### 2. 模型 API
+### 2. Model API
 
 #### screen_models()
 
-执行 ML 模型筛选（推荐使用）。
+Execute ML model screening (recommended usage).
 
 ```python
 from molblender.api import screen_models
 
-# 简单筛选
+# Simple screening
 results = screen_models(
     smiles_data=["CCO", "c1ccccc1", "CC(C)CC", ...],
     representations=["morgan_fp", "rdkit_fp"],
@@ -438,7 +438,7 @@ results = screen_models(
     target_values=[0.5, 1.2, 0.8, ...],
 )
 
-# 高级筛选
+# Advanced screening
 results = screen_models(
     smiles_data=smiles_list,
     representations=["morgan_fp", "chemberta"],
@@ -453,7 +453,7 @@ results = screen_models(
     combinations="auto",
 )
 
-# 保存结果到数据库
+# Save results to database
 results = screen_models(
     ...,
     save_path="screening_results.db",
@@ -461,32 +461,32 @@ results = screen_models(
 )
 ```
 
-**参数**:
-- `smiles_data` (`list[str]`): SMILES 分子列表
-- `representations` (`list[str]`): 分子表征列表
-- `models` (`list[str]` | `None`): 模型列表（None表示自动选择）
-- `task_type` (`str`): 任务类型（"classification" 或 "regression"）
-- `target_values` (`list[float]`): 目标值
-- `save_path` (`str | None`): 结果保存路径
-- `session_name` (`str | None`): 会话名称
-- 其他参数参见 `ScreeningConfig`
+**Parameters**:
+- `smiles_data` (`list[str]`): SMILES molecule list
+- `representations` (`list[str]`): molecular representation list
+- `models` (`list[str]` | `None`): model list（Nonemeans auto-select）
+- `task_type` (`str`): task type（"classification" or "regression"）
+- `target_values` (`list[float]`): target value
+- `save_path` (`str | None`): result save path
+- `session_name` (`str | None`): session name
+- Other parameters see `ScreeningConfig`
 
-并行参数约定:
-- `max_cpu_cores`: 整个筛选流程可用的总 CPU 预算
-- `max_workers_per_model`: 单个模型内部可使用的 worker 上限
-- `n_jobs`: 旧接口兼容别名，新代码不再推荐
+Parallel parameter conventions:
+- `max_cpu_cores`: Total CPU budget available for the entire screening workflow
+- `max_workers_per_model`: Maximum number of workers that can be used within a single model
+- `n_jobs`: Legacy interface compatibility alias, not recommended for new code
 
-**返回**: `dict` - 筛选结果字典
+**Returns**: `dict` - Screening results dictionary
 
 #### create_screener()
 
-创建筛选器实例（高级用法）。
+Create screener instance (advanced usage).
 
 ```python
 from molblender.api import create_screener
 from molblender.models import ScreeningConfig
 
-# 创建配置
+# Create configuration
 config = ScreeningConfig(
     task_type="regression",
     representations=["morgan_fp"],
@@ -495,63 +495,63 @@ config = ScreeningConfig(
     max_workers_per_model=1,
 )
 
-# 创建筛选器
+# Create screener
 screener = create_screener(config)
 
-# 准备数据
+# Prepare data
 screener.prepare_data(
     smiles_data=["CCO", "c1ccccc1"],
     target_values=[0.5, 1.2],
 )
 
-# 运行筛选
+# Run screening
 results = screener.run_screening()
 ```
 
-**参数**:
-- `config` (`ScreeningConfig`): 筛选配置
+**Parameters**:
+- `config` (`ScreeningConfig`): screening configuration
 
-**返回**: `BaseScreener` - 筛选器实例
+**Returns**: `BaseScreener` - Screener instance
 
 #### load_results()
 
-从数据库加载筛选结果。
+Load screening results from database.
 
 ```python
 from molblender.api import load_results
 
-# 加载结果
+# Load results
 results = load_results(
     db_path="screening_results.db",
     session_name="my_screening_session",
 )
 
-# 获取最佳结果
+# Get best results
 best_result = results.get_best_result(metric="r2_score")
-print(f"最佳模型: {best_result['model_name']}")
-print(f"最佳表征: {best_result['representation_name']}")
-print(f"最佳分数: {best_result['primary_metric']}")
+print(f"Best model: {best_result['model_name']}")
+print(f"Best representation: {best_result['representation_name']}")
+print(f"Best score: {best_result['primary_metric']}")
 ```
 
-**参数**:
-- `db_path` (`str`): 数据库路径
-- `session_name` (`str | None`): 会话名称（None表示加载所有会话）
+**Parameters**:
+- `db_path` (`str`): database path
+- `session_name` (`str | None`): session name（Nonemeans load all sessions）
 
-**返回**: `ResultsDatabase` - 结果数据库对象
+**Returns**: `ResultsDatabase` - Results database object
 
 ### 3. Dashboard API
 
 #### run_dashboard()
 
-启动交互式 Dashboard。
+Launch interactive Dashboard.
 
 ```python
 from molblender.api import run_dashboard
 
-# 启动 Dashboard（默认端口 8501）
+# Launch Dashboard (default port 8501)
 run_dashboard("screening_results.db")
 
-# 指定数据库和端口
+# Specify database and port
 run_dashboard(
     "screening_results.db",
     port=8502,
@@ -559,47 +559,47 @@ run_dashboard(
 )
 ```
 
-**参数**:
-- `results_path` (`str | Path`): 结果数据库或结果目录路径
-- `port` (`int`): Web 服务端口
-- `no_browser` (`bool`): 不自动打开浏览器
+**Parameters**:
+- `results_path` (`str | Path`): results database or results directory path
+- `port` (`int`): Web service port
+- `no_browser` (`bool`): do not auto-open browser
 
 #### load_dashboard_data()
 
-加载 Dashboard 数据（用于自定义分析）。
+Load Dashboard data (for custom analysis).
 
 ```python
 from molblender.api import load_dashboard_data
 
-# 加载数据
+# Load data
 data = load_dashboard_data("screening_results.db")
 
-# 访问数据
+# Access data
 sessions = data['sessions']
 results = data['results']
 models = data['models']
 representations = data['representations']
 ```
 
-**返回**: `dict` - 包含所有 Dashboard 数据的字典
+**Returns**: `dict` - Dictionary containing all Dashboard data
 
-## 完整示例
+## Complete Examples
 
-### 示例1: 简单回归任务
+### Example 1: Simple Regression Task
 
 ```python
 from molblender.api import screen_models, load_results, run_dashboard
 
-# 1. 准备数据
+# 1. Prepare data
 smiles = [
-    "CCO",  # 乙醇
-    "c1ccccc1",  # 苯
-    "CC(C)CC",  # 异丁烷
-    # ... 更多分子
+    "CCO",  # Ethanol
+    "c1ccccc1",  # benzene
+    "CC(C)CC",  # Isobutane
+    # ... more molecules
 ]
-activities = [0.5, 1.2, 0.8, ...]  # 生物活性值
+activities = [0.5, 1.2, 0.8, ...]  # bioactivity value
 
-# 2. 运行筛选
+# 2. run screening
 results = screen_models(
     smiles_data=smiles,
     representations=["morgan_fp", "rdkit_fp"],
@@ -609,23 +609,23 @@ results = screen_models(
     session_name="regression_screening",
 )
 
-# 3. 查看结果
-print(f"完成 {len(results)} 个模型-表征组合筛选")
+# 3. view results
+print(f"completed {len(results)} models-representation combination screening")
 
-# 4. 启动 Dashboard 可视化
+# 4. launch Dashboard visualize
 run_dashboard("results.db")
 ```
 
-### 示例2: 分类任务
+### example2: classification task
 
 ```python
 from molblender.api import screen_models
 
-# 分类数据
+# Classification data
 smiles = [...]
-labels = [0, 1, 0, 1, ...]  # 0: 不活性, 1: 活性
+labels = [0, 1, 0, 1, ...]  # 0: inactive, 1: active
 
-# 运行分类筛选
+# Run classification screening
 results = screen_models(
     smiles_data=smiles,
     representations=["morgan_fp", "chemberta"],
@@ -634,32 +634,32 @@ results = screen_models(
     target_values=labels,
     save_path="classification_results.db",
     session_name="classification_screening",
-    metric_type="roc_auc",  # 使用 AUC 作为评估指标
+    metric_type="roc_auc",  # Use AUC as evaluation metric
 )
 ```
 
-### 示例3: 高级筛选配置
+### Example 3: Advanced screening configuration
 
 ```python
 from molblender.api import create_screener
 from molblender.models import ScreeningConfig
 
-# 创建高级配置
+# Create advanced configuration
 config = ScreeningConfig(
     task_type="regression",
     representations=["morgan_fp", "chemberta", "unimol_cls"],
-    models=None,  # 自动选择兼容模型
+    models=None,  # Auto-select compatible models
     cv_folds=5,
     test_size=0.2,
-    split_strategy="scaffold_split",  # 使用骨架分割
+    split_strategy="scaffold_split",  # Use scaffold split
     max_cpu_cores=-1,
     max_workers_per_model=1,
     enable_hpo=False,
-    combinations="auto",  # 使用主要路径 + 备用路径
-    auto_resource_optimization=True,  # 自动资源优化
+    combinations="auto",  # Use primary path + backup path
+    auto_resource_optimization=True,  # automatic resource optimization
 )
 
-# 创建并运行筛选器
+# Create and run screener
 screener = create_screener(config)
 screener.prepare_data(
     smiles_data=smiles,
@@ -671,85 +671,85 @@ results = screener.run_screening(
 )
 ```
 
-### 示例4: 结果分析
+### Example 4: Results analysis
 
 ```python
 from molblender.api import load_results
 
-# 加载结果
+# Load results
 db = load_results("results.db", session_name="my_screening")
 
-# 获取所有结果
+# Get all results
 all_results = db.get_all_results()
-print(f"总结果数: {len(all_results)}")
+print(f"Total results: {len(all_results)}")
 
-# 获取最佳结果
+# Get best results
 best = db.get_best_result()
-print(f"最佳组合: {best['model_name']} + {best['representation_name']}")
-print(f"最佳分数: {best['primary_metric']:.3f}")
+print(f"Best combination: {best['model_name']} + {best['representation_name']}")
+print(f"Best score: {best['primary_metric']:.3f}")
 
-# 筛选特定结果
+# Filter specific results
 rf_results = db.get_results(
     model_name="random_forest",
     representation_name="morgan_fp",
 )
 
-# 获取统计信息
+# Get statistics
 stats = db.get_statistics()
-print(f"平均R²: {stats['mean_primary_metric']:.3f}")
-print(f"标准差: {stats['std_primary_metric']:.3f}")
+print(f"Mean R²: {stats['mean_primary_metric']:.3f}")
+print(f"Std dev: {stats['std_primary_metric']:.3f}")
 ```
 
-## API 设计原则
+## API Design Principles
 
-### 1. 简洁性
+### 1. Simplicity
 
-- 最少的参数，合理的默认值
-- 一个函数完成常见任务
-- 自动检测和验证
+- Minimal parameters, reasonable defaults
+- One function completes common tasks
+- Auto-detection and validation
 
-### 2. 一致性
+### 2. Consistency
 
-- 统一的命名约定
-- 一致的参数顺序
-- 统一的返回类型
+- Unified naming conventions
+- Consistent parameter order
+- Unified return types
 
-### 3. 向后兼容性
+### 3. Backward Compatibility
 
-- 旧导入路径仍然可用
-- 逐步迁移，无需立即重写
-- 平滑的升级路径
+- Old import paths still work
+- Gradual migration, no immediate rewrite needed
+- Smooth upgrade path
 
-### 4. 可扩展性
+### 4. Extensibility
 
-- 支持高级配置
-- 支持自定义扩展
-- 支持插件机制
+- Support advanced configuration
+- Support custom extensions
+- Support plugin mechanism
 
-## 错误处理
+## error handling
 
-### 常见错误
+### Common Errors
 
 ```python
-# 1. 不兼容的模型-表征组合
+# 1. Incompatible model-representation combinations
 try:
     results = screen_models(
         smiles_data=smiles,
-        representations=["canonical_smiles"],  # STRING 类型
-        models=["random_forest"],  # 不能处理 STRING
+        representations=["canonical_smiles"],  # STRING type
+        models=["random_forest"],  # Cannot handle STRING
         task_type="regression",
         target_values=activities,
     )
 except ValueError as e:
-    print(f"兼容性错误: {e}")
+    print(f"Compatibility error: {e}")
 
-# 2. 无效的表征器名称
+# 2. Invalid representation name
 try:
     featurizer = get_featurizer("invalid_featurizer")
 except ValueError as e:
-    print(f"表征器错误: {e}")
+    print(f"Representation error: {e}")
 
-# 3. 数据格式错误
+# 3. Data format error
 try:
     results = screen_models(
         smiles_data=["INVALID_SMILES"],
@@ -758,10 +758,10 @@ try:
         target_values=[0.5],
     )
 except Exception as e:
-    print(f"数据错误: {e}")
+    print(f"Data error: {e}")
 ```
 
-### 错误处理最佳实践
+### error handlingBest Practices
 
 ```python
 from molblender.api import screen_models
@@ -770,7 +770,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 def safe_screening(smiles, targets, reprs, models):
-    """带错误处理的筛选"""
+    """Screening with error handling"""
     try:
         results = screen_models(
             smiles_data=smiles,
@@ -781,41 +781,41 @@ def safe_screening(smiles, targets, reprs, models):
         )
         return results
     except ValueError as e:
-        logger.error(f"配置错误: {e}")
+        logger.error(f"Configuration error: {e}")
         return None
     except Exception as e:
-        logger.error(f"筛选失败: {e}")
+        logger.error(f"Screening failed: {e}")
         return None
 ```
 
-## 性能优化
+## Performance Optimization
 
-### 1. 并行处理
+### 1. Parallel Processing
 
 ```python
-# 自动并行（推荐）
+# Auto parallel (recommended)
 results = screen_models(
     smiles_data=large_smiles_list,
     representations=["morgan_fp"],
     models=["random_forest"],
-    max_cpu_cores=-1,          # 总 CPU 预算
-    max_workers_per_model=1,   # 单模型内部并行上限
+    max_cpu_cores=-1,          # Total CPU budget
+    max_workers_per_model=1,   # Max parallel workers per model
 )
 ```
 
-### 2. 缓存优化
+### 2. Cache Optimization
 
 ```python
 import os
 from molblender.config import config_manager
 
-# 设置缓存目录
+# Set cache directory
 config_manager.set_cache_dir("representations", "./cache")
 
-# 启用缓存
+# Enable cache
 os.environ["MOLBLENDER_CACHE_ENABLED"] = "true"
 
-# 筛选会自动使用缓存
+# Screening automatically uses cache
 results = screen_models(
     smiles_data=smiles,
     representations=["morgan_fp"],
@@ -824,63 +824,63 @@ results = screen_models(
 )
 ```
 
-### 3. 资源优化
+### 3. Resource Optimization
 
 ```python
 from molblender.models import ScreeningConfig
 
-# 自动资源优化
+# automatic resource optimization
 config = ScreeningConfig(
     task_type="regression",
     representations=["morgan_fp"],
-    auto_resource_optimization=True,  # 启用自动优化
+    auto_resource_optimization=True,  # Enable auto optimization
 )
 
-# 创建筛选器
+# Create screener
 screener = create_screener(config)
 ```
 
-## 相关文档
+## Related Documentation
 
-- [迁移指南](migration_guide.md) - 从旧 API 迁移
-- [ConfigManager 指南](config_manager_guide.md) - 配置管理
-- [快速开始](quickstart.md) - 新手入门
-- [架构概览](development/architecture.md) - 当前公开层级与内部边界
+- [Migration Guide](migration_guide.md) - Migrate from old API
+- [ConfigManager Guide](config_manager_guide.md) - Configuration management
+- [Quick Start](quickstart.md) - Getting started
+- [Architecture Overview](development/architecture.md) - Current public layers with internal boundaries
 
 ---
 
-**最后更新**: 2026-03-10
-**版本**: 1.0.0
+**Last updated**: 2026-03-10
+**Version**: 1.0.0
 
 ## Advanced: Tool Registry API
 
-MolBlender 提供了统一的表征器注册表系统，用于高级元数据查询和筛选。
+MolBlender provides a unified representation registry system for advanced metadata query and filtering.
 
 ### ToolRegistry
 
-`ToolRegistry` 提供了统一的表征器发现和查询接口。
+`ToolRegistry` provides unified representation discovery and query interfaces.
 
 ```python
 from molblender.representations.tool_registry import ToolRegistry, ToolInfo
 
-# 获取注册表实例
+# Get registry instance
 registry = ToolRegistry()
 
-# 按类别筛选
+# Filter by category
 molecular_featurizers = registry.list(category="molecular")
 protein_featurizers = registry.list(category="protein")
 
-# 按标签筛选
+# Filter by tag
 gpu_featurizers = registry.list(tags=["gpu"])
 experimental_featurizers = registry.list(tags=["experimental"])
 
-# 获取详细元数据
+# Get detailed metadata
 info: ToolInfo = registry.get("ecfp")
 print(f"Description: {info.description}")
 print(f"Dependencies: {info.dependencies}")
 print(f"Output shape: {info.output_shape}")
 
-# 搜索表征器
+# Search representations
 results = registry.search("fingerprint")
 for info in results:
     print(f"{info.name}: {info.description}")
@@ -888,33 +888,33 @@ for info in results:
 
 ### ToolInfo
 
-`ToolInfo` 包含表征器的完整元数据：
+`ToolInfo` contains complete metadata for representations:
 
 ```python
 @dataclass
 class ToolInfo:
-    name: str                      # 表征器名称
-    category: str                  # 类别 (molecular, protein, etc.)
-    description: str               # 描述
-    source: str                    # 来源 (rdkit, deepchem, etc.)
-    tags: list[str]                # 标签 (gpu, experimental, etc.)
-    input_type: str                # 输入类型 (smiles, sdf, etc.)
-    output_type: str               # 输出类型 (vector, matrix, etc.)
-    output_shape: tuple            # 输出形状
-    default_kwargs: dict           # 默认参数
-    is_available: bool             # 是否可用（依赖检查）
-    dependencies: list[str]        # 依赖列表
+    name: str                      # Representation name
+    category: str                  # Category (molecular, protein, etc.)
+    description: str               # Description
+    source: str                    # Source (rdkit, deepchem, etc.)
+    tags: list[str]                # Tags (gpu, experimental, etc.)
+    input_type: str                # Input type (smiles, sdf, etc.)
+    output_type: str               # Output type (vector, matrix, etc.)
+    output_shape: tuple            # Output shape
+    default_kwargs: dict           # Default parameters
+    is_available: bool             # Is available (dependency check)
+    dependencies: list[str]        # Dependencies
 ```
 
-### 使用示例
+### Usage Example
 
 ```python
 from molblender.representations.tool_registry import get_tool_registry
 
-# 获取全局注册表实例
+# Get global registry instance
 registry = get_tool_registry()
 
-# 列出所有可用的 GPU 表征器
+# List all available GPU representations
 gpu_tools = registry.list(tags=["gpu"])
 for tool in gpu_tools:
     if tool.is_available:
@@ -922,7 +922,7 @@ for tool in gpu_tools:
     else:
         print(f"❌ {tool.name}: Missing dependencies {tool.dependencies}")
 
-# 查找特定表征器
+# Find specific representation
 info = registry.get("morgan_fp")
 if info and info.is_available:
     print(f"Morgan fingerprint is available!")

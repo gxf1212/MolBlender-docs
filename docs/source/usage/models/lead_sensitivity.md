@@ -24,7 +24,9 @@ When developing predictive models for new molecular classes, you often have a fe
 
 ```python
 from molblender.data import MolecularDataset, InputType
-from molblender.models.api.lead_sensitivity import run_lead_sensitivity_analysis
+from molblender.models.api.lead.lead_sensitivity import (
+    run_lead_sensitivity_analysis,
+)
 
 # Load dataset
 dataset = MolecularDataset.from_csv(
@@ -54,10 +56,10 @@ for fold_name, fold_df in results.items():
 ### With Visualization
 
 ```python
-from molblender.models.api.lead_sensitivity_viz import (
+from molblender.models.api.lead.lead_sensitivity_viz import (
     plot_performance_vs_lead_count,
     plot_top_bottom_combinations,
-    plot_lead_heatmap
+    plot_lead_heatmap,
 )
 
 # Load results from database
@@ -324,7 +326,7 @@ All visualization functions follow publication standards (Times New Roman, 300 D
 Box plot showing performance distribution across lead counts.
 
 ```python
-from molblender.models.api.lead_sensitivity_viz import plot_performance_vs_lead_count
+from molblender.models.api.lead.lead_sensitivity_viz import plot_performance_vs_lead_count
 
 plot_performance_vs_lead_count(
     df: pd.DataFrame,
@@ -344,7 +346,7 @@ plot_performance_vs_lead_count(
 Horizontal bar chart comparing best and worst lead combinations.
 
 ```python
-from molblender.models.api.lead_sensitivity_viz import plot_top_bottom_combinations
+from molblender.models.api.lead.lead_sensitivity_viz import plot_top_bottom_combinations
 
 plot_top_bottom_combinations(
     df: pd.DataFrame,
@@ -363,7 +365,7 @@ plot_top_bottom_combinations(
 2D heatmap for 2-lead combination performance matrix.
 
 ```python
-from molblender.models.api.lead_sensitivity_viz import plot_lead_heatmap
+from molblender.models.api.lead.lead_sensitivity_viz import plot_lead_heatmap
 
 plot_lead_heatmap(
     df: pd.DataFrame,
@@ -382,7 +384,7 @@ plot_lead_heatmap(
 Grouped box plots comparing all folds side-by-side.
 
 ```python
-from molblender.models.api.lead_sensitivity_viz import plot_cross_fold_summary
+from molblender.models.api.lead.lead_sensitivity_viz import plot_cross_fold_summary
 
 plot_cross_fold_summary(
     results_dict: Dict[str, pd.DataFrame],
@@ -454,26 +456,29 @@ Use `strategy='random'` with `sample_size=100-200` for initial exploration, then
 
 ## Example Workflow
 
-### 1. Run Improved LOGO
+### 1. Prepare LOGO Fold Results
 
 ```python
-from molblender.models.api.multimodal import improved_logo_validation
+from pathlib import Path
 
-results = improved_logo_validation(
-    dataset=dataset,
-    target_column="activity",
-    fold_config={
-        'A_N': {'test_group': 'A_N', 'lead_indices': [3]},
-        'C': {'test_group': 'C', 'lead_indices': [20, 35]}
-    },
-    output_dir="./results_logo_improved"
-)
+logo_results_dir = Path("./results_logo_improved")
+
+# Lead sensitivity analysis expects a directory that already contains
+# per-fold LOGO screening outputs, for example:
+#   results_logo_improved/
+#     fold_A_N/
+#     fold_C/
+#
+# Generate these fold-level results with your LOGO workflow before
+# starting the sensitivity analysis step below.
 ```
 
 ### 2. Run Lead Sensitivity Analysis
 
 ```python
-from molblender.models.api.lead_sensitivity import run_lead_sensitivity_analysis
+from molblender.models.api.lead.lead_sensitivity import (
+    run_lead_sensitivity_analysis,
+)
 
 sens_results = run_lead_sensitivity_analysis(
     logo_results_dir="./results_logo_improved",
@@ -509,10 +514,10 @@ print(f"Failed: {len(failed)}/{len(fold_df)}")
 ### 4. Generate Visualizations
 
 ```python
-from molblender.models.api.lead_sensitivity_viz import (
+from molblender.models.api.lead.lead_sensitivity_viz import (
     plot_performance_vs_lead_count,
     plot_top_bottom_combinations,
-    plot_lead_heatmap
+    plot_lead_heatmap,
 )
 
 # Performance distribution
