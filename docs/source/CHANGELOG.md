@@ -9,6 +9,86 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Representations Registry Module Refactoring** (2026-03-17)
+  - Moved `utils/registry*.py` (7 files, 1153 lines) to independent `registry/` module
+  - Removed `registry_` prefix from filenames: `registry_core.py` → `core.py`, etc.
+  - Renamed `selectors.py` → `selection.py` to avoid conflict with Python stdlib
+  - Created clean module boundary: registry handles featurizer registration, utils handles utilities
+  - Updated all imports across 35+ source files and 5 test files
+  - Impact: Clearer architecture, better separation of concerns, eliminates utils module bloat
+
+- **Modality Models Base Class Simplification** (2026-03-17)
+  - Consolidated 5 base classes into focused single-responsibility modules
+  - Created `core.py` (was `base_core.py`) for shared abstractions
+  - Created dedicated base files: `cnn/base.py`, `string_models/base.py`, `vae/base.py`, `graph/base.py`
+  - Deleted redundant `base_*.py` files that mixed multiple abstractions
+  - Added `modality_models/README.md` documenting the new structure
+  - Impact: Easier to understand, modify, and extend modality models
+
+- **API Layer Configuration Objects** (2026-03-17)
+  - Replaced 78 parameters in `universal_screen()` with 6 dataclass config objects
+  - New config classes: `CoreScreeningConfig`, `SplitConfig`, `ResourceConfig`, `HPOConfig`, `DatabaseConfig`, `WeightConfig`
+  - Reduced `api.py` from 785 lines to ~550 lines (30% reduction)
+  - Removed 53 legacy parameters and ~100 lines of parameter merging logic
+  - Maintained backward compatibility through facade pattern
+  - Updated 10 RdRp test scripts to use new config object API
+  - Impact: Cleaner API, easier parameter management, better code maintainability
+
+### Changed
+
+- **Representations Module Organization** (2026-03-17)
+  - Old: `utils/` module mixed registry logic with utility functions (16 files)
+  - New: `registry/` as independent module, `utils/` focused on pure utilities
+  - Eliminated circular imports between utils and registry
+  - All registry functions now import from `molblender.representations.registry`
+  - Impact: Single-responsibility principle, clearer module boundaries
+
+- **DeepChem Models Integration** (2026-03-17)
+  - Moved `models/deepchem/` to `models/modality_models/graph/`
+  - DeepChem GNN models now properly inherit from `GraphModalityModel`
+  - Updated imports across models using DeepChem
+  - Deleted obsolete `models/deepchem/` directory
+
+### Fixed
+
+- **Registry Module Lint and Type Errors** (2026-03-17)
+  - Fixed Ruff B007 unused loop variable errors in test files
+  - Fixed mypy type annotation errors in registry/display.py, registry/info.py, registry/shapes.py
+  - Added TYPE_CHECKING imports for BaseFeaturizer to avoid circular imports
+  - Added missing logging import in display.py
+  - Fixed bandit B307 security issue: replaced eval() with ast.literal_eval()
+  - Updated test imports from old registry_* paths to new registry/ module paths
+  - Impact: All lint checks passing, improved type safety, better security
+
+### Removed
+
+- **Registry Filename Prefixes** (2026-03-17)
+  - Removed `registry_` prefix from all registry module files
+  - `registry_core.py` → `core.py`, `registry.py` → `facade.py`, etc.
+  - Renamed `selectors.py` → `selection.py` to avoid Python stdlib conflict
+  - Impact: Cleaner filenames, better naming conventions
+  - Impact: Consistent model architecture, all graph models in one location
+
+- **Execution Layer Cleanup** (2026-03-17)
+  - Removed `execution/optimized_parallel.py` (duplicate functionality)
+  - Deleted `models/api/utils/resource_scheduler.py` (replaced by infrastructure layer)
+  - Cleaned up legacy compatibility shims
+  - Impact: Removed code duplication, clearer dependencies
+
+### Tests
+
+- Added `tests/models/api/test_model_discovery.py` (model catalog discovery tests)
+- Added `tests/models/modality_models/test_graph_models.py` (graph model tests)
+- Verified 157 featurizers still accessible after refactoring
+- All 51 multimodal/representations tests passing
+
+### Fixed
+
+- Fixed circular import between `utils/` and `registry/` modules
+- Fixed name collision between new `ScreeningConfig` and existing `screening_engine.ScreeningConfig`
+- Fixed dashboard imports after API refactoring
+- Fixed relative imports in registry module after file moves
+
 - **Architecture Role Catalog & Executable Snapshot** (2026-03-12)
   - Added machine-readable package role metadata across top-level facades, domain APIs, visualization layers, and execution layers
   - Added `molblender.architecture_roles` helpers for:
