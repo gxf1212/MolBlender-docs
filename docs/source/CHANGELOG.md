@@ -1377,3 +1377,17 @@ infrastructure/telemetry/
 - ✅ Individual Model: Scatter plot正常渲染
 - ✅ 所有4个修复的文件通过手动测试
 - ✅ 模块化重构保持向后兼容性
+
+### Removed
+
+- **Duplicate tool_registry.py Module** (2026-03-17)
+  - Deleted `tool_registry.py` (445 lines) - redundant with registry/ module
+  - Deleted `test_tool_registry.py` - dedicated test file no longer needed
+  - All functionality already exists in registry/ module:
+    - `ToolInfo` → `FeaturizerInfo`
+    - `ToolRegistry` → `registry/` facade.py + core.py + queries.py
+    - `list_featurizers()` → `list_available_featurizers()`
+    - `search_featurizers()` → `FeaturizerQuery.search()`
+  - Updated all tests to use registry/ module instead
+  - Impact: Single source of truth, cleaner architecture, less confusion
+
