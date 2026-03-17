@@ -92,6 +92,11 @@ validation_report = dataset.validate()
 print(f"All molecules valid: {validation_report['all_valid']}")
 ```
 
+For custom loaders and preprocessing code, reuse low-level shared checks from
+`molblender.validation` (for example file existence, suffix checks, numeric
+ranges, and required DataFrame columns) instead of reimplementing them in each
+module.
+
 ### Step 2: Generate Diverse Molecular Representations
 
 ```python

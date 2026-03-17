@@ -129,6 +129,32 @@ def process_molecule(mol: str) -> np.ndarray:
     return result
 ```
 
+## Validation Layering
+
+Prefer the shared primitive validation layer for reusable low-level checks:
+
+```python
+from molblender.validation import (
+    ensure_allowed_suffix,
+    ensure_dataframe_columns,
+    ensure_file_exists,
+    ensure_in_range,
+)
+```
+
+Use `molblender.validation` for:
+- file/path existence
+- writable destination checks
+- suffix/format checks
+- numeric range checks
+- array shape checks
+- DataFrame column presence
+
+Keep domain semantics in their own modules:
+- `molblender.data.validation` for dataset diagnostics
+- `molblender.metrics.validation` for metric compatibility
+- `molblender.models.api.*.validation` for screening-engine rules
+
 ## Code Formatting
 
 Use **Black** for automatic formatting:

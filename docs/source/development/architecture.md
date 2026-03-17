@@ -139,6 +139,8 @@ The diagnostics subdomain also lazily exposes its specialized UI as
 `molblender.data.diagnostics.dashboard`, keeping pre-modeling dataset analysis
 separate from the main results dashboard.
 Likewise, `molblender.data.cache` lazily exposes its `multimodal` cache submodule.
+Shared primitive validation lives in `molblender.validation`; domain-specific
+validation remains inside `data`, `metrics`, and `models.api`.
 
 **Key Classes:**
 - `Molecule`: Single molecule wrapper with lazy evaluation
