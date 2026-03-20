@@ -9,6 +9,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **YAML/TOML Configuration File Support** (2026-03-17)
+  - Created `config/loader.py` for loading YAML and TOML configuration files
+  - Auto-detect format by file extension (.yaml/.yml/.toml)
+  - Environment variable substitution with `${VAR_NAME}` and `${VAR_NAME:default}` syntax
+  - Created `config/export.py` for exporting and creating configuration templates
+  - Added 4 configuration templates:
+    - `screening_basic.yaml` - Minimal quick-start template
+    - `screening_advanced.yaml` - Full-featured template with all options
+    - `screening_hpo.yaml` - HPO-optimized template
+    - `screening_basic.toml` - TOML format example
+  - Integrated with `universal_screen()` via new `config_file` parameter
+  - Priority order: explicit params > config file > defaults
+  - Backward compatible with existing API
+  - Impact: Version control configs, easier collaboration, non-programmers can modify settings
+
+- **Parallel Execution Infrastructure Module** (2026-03-17)
+  - Created new `molblender.parallel` module (457 lines) for unified parallel execution
+  - Core primitives: `WorkerError`, `ProgressTracker`, `execute_with_timeout()`
+  - Parallel executor: `execute_with_fallback()` with automatic serial fallback
+  - Cached execution: `CachedExecutor`, `CacheStats`, `make_cache_key()`
+  - Refactored 3 files to use new infrastructure:
+    - `representations/utils/parallel.py` - uses `execute_with_fallback()`
+    - `representations/utils/parallel_cached.py` - uses `CachedExecutor`
+    - `representations/image/utils.py` - uses unified parallel execution
+  - Eliminates code duplication across representations layer
+  - Uses runtime `concurrent.futures` imports for proper monkeypatch test compatibility
+  - Impact: Cleaner parallel execution, better error handling, consistent progress tracking
+
 - **Representations Registry Module Refactoring** (2026-03-17)
   - Moved `utils/registry*.py` (7 files, 1153 lines) to independent `registry/` module
   - Removed `registry_` prefix from filenames: `registry_core.py` → `core.py`, etc.
@@ -50,6 +78,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Deleted obsolete `models/deepchem/` directory
 
 ### Fixed
+
+- **Documentation API Compatibility** (2026-03-20)
+  - Added `MolecularDataset.validate()` method for dataset validation as shown in quickstart documentation
+  - Added `MolecularDataset.from_dataframe()` alias pointing to `from_df()` for backward compatibility
+  - Fixed UniMol dependency loading to expose `UniMolRepr` class via `deps.get_unimol_tools()["UniMolRepr"]`
+  - Updated UniMol test expectations for actual output dimensions (768 instead of 512 for UniMol-V2-84M)
+  - All documentation examples now work correctly (6/6 tests passing)
+  - Impact: Documentation matches actual API, better user experience
 
 - **Registry Module Lint and Type Errors** (2026-03-17)
   - Fixed Ruff B007 unused loop variable errors in test files
