@@ -8,7 +8,7 @@ Guide for adding new molecular representation methods to MolBlender.
 
 ```python
 from molblender.representations.utils.base import BaseFeaturizer
-from molblender.representations.utils.registry import register_featurizer
+from molblender.representations.registry import register_featurizer
 from molblender.data.io import InputType
 import numpy as np
 

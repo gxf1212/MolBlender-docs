@@ -97,7 +97,6 @@ Quick Links
    installation
    quickstart
    api_guide
-   migration_guide
 
 .. toctree::
    :maxdepth: 1
@@ -105,7 +104,6 @@ Quick Links
    :caption: User Guide
 
    usage/index
-   dashboard_troubleshooting
 
 .. toctree::
    :maxdepth: 1
@@ -120,8 +118,6 @@ Quick Links
    :caption: Development
 
    development/index
-   config_manager_guide
-   screening_workflow_sequence
 
 .. toctree::
    :maxdepth: 1

@@ -34,9 +34,36 @@ sequences = [
     "GSMQALPFDVQEWQLSGPRA",
     "KALTARQQEVFDLIRDHISQTGMPPTRAEIAQRLGFRSPNAAEEHLKALARKGVIEIV"
 ]
-embeddings = featurizer(sequences, n_workers=1)  # Use n_workers>1 for parallel processing
+embeddings = featurizer(sequences, n_workers=1)
 print(f"Processed {len(embeddings)} sequences")
 # Output: Processed 3 sequences
+```
+
+```{note}
+For heavyweight PLM backends, MolBlender currently caps featurization workers to
+1 even if you request a larger `n_workers` value. This keeps real model-backed
+featurizers stable in constrained environments and avoids multiprocessing issues
+with large model objects.
+```
+
+## Mainland China / HuggingFace Mirror
+
+For PLMs backed by Hugging Face assets, set a mirror endpoint before first use
+when running in mainland China:
+
+```bash
+export HF_ENDPOINT=https://hf-mirror.com
+export HF_HOME=$HOME/.cache/huggingface
+export TRANSFORMERS_CACHE=$HF_HOME/transformers
+```
+
+Then create the featurizer normally:
+
+```python
+import molblender as mbl
+
+featurizer = mbl.get_protein_featurizer("protT5")
+embedding = featurizer("MKTAYIAKQRQISFVKSHFSRQ")
 ```
 
 ## Supported Models

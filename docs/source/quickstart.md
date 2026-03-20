@@ -399,43 +399,37 @@ detailed_results = mbl.models.api.thorough_screen(
 
 This complete workflow showcases MolBlender's power in automating molecular machine learning while maintaining flexibility and interpretability.
 
-### Advanced: Tool Registry for Featurizer Discovery
+### Advanced: Featurizer Catalog and Query APIs
 
-For advanced featurizer discovery and metadata queries, use the unified tool registry:
+For advanced featurizer discovery and metadata queries, use the catalog and query
+helpers exposed from `molblender.representations`:
 
 ```python
-from molblender.representations.tool_registry import ToolRegistry, get_tool_registry
-
-# Get global registry instance
-registry = get_tool_registry()
+from molblender.representations import FeaturizerCatalog, FeaturizerQuery
 
 # List all available featurizers
-all_featurizers = registry.list_all()
+all_featurizers = FeaturizerCatalog.list_all(include_protein=True)
 print(f"Total featurizers: {len(all_featurizers)}")
 
-# Filter by category
-from molblender.representations.tool_registry import ToolRegistry
-registry = ToolRegistry()
-
 # Get fingerprint featurizers
-fingerprints = registry.list(category="fingerprints")
+fingerprints = FeaturizerQuery.by_category("fingerprints")
 print(f"Fingerprint featurizers: {[f.name for f in fingerprints]}")
 
 # Filter by tag
-gpu_featurizers = registry.list(tags=["gpu"])
+gpu_featurizers = FeaturizerQuery.by_tag("gpu")
 print(f"GPU featurizers: {[f.name for f in gpu_featurizers]}")
 
 # Get detailed metadata
-info = registry.get("ecfp")
+info = FeaturizerCatalog.get_info("morgan_fp_r2_1024")
 if info:
     print(f"Name: {info.name}")
     print(f"Category: {info.category}")
     print(f"Description: {info.description}")
-    print(f"Dependencies: {info.dependencies}")
-    print(f"Is available: {info.is_available}")
+    print(f"Source: {info.source}")
+    print(f"Output shape: {info.output_shape}")
 
 # Search featurizers
-results = registry.search("fingerprint")
+results = FeaturizerQuery.search("fingerprint")
 for info in results:
     print(f"{info.name}: {info.description}")
 ```

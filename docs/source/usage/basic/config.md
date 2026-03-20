@@ -96,11 +96,39 @@ Once models are cached, MolBlender works offline:
 
 ```python
 # After initial download, this works without internet
-from molblender.representations.spatial.unimol import UniMolFeaturizer
+from molblender.representations.spatial.unimol import UniMolCLSFeaturizer
 
-unimol = UniMolFeaturizer()
+unimol = UniMolCLSFeaturizer()
 # Loads from local cache at TORCH_HOME or HF_HOME
 ```
+
+## Mainland China / HuggingFace Mirror
+
+If you are running MolBlender in mainland China, model downloads from the
+default Hugging Face endpoint can be slow or unreliable. Set the standard
+Hugging Face environment variables before using PLM or transformer-backed
+representations:
+
+```bash
+export HF_ENDPOINT=https://hf-mirror.com
+export HF_HOME=$HOME/.cache/huggingface
+export TRANSFORMERS_CACHE=$HF_HOME/transformers
+```
+
+Then run MolBlender normally:
+
+```python
+import molblender as mbl
+
+featurizer = mbl.get_protein_featurizer("protT5")
+embedding = featurizer("MKTAYIAKQRQISFVKSHFSRQ")
+```
+
+This is especially useful for:
+
+- Protein language models (`esm2`, `protT5`, `ankh`)
+- Transformer-based molecular representations
+- Any representation that downloads model weights from Hugging Face
 
 ## API Reference
 

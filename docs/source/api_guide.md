@@ -842,9 +842,8 @@ screener = create_screener(config)
 
 ## Related Documentation
 
-- [Migration Guide](migration_guide.md) - Migrate from old API
-- [ConfigManager Guide](config_manager_guide.md) - Configuration management
 - [Quick Start](quickstart.md) - Getting started
+- [Configuration Files](usage/basic/config_files.md) - Runtime profiles, YAML config files, and environment overrides
 - [Architecture Overview](development/architecture.md) - Current public layers with internal boundaries
 
 ---
@@ -852,47 +851,50 @@ screener = create_screener(config)
 **Last updated**: 2026-03-10
 **Version**: 1.0.0
 
-## Advanced: Tool Registry API
+## Advanced: Featurizer Catalog and Query API
 
 MolBlender provides a unified representation registry system for advanced metadata query and filtering.
 
-### ToolRegistry
+### FeaturizerCatalog and FeaturizerQuery
 
-`ToolRegistry` provides unified representation discovery and query interfaces.
+`FeaturizerCatalog` provides configuration-oriented lookup helpers, while
+`FeaturizerQuery` provides filtering and search across the registered
+representation metadata.
 
 ```python
-from molblender.representations.tool_registry import ToolRegistry, ToolInfo
-
-# Get registry instance
-registry = ToolRegistry()
+from molblender.representations import (
+    FeaturizerCatalog,
+    FeaturizerInfo,
+    FeaturizerQuery,
+)
 
 # Filter by category
-molecular_featurizers = registry.list(category="molecular")
-protein_featurizers = registry.list(category="protein")
+molecular_featurizers = FeaturizerQuery.by_category("fingerprints")
+protein_featurizers = FeaturizerQuery.by_category("protein")
 
 # Filter by tag
-gpu_featurizers = registry.list(tags=["gpu"])
-experimental_featurizers = registry.list(tags=["experimental"])
+gpu_featurizers = FeaturizerQuery.by_tag("gpu")
+experimental_featurizers = FeaturizerQuery.by_tag("experimental")
 
-# Get detailed metadata
-info: ToolInfo = registry.get("ecfp")
+# Get detailed metadata for a concrete catalog entry
+info: FeaturizerInfo | None = FeaturizerCatalog.get_info("morgan_fp_r2_1024")
 print(f"Description: {info.description}")
-print(f"Dependencies: {info.dependencies}")
+print(f"Source: {info.source}")
 print(f"Output shape: {info.output_shape}")
 
-# Search representations
-results = registry.search("fingerprint")
+# Search returns FeaturizerInfo objects
+results = FeaturizerQuery.search("fingerprint")
 for info in results:
     print(f"{info.name}: {info.description}")
 ```
 
-### ToolInfo
+### FeaturizerInfo
 
-`ToolInfo` contains complete metadata for representations:
+`FeaturizerInfo` contains complete metadata for representations:
 
 ```python
 @dataclass
-class ToolInfo:
+class FeaturizerInfo:
     name: str                      # Representation name
     category: str                  # Category (molecular, protein, etc.)
     description: str               # Description
@@ -902,30 +904,24 @@ class ToolInfo:
     output_type: str               # Output type (vector, matrix, etc.)
     output_shape: tuple            # Output shape
     default_kwargs: dict           # Default parameters
-    is_available: bool             # Is available (dependency check)
-    dependencies: list[str]        # Dependencies
+    examples: list[dict]           # Optional usage examples
 ```
 
 ### Usage Example
 
 ```python
-from molblender.representations.tool_registry import get_tool_registry
-
-# Get global registry instance
-registry = get_tool_registry()
+from molblender.representations import FeaturizerCatalog, FeaturizerQuery
 
 # List all available GPU representations
-gpu_tools = registry.list(tags=["gpu"])
+gpu_tools = FeaturizerQuery.by_tag("gpu")
 for tool in gpu_tools:
-    if tool.is_available:
-        print(f"✅ {tool.name}: {tool.description}")
-    else:
-        print(f"❌ {tool.name}: Missing dependencies {tool.dependencies}")
+    print(f"✅ {tool.name}: {tool.description}")
+    print(f"   source={tool.source}, output={tool.output_type}")
 
 # Find specific representation
-info = registry.get("morgan_fp")
-if info and info.is_available:
+info = FeaturizerCatalog.get_info("morgan_fp_r2_1024")
+if info:
     print(f"Morgan fingerprint is available!")
     print(f"Default radius: {info.default_kwargs.get('radius', 'N/A')}")
-    print(f"Default n_bits: {info.default_kwargs.get('n_bits', 'N/A')}")
+    print(f"Default nBits: {info.default_kwargs.get('nBits', 'N/A')}")
 ```
