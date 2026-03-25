@@ -210,6 +210,7 @@ The following table lists the main optional groups and the key functionalities t
 | `pip install molblender[molfeat]`       | `molfeat`                                             | Various fingerprints and representations via Molfeat.      |
 | `pip install molblender[drawing]`       | `matplotlib`, `seaborn`                               | Molecule and data visualization utilities.                 |
 | `pip install molblender[openbabel]`     | `openbabel-wheel`                                     | Support for Open Babel via Pybel.                          |
+| `pip install molblender[io]`            | `openpyxl`, `xlrd`, `pyarrow`                         | Excel (.xlsx/.xls) and Parquet file loading support.       |
 
 -----
 

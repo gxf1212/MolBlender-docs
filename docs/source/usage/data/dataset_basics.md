@@ -93,6 +93,51 @@ dataset = MolecularDataset.from_sdf(
 )
 ```
 
+### From Excel File (.xlsx, .xls)
+
+```python
+from molblender.data import DataLoader
+
+# Create a dataset from an Excel file
+dataset = DataLoader.from_excel(
+    file_path="compounds.xlsx",
+    input_column="SMILES",
+    label_columns=["Activity", "LogP"],
+    sheet_name="Sheet1"  # Optional: specify sheet name or index
+)
+```
+
+### From Parquet File (.parquet)
+
+```python
+from molblender.data import DataLoader
+
+# Create a dataset from a Parquet file (fast for large datasets)
+dataset = DataLoader.from_parquet(
+    file_path="compounds.parquet",
+    input_column="SMILES",
+    label_columns=["Activity", "LogP"]
+)
+```
+
+### Auto-Detect File Format
+
+```python
+from molblender.data import DataLoader
+
+# Automatically detect format from file extension
+dataset = DataLoader.auto_load(
+    source="compounds.xlsx",  # Supports .csv, .xlsx, .xls, .parquet, .sdf
+    input_column="SMILES",
+    label_columns=["Activity"]
+)
+```
+
+**Note**: Excel and Parquet support require optional dependencies:
+```bash
+pip install -e ".[io]"
+```
+
 ## Accessing Dataset Contents
 
 ### Molecules and Basic Properties

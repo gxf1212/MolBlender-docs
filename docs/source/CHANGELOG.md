@@ -9,6 +9,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Excel and Parquet File Format Support** (2026-03-25)
+  - Added `DataLoader.from_excel()` for loading `.xlsx/.xls` files
+  - Added `DataLoader.from_parquet()` for loading `.parquet` files (fast for large datasets)
+  - Updated `DataLoader.auto_load()` to detect and handle Excel/Parquet formats
+  - Added convenience functions: `load_from_excel()`, `load_from_parquet()`
+  - New optional dependency group `[io]`: openpyxl, xlrd, pyarrow
+  - Updated `[all]` group to include `[io]` dependencies
+  - Impact: Easier data loading from business formats (Excel) and big data formats (Parquet)
+
+- **Config Module Reorganization** (2026-03-24)
+  - Organized config files by functionality: `logging/`, `io/`, `runtime/`
+  - Moved `loader.py` → `io/loader.py` (YAML/TOML config loading)
+  - Moved `export.py` → `io/export.py` (config export templates)
+  - Moved `logging_utils.py` → `logging/utils.py` (logging utilities)
+  - Created `runtime/` for runtime configuration management
+  - Updated all imports across codebase to use new paths
+  - Impact: Clearer module organization, better separation of concerns
+
+### Fixed
+
+- **Test Import Errors After Config Reorganization** (2026-03-25)
+  - Fixed 21 test import errors caused by config module restructuring
+  - Updated `multimodal/api.py`: config imports → `io/loader`, `io/export`, `logging/utils`
+  - Updated 2 test files: `universal_screen` import path corrections
+  - Updated `test_base_validation_regression.py`: modality model imports
+  - Deleted obsolete test using removed `RegressionGridSearch` API
+  - Impact: Test suite restored to 2104 passing tests (2 errors remain, project-specific)
+
+### Changed
+
 - **YAML/TOML Configuration File Support** (2026-03-17)
   - Created `config/loader.py` for loading YAML and TOML configuration files
   - Auto-detect format by file extension (.yaml/.yml/.toml)
