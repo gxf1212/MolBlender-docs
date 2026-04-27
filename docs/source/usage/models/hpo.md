@@ -362,13 +362,25 @@ MolBlender provides pre-defined parameter grids for all supported models. Grids 
 
 ```python
 {
-    'n_estimators': [50, 100, 200],
-    'learning_rate': [0.01, 0.1, 0.3],
-    'max_depth': [3, 6, 10],
-    'subsample': [0.8, 1.0],
-    'colsample_bytree': [0.8, 1.0]
+    'n_estimators': [50, 100, 200, 300],
+    'learning_rate': [0.01, 0.05, 0.1, 0.2],
+    'max_depth': [3, 5, 7]
 }
-# Total combinations: 3 × 3 × 3 × 2 × 2 = 108
+# Total combinations: 4 × 4 × 3 = 48
+```
+
+#### XGBoost (Fine)
+
+```python
+{
+    'n_estimators': [50, 100, 200, 300],
+    'learning_rate': [0.01, 0.05, 0.1, 0.2],
+    'max_depth': [3, 5, 7],
+    'subsample': [0.7, 0.85, 1.0],
+    'colsample_bytree': [0.7, 0.85, 1.0],
+    'gamma': [0, 0.1, 0.3]
+}
+# Total combinations: 4 × 4 × 3 × 3 × 3 = 432
 ```
 
 #### SVM (Coarse)
@@ -386,13 +398,24 @@ MolBlender provides pre-defined parameter grids for all supported models. Grids 
 
 ```python
 {
-    'n_estimators': [50, 100, 200],
-    'learning_rate': [0.01, 0.1, 0.3],
-    'num_leaves': [31, 63, 127],
-    'max_depth': [5, 10, -1],
-    'min_child_samples': [20, 50]
+    'n_estimators': [50, 100, 200, 300],
+    'learning_rate': [0.01, 0.05, 0.1, 0.2],
+    'max_depth': [3, 5, 7]
 }
-# Total combinations: 3 × 3 × 3 × 3 × 2 = 162
+# Total combinations: 4 × 4 × 3 = 48
+```
+
+#### LightGBM (Fine)
+
+```python
+{
+    'n_estimators': [50, 100, 200, 300],
+    'learning_rate': [0.01, 0.05, 0.1, 0.2],
+    'max_depth': [3, 5, 7, -1],
+    'subsample': [0.7, 0.85, 1.0],
+    'colsample_bytree': [0.7, 0.85, 1.0]
+}
+# Total combinations: 4 × 4 × 4 × 3 × 3 = 576
 ```
 
 ### Custom Parameter Grids

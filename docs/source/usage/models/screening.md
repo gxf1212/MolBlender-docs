@@ -142,6 +142,76 @@ Runtime terminology:
 - `max_workers_per_model`: Internal parallelism limit for a single estimator
 - These values are stored separately in result/session metadata on purpose
 
+**GPU Heavy-Task Scheduler** ⭐ **NEW**
+
+MolBlender implements an **intelligent GPU scheduler** that distinguishes between heavy and light workloads to optimize resource utilization and prevent CUDA out-of-memory errors.
+
+`enable_heavy_gpu_scheduler`: `bool`, default=`False`
+: Enable per-GPU heavy task scheduling (default: disabled for backward compatibility)
+  - **Heavy models** (VAE, Transformer, CNN): Use per-GPU slot management
+  - **Light models** (RandomForest, XGBoost, SVM): Use task-level parallelization
+  - **Recommended**: Enable when screening includes deep learning models
+
+`heavy_jobs_per_gpu`: `int`, default=`1`
+: Maximum concurrent heavy jobs per GPU device
+  - Typical values: 1-2 (depending on GPU memory)
+  - Prevents CUDA OOM by limiting concurrent heavy models
+  - Example: 4 GPUs × `heavy_jobs_per_gpu=2` = 8 heavy models max
+
+`heavy_max_parallel_jobs`: `Optional[int]`, default=`None`
+: Total heavy job cap across all GPUs (None = use GPU slot count)
+  - Override GPU slot calculation with a hard limit
+  - Example: `heavy_max_parallel_jobs=4` caps at 4 jobs even with 8 GPU slots
+
+`heavy_model_keywords`: `list[str]`, default=`["vae", "transformer", "language_model", "unimol"]`
+: Keywords to identify heavy models automatically
+  - Models matching these keywords are classified as "heavy"
+  - Default covers: VAE, Transformer, language models, UniMol
+  - Customize for your model set: `["cnn", "transformer", "vae"]`
+
+**How It Works**:
+
+1. **Automatic Classification**: Models are classified as heavy/light based on `heavy_model_keywords`
+2. **Separate Scheduling**:
+   - **Heavy tasks**: Queued per-GPU slots (e.g., 2 slots per GPU)
+   - **Light tasks**: Task-level parallelization (maximize CPU utilization)
+3. **Slot Management**: Each GPU has `heavy_jobs_per_gpu` independent slots
+4. **Graceful Degradation**: CUDA errors fall back to CPU on large machines (≥32 cores)
+
+**When to Enable**:
+- ✅ **Screening includes VAE/Transformer/CNN** with traditional ML models
+- ✅ **Multi-GPU systems** where you want to prevent CUDA OOM
+- ✅ **Mixed workloads** where deep learning and sklearn models compete for resources
+- ❌ **Traditional ML only** - no benefit, adds unnecessary overhead
+- ❌ **Single GPU with 1-2 heavy models** - manual control is simpler
+
+**Example Usage**:
+
+```python
+# Mixed workload: VAE + RandomForest + XGBoost
+results = universal_screen(
+    dataset=dataset,
+    target_column="activity",
+    enable_heavy_gpu_scheduler=True,      # Enable GPU scheduler
+    heavy_jobs_per_gpu=2,                 # 2 heavy jobs per GPU
+    heavy_model_keywords=["vae", "transformer", "cnn"],  # Custom heavy keywords
+    max_cpu_cores=32                      # Leave room for CPU fallback
+)
+
+# Expected behavior with 4 GPUs:
+# - VAE models: queued as heavy (max 4×2=8 concurrent)
+# - RandomForest/XGBoost: parallelized across CPU cores (light)
+# - No CUDA OOM: per-GPU slot enforcement
+```
+
+**Performance Impact**:
+
+| Scenario | Without Scheduler | With Scheduler |
+|----------|------------------|----------------|
+| 4 VAE + 20 RF (4 GPUs) | Risk of CUDA OOM | Stable: 2 VAE per GPU |
+| 1 VAE + 30 RF (1 GPU) | VAE blocks all models | VAE takes 1 slot, RF runs on CPU |
+| 8 Transformer + 10 XGBoost (2 GPUs) | CUDA errors likely | Controlled: 1 Transformer per GPU |
+
 **CUDA Fallback Behavior**
 
 If a CUDA‑enabled model (VAE/CNN/Transformer/XGBoost) hits a CUDA error during training,
