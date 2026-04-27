@@ -185,15 +185,15 @@ results_stage2 = universal_screen(
     - Faster for very large grids
     - Set `n_iter` to control number of samples
 
-  - **`"optuna"`** - Optuna Bayesian optimization ⭐ NEW
+  - **`"optuna"`** - Optuna Bayesian optimization
     - Intelligent sampling using Tree-structured Parzen Estimator (TPE)
     - Efficient search focused on promising regions
     - MedianPruner for early stopping (aborts unpromising trials)
-    - Warm-start from Grid Search best parameters (±50% range)
+    - **Bayesian warm-start**: Automatically runs coarser grid search first to inject priors
     - Ideal for:
       - Fine-tuning models with many hyperparameters
       - Slow-training models (Transformer, CNN) where Grid Search is expensive
-      - Top 3 models from coarse grid that deserve focused optimization
+      - `hpo_stage="fine"` or `"ultrafine"` where warm-start accelerates convergence
     - **Usage**: Requires Optuna installation (`pip install optuna`)
 
 ```python
@@ -203,65 +203,103 @@ enable_hpo=True, hpo_method="grid", hpo_stage="coarse"
 # Random search (faster for large grids)
 enable_hpo=True, hpo_method="random", hpo_stage="fine", n_iter=50
 
-# Optuna (Bayesian optimization with pruning)
-enable_hpo=True, hpo_method="optuna", hpo_stage="fine"
-# Note: Falls back to Grid Search if Optuna not installed
+# Optuna with Bayesian warm-start (recommended for fine-tuning)
+enable_hpo=True, hpo_method="optuna", hpo_stage="fine", optuna_warm_start=True
 ```
 
-#### Optuna Configuration (Advanced)
+#### Optuna Configuration
 
-When using `hpo_method="optuna"`, Optuna-specific parameters apply:
+When using `hpo_method="optuna"`, the following Optuna-specific parameters apply:
 
-- **`n_trials`**: Number of optimization trials (default: 50)
-- **`timeout`**: Maximum optimization time in seconds (default: None)
-- **`pruning`**: Enable MedianPruner for early stopping (default: True)
+- **`optuna_n_trials`**: `int`, default=`50`
+  - Number of optimization trials to run
+  - More trials = better optimization, but longer runtime
+  - Recommended: 50-100 for most cases
 
-**Integration with Grid Search**:
+- **`optuna_timeout`**: `Optional[int]`, default=`None`
+  - Maximum optimization time in seconds
+  - Useful when you want to limit total HPO time
+  - When set, optimization stops after timeout even if not all trials complete
 
-Optuna is designed as a **Stage 3** fine-tuning step:
+- **`optuna_pruning`**: `bool`, default=`True`
+  - Enable MedianPruner for early stopping
+  - Aborts trials that are unpromising halfway through
+  - Significantly speeds up optimization by wasting less time on bad configs
+
+- **`optuna_warm_start`**: `bool`, default=`True`
+  - Enable Bayesian warm-start from coarser grid results
+  - **Stage selection**: Automatically chooses warm-start stage:
+    - `hpo_stage="ultrafine"` → runs `"fine"` grid first for priors
+    - `hpo_stage="fine"` → runs `"coarse"` grid first for priors
+    - `hpo_stage="coarse"` → uses Stage 1 defaults as priors (no extra grid run)
+  - Coarse grid trials are **injected into Optuna study** with proper distributions
+  - Base parameters are narrowed to ±50% around coarse best for focused search
 
 ```python
-# Recommended workflow: Grid (coarse) → Grid (fine) → Optuna (focused)
+# Example: Fine-tuning with warm-start from coarse grid
 results = universal_screen(
     dataset=dataset,
     target_column="activity",
     enable_hpo=True,
-    hpo_method="grid",     # Stage 2
-    hpo_stage="coarse",
-    top_n_for_hpo=5,
-    enable_db_storage=True,
-    db_path="optimization.db"
+    hpo_method="optuna",          # Use Optuna Bayesian optimization
+    hpo_stage="fine",              # Fine-tuning stage
+    optuna_n_trials=100,           # Run 100 Optuna trials
+    optuna_timeout=3600,           # Stop after 1 hour if needed
+    optuna_pruning=True,           # Enable early stopping (recommended)
+    optuna_warm_start=True,        # Inject coarse grid priors (recommended)
+    top_n_for_hpo=3,               # Optimize top 3 models
+    enable_db_storage=True
 )
 
-# Advanced internal hook: manually run Optuna on top models only if you are
-# extending MolBlender beyond the standard universal_screen() workflow.
-from molblender.models.api.core.hpo.optuna_optimizer import create_optimizer
-
-optuna = create_optimizer(
-    config=screening_config,
-    n_trials=100,              # More trials for focused optimization
-    pruning=True               # Early stopping enabled
+# Example: Ultrafine tuning with warm-start from fine grid
+results_ultrafine = universal_screen(
+    dataset=dataset,
+    target_column="activity",
+    enable_hpo=True,
+    hpo_method="optuna",
+    hpo_stage="ultrafine",         # Highest granularity
+    optuna_warm_start=True,        # Will run 'fine' grid first for priors
+    top_n_for_hpo=1                # Only optimize the single best model
 )
 ```
 
-The `create_optimizer()` path above is an advanced internal hook. For normal
-user workflows, stop at `universal_screen(enable_hpo=True, ...)` unless you
-explicitly need custom Stage 3 optimization control.
+**How Bayesian Warm-Start Works**:
+
+1. **Automatic stage selection**: When `optuna_warm_start=True`, MolBlender runs a coarser grid search before Optuna:
+   - For `hpo_stage="fine"`: runs `"coarse"` grid first (3-5 values per param)
+   - For `hpo_stage="ultrafine"`: runs `"fine"` grid first (5-10 values per param)
+
+2. **Trial injection**: All coarse grid results are injected into the Optuna study as completed trials with:
+   - Proper parameter distributions (`IntDistribution`, `FloatDistribution`, `CategoricalDistribution`)
+   - Actual CV scores as trial values
+   - This allows TPE sampler to learn from coarse grid results
+
+3. **Focused search**: The Optuna search space is narrowed to ±50% around the coarse grid's best parameters:
+   - If coarse best was `max_depth=6`, Optuna searches `[3, 9]` instead of `[1, 20]`
+   - This dramatically accelerates convergence for high-dimensional spaces
+
+4. **Merged results**: Both coarse grid trials and Optuna trials are stored in `all_cv_results`:
+   - Coarse grid results come first (exploration)
+   - Optuna results follow (exploitation around best region)
+   - Dashboard visualizes the complete optimization trajectory
 
 **When to Use Optuna**:
-- ✅ **Top models** (top 3) from coarse grid deserve focused optimization
-- ✅ **Slow models** (Transformer, CNN) where each trial is expensive
+- ✅ **Fine/ultrafine stages** where warm-start provides strong priors
+- ✅ **Slow models** (Transformer, CNN, VAE) where each trial is expensive
 - ✅ **Many hyperparameters** (10+) where Grid Search is impractical
+- ✅ **Top 1-3 models** from coarse grid that deserve focused optimization
+- ❌ **Coarse stage** - Grid Search is faster and sufficient for exploration
 - ❌ **Small datasets** (<500 molecules) - insufficient data for reliable Bayesian optimization
 
 **Optuna vs Grid Search**:
 
-| Aspect | Grid Search | Optuna |
-|--------|-------------|--------|
-| Speed | Fast for small grids, slow for large grids | Intelligent sampling, fewer trials needed |
-| Completeness | Tests all combinations | Samples promising regions, may miss edge cases |
-| Best Guarantee | Finds best in grid | Usually finds best, but not guaranteed |
-| Ideal For | Small/medium grids, exhaustive search needed | Large grids, slow training models |
+| Aspect | Grid Search | Optuna with Warm-Start |
+|--------|-------------|------------------------|
+| Speed | Fast for coarse grids, slow for fine/ultrafine | Warm-start accelerates, fewer trials needed |
+| Completeness | Tests all combinations in grid | Samples promising regions, may miss edge cases |
+| Best Guarantee | Finds best in grid | Usually finds best, guided by coarse priors |
+| Ideal For | Coarse exploration, small/medium grids | Fine/ultrafine tuning, slow models |
+| Stage | `"coarse"` | `"fine"`, `"ultrafine"` |
 
 ### Model Selection
 
