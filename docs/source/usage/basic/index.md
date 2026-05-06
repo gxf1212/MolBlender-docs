@@ -9,6 +9,7 @@ This section covers the essential building blocks you need to understand before 
 Key topics include:
 - **Featurizer System**: Understanding how to discover, instantiate, and use molecular and protein featurizers
 - **Configuration**: Managing global settings, dependencies, and environment setup
+- **Configuration Files**: Using YAML/TOML files for screening workflows
 - **Data Shapes & Modalities**: Understanding the different representation formats and their dimensions
 - **CLI Tools**: Command-line utilities for result management and analysis
 
@@ -27,6 +28,13 @@ Understanding the featurizer system and registry
 :link-type: doc
 
 Global settings and dependency management
+:::
+
+:::{grid-item-card} 📄 **Configuration Files**
+:link: config_files
+:link-type: doc
+
+YAML/TOML configuration for screening workflows
 :::
 
 :::{grid-item-card} 💻 **CLI**
@@ -76,6 +84,7 @@ print(f"Feature shape: {features.shape}")
 
 featurizers
 config
+config_files
 cli
 shapes
 ```
