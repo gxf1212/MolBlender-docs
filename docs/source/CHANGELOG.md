@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Morgan Hashed Count Fingerprints** (2026-05-01)
+  - Added `MorganHashedCountFP` class using RDKit's official `GetCountFingerprintAsNumPy()` API
+  - New featurizers: `morgan_hashed_count_fp_r2_8192`, `morgan_hashed_count_fp_r2_16384` (R2)
+  - New featurizers: `morgan_hashed_count_fp_r3_8192`, `morgan_hashed_count_fp_r3_16384` (R3)
+  - New feature-invariant variants: `morgan_feature_hashed_count_fp_r2_8192`, `morgan_feature_hashed_count_fp_r3_8192`
+  - New chiral variants: All hashed_count fingerprints support `useChirality=True`
+  - Improved `DEFAULT_SPARSE_FP_SIZE` from 4096 to 8192 (reduces truncation)
+  - Enhanced truncation warnings with feature count statistics
+  - Migration guide: Deprecated `morgan_count_fp_*` and `morgan_feature_fp_*` (truncated sparse count)
+  - Impact: Fixed-dimension count fingerprints without truncation, better coverage for complex molecules
+
+- **Morgan Chiral Fingerprints** (2026-05-01)
+  - Added chirality support to Morgan bit fingerprints
+  - New featurizers: `morgan_fp_r2_2048_chiral`, `morgan_fp_r2_1024_chiral`, `morgan_fp_r2_512_chiral`
+  - New featurizers: `morgan_fp_r3_2048_chiral`, `morgan_fp_r3_1024_chiral`, `morgan_fp_r3_512_chiral`
+  - Impact: Enantiomer-sensitive Morgan fingerprints for stereochemistry-aware applications
+
 - **Excel and Parquet File Format Support** (2026-03-25)
   - Added `DataLoader.from_excel()` for loading `.xlsx/.xls` files
   - Added `DataLoader.from_parquet()` for loading `.parquet` files (fast for large datasets)
@@ -28,6 +45,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Impact: Clearer module organization, better separation of concerns
 
 ### Fixed
+
+- **CNN and VAE GPU Memory Overflow** (2026-04-14)
+  - Fixed GPU memory overflow in CNN (`TorchCNNWrapper.predict()`) and VAE (`MolecularFingerprintVAE.predict()`)
+  - Added batch processing to both `predict()` methods (previously processed all data at once)
+  - Added `inference_batch_size` parameter to `TorchCNNWrapper.__init__()` and `MolecularFingerprintVAE.__init__()`
+  - Updated model catalog:
+    - `matrix_cnn`: batch_size=16, inference_batch_size=16
+    - `image_cnn`: batch_size=16, inference_batch_size=16
+    - `matrix_cnn_small`: batch_size=32, inference_batch_size=32
+    - `image_cnn_small`: batch_size=32, inference_batch_size=32
+    - `VAE (latent=64/128/256/compact)`: batch_size=32, inference_batch_size=32
+  - Automatic fallback: `inference_batch_size` → training `batch_size` → default
+  - Impact: All GPU models (Transformer, CNN, VAE) now support batch processing for large datasets
+
+- **Transformer GPU Memory Overflow** (2026-04-14)
+  - Fixed GPU memory overflow when processing >4200 samples in `predict()` method
+  - Added batch processing to `predict()` method (previously processed all data at once)
+  - Added `inference_batch_size` parameter to `TransformerStringModel.__init__()`
+  - Updated model catalog: `transformer_small` (batch=32), `transformer_medium` (batch=16)
+  - Automatic fallback: `inference_batch_size` → training `batch_size` → default 32
+  - Impact: Can now process large datasets (>4200 samples) without GPU memory overflow
 
 - **Test Import Errors After Config Reorganization** (2026-03-25)
   - Fixed 21 test import errors caused by config module restructuring

@@ -100,22 +100,42 @@ print(np.array_equal(fp_mol, fp_rdkit))  # True
   - Binary
   - 1024
   - Morgan fingerprint, radius=3, medium size
+* - `morgan_fp_r2_2048_chiral`
+  - Binary
+  - 2048
+  - Morgan fingerprint with chirality (R2)
+* - `morgan_fp_r3_2048_chiral`
+  - Binary
+  - 2048
+  - Morgan fingerprint with chirality (R3)
+* - `morgan_hashed_count_fp_r2_8192`
+  - Hashed Count
+  - 8192
+  - Morgan hashed count (R2, fixed dim, no truncation)
+* - `morgan_hashed_count_fp_r2_16384`
+  - Hashed Count
+  - 16384
+  - Morgan hashed count (R2, minimal collision)
+* - `morgan_hashed_count_fp_r3_8192`
+  - Hashed Count
+  - 8192
+  - Morgan hashed count (R3, fixed dim, no truncation)
+* - `morgan_feature_hashed_count_fp_r2_8192`
+  - Hashed Count
+  - 8192
+  - Morgan feature hashed count (pharmacophore)
+* - `morgan_hashed_count_fp_r2_8192_chiral`
+  - Hashed Count
+  - 8192
+  - Morgan hashed count with chirality (R2)
 * - `morgan_count_fp_r2`
-  - Count
+  - Sparse Count
   - 4096
-  - Morgan counts, radius=2
+  - [DEPRECATED] Morgan sparse count (use hashed_count instead)
 * - `morgan_feature_fp_r2`
-  - Count
+  - Sparse Count
   - 4096
-  - Morgan with pharmacophore features, radius=2
-* - `morgan_count_fp_r3`
-  - Count
-  - 4096
-  - Morgan counts, radius=3
-* - `morgan_feature_fp_r3`
-  - Count
-  - 4096
-  - Morgan with pharmacophore features, radius=3
+  - [DEPRECATED] Morgan feature sparse count (use hashed_count instead)
 * - `maccs_keys`
   - Binary
   - 167
@@ -158,17 +178,36 @@ fp = morgan.featurize('c1ccccc1O')  # phenol
 print(f"Active bits: {np.sum(fp)}")  # Number of set bits
 print(f"Fingerprint density: {np.sum(fp) / len(fp):.3f}")  # Sparsity
 
-# Count-based Morgan fingerprints
-morgan_count = mbl.get_featurizer('morgan_count_fp_r2')
-fp_count = morgan_count.featurize('c1ccccc1O')
-print(f"Non-zero features: {np.count_nonzero(fp_count)}")
-print(f"Max count: {np.max(fp_count)}")  # Some features may appear multiple times
+# Hashed count fingerprints (recommended, no truncation)
+morgan_hashed = mbl.get_featurizer('morgan_hashed_count_fp_r2_8192')
+fp_hashed = morgan_hashed.featurize('c1ccccc1O')
+print(f"Non-zero features: {np.count_nonzero(fp_hashed)}")
+print(f"Max count: {np.max(fp_hashed)}")  # Full count information preserved
+```
+:::
+
+:::{tab-item} Hashed Count vs Sparse Count
+```python
+# ✅ RECOMMENDED: Hashed count (fixed dimension, no truncation)
+morgan_hashed = mbl.get_featurizer('morgan_hashed_count_fp_r2_8192')
+fp_hashed = morgan_hashed.featurize('complex_molecule')
+# Output: Fixed 8192 dimensions, all counts preserved via hashing
+
+# ⚠️  DEPRECATED: Sparse count (truncated, loses information)
+morgan_sparse = mbl.get_featurizer('morgan_count_fp_r2')
+fp_sparse = morgan_sparse.featurize('complex_molecule')
+# Output: Variable dimensions, features beyond 4092 may be truncated
+# Warning: "Sparse fingerprint: 15/4207 features (0.4%) truncated"
+
+# 💡 Use hashed_count for complex molecules to avoid information loss
 ```
 :::
 
 :::{tab-item} Custom Parameters
 ```python
-from molblender.representations.fingerprints.rdkit import MorganBitFP, MorganCountFP
+from molblender.representations.fingerprints.rdkit import (
+    MorganBitFP, MorganHashedCountFP
+)
 
 # Custom binary Morgan with chirality
 custom_morgan = MorganBitFP(
@@ -179,23 +218,58 @@ custom_morgan = MorganBitFP(
     useFeatures=False   # Use atom types, not pharmacophores
 )
 
-# Feature-based Morgan for pharmacophore encoding
-feature_morgan = MorganCountFP(
+# Custom hashed count with feature invariants
+custom_hashed = MorganHashedCountFP(
     radius=2,
+    fpSize=16384,       # Larger space reduces hash collisions
     useFeatures=True,   # Use pharmacophore features
-    fpSize=8192         # Larger space for count vectors
+    useChirality=True   # Include stereochemistry
 )
 ```
 :::
 
 :::{tab-item} Applications
 - **Similarity searching**: Find molecules with similar scaffolds
-- **Machine learning**: Features for QSAR/QSPR models
+- **Machine learning**: Features for QSAR/QSPR models (hashed_count recommended)
 - **Scaffold hopping**: Identify molecules with similar pharmacophores
 - **Virtual screening**: Fast similarity-based filtering
+- **Chiral separation**: Stereochemistry-aware clustering with chiral variants
 :::
 
 ::::
+
+```{warning}
+**Morgan Count Migration Guide**
+
+The old `morgan_count_fp_*` and `morgan_feature_fp_*` fingerprints use sparse count vectors that may truncate features beyond the default size. For new projects, use the new hashed count variants:
+
+**Old (Deprecated)** → **New (Recommended)**
+- `morgan_count_fp_r2` → `morgan_hashed_count_fp_r2_8192`
+- `morgan_feature_fp_r2` → `morgan_feature_hashed_count_fp_r2_8192`
+- `morgan_count_fp_r3` → `morgan_hashed_count_fp_r3_8192`
+- `morgan_feature_fp_r3` → `morgan_feature_hashed_count_fp_r3_8192`
+
+Benefits: No truncation, fixed dimensions, better coverage for complex molecules.
+```
+
+#### Available Morgan Variants
+
+**Binary Morgan (Bit Vectors)**
+- `morgan_fp_r2_512`, `morgan_fp_r2_1024`, `morgan_fp_r2_2048`
+- `morgan_fp_r3_512`, `morgan_fp_r3_1024`, `morgan_fp_r3_2048`
+- `morgan_fp_r2_512_chiral`, `morgan_fp_r2_1024_chiral`, `morgan_fp_r2_2048_chiral`
+- `morgan_fp_r3_512_chiral`, `morgan_fp_r3_1024_chiral`, `morgan_fp_r3_2048_chiral`
+
+**Hashed Count Morgan (Fixed Dimension, No Truncation)**
+- `morgan_hashed_count_fp_r2_8192`, `morgan_hashed_count_fp_r2_16384`
+- `morgan_hashed_count_fp_r3_8192`, `morgan_hashed_count_fp_r3_16384`
+- `morgan_feature_hashed_count_fp_r2_8192` (pharmacophore features)
+- `morgan_feature_hashed_count_fp_r3_8192` (pharmacophore features)
+- All variants support chiral versions with `_chiral` suffix
+
+**Sparse Count Morgan (Deprecated, May Truncate)**
+- `morgan_count_fp_r2`, `morgan_count_fp_r3`
+- `morgan_feature_fp_r2`, `morgan_feature_fp_r3`
 
 ### Topological Fingerprints
 
