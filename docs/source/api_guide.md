@@ -421,6 +421,43 @@ print(f"Description: {info['description']}")
 
 **Returns**: `dict` - Dictionary containing detailed representation information
 
+#### Chirality-Aware Representations
+
+MolBlender provides chirality-aware variants for stereochemistry-sensitive applications:
+
+**RDKit Morgan Chiral Variants**:
+```python
+from molblender.api import get_featurizer
+import numpy as np
+
+# Standard Morgan (no chirality)
+morgan_normal = get_featurizer("morgan_fp_r2_2048")
+fp1 = morgan_normal.featurize("F[C@H](Cl)Br")
+fp2 = morgan_normal.featurize("F[C@@H](Cl)Br")
+print(f"Same for enantiomers: {np.array_equal(fp1, fp2)}")  # True
+
+# Chiral Morgan (with chirality)
+morgan_chiral = get_featurizer("morgan_fp_r2_2048_chiral")
+fp1_chiral = morgan_chiral.featurize("F[C@H](Cl)Br")
+fp2_chiral = morgan_chiral.featurize("F[C@@H](Cl)Br")
+print(f"Different for enantiomers: {not np.array_equal(fp1_chiral, fp2_chiral)}")  # True
+```
+
+**Available Chiral Variants**:
+- `morgan_fp_r2_2048_chiral`, `morgan_fp_r2_1024_chiral`, `morgan_fp_r2_512_chiral`
+- `morgan_fp_r3_2048_chiral`, `morgan_fp_r3_1024_chiral`, `morgan_fp_r3_512_chiral`
+- `morgan_hashed_count_fp_r2_8192_chiral`, `morgan_hashed_count_fp_r2_16384_chiral`
+- `morgan_hashed_count_fp_r3_8192_chiral`, `morgan_hashed_count_fp_r3_16384_chiral`
+- `morgan_feature_hashed_count_fp_r2_8192_chiral`, `morgan_feature_hashed_count_fp_r3_8192_chiral`
+- `deepchem_morgan_r2_2048_chiral`, `deepchem_morgan_r3_1024_chiral`, `deepchem_morgan_count_r2_2048_chiral`
+- `deepchem_convmol_chiral`, `deepchem_weave_chiral`, `deepchem_molgraphconv_chiral`
+
+**When to Use Chiral Variants**:
+- Enantiomer screening and selection
+- Chiral drug discovery
+- Stereochemistry-aware modeling
+- Applications requiring spatial isomer discrimination
+
 ### 2. Model API
 
 #### screen_models()

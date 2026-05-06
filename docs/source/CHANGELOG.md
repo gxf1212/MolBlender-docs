@@ -20,11 +20,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Migration guide: Deprecated `morgan_count_fp_*` and `morgan_feature_fp_*` (truncated sparse count)
   - Impact: Fixed-dimension count fingerprints without truncation, better coverage for complex molecules
 
-- **Morgan Chiral Fingerprints** (2026-05-01)
+- **Morgan Chiral Fingerprints** (2026-05-06)
   - Added chirality support to Morgan bit fingerprints
   - New featurizers: `morgan_fp_r2_2048_chiral`, `morgan_fp_r2_1024_chiral`, `morgan_fp_r2_512_chiral`
   - New featurizers: `morgan_fp_r3_2048_chiral`, `morgan_fp_r3_1024_chiral`, `morgan_fp_r3_512_chiral`
+  - New hashed count chiral variants: `morgan_hashed_count_fp_r2_8192_chiral`, `morgan_hashed_count_fp_r2_16384_chiral`
+  - New hashed count chiral variants: `morgan_hashed_count_fp_r3_8192_chiral`, `morgan_hashed_count_fp_r3_16384_chiral`
+  - New feature-hashed chiral variants: `morgan_feature_hashed_count_fp_r2_8192_chiral`, `morgan_feature_hashed_count_fp_r3_8192_chiral`
   - Impact: Enantiomer-sensitive Morgan fingerprints for stereochemistry-aware applications
+
+- **DeepChem Chiral Fingerprints** (2026-05-06)
+  - Added chirality support to DeepChem Circular fingerprints
+  - New featurizers: `deepchem_morgan_r2_2048_chiral`, `deepchem_morgan_r3_1024_chiral`
+  - New count variant: `deepchem_morgan_count_r2_2048_chiral`
+  - Impact: Enantiomer discrimination for DeepChem fingerprint workflows
+
+- **DeepChem Chiral Graph Featurizers** (2026-05-06)
+  - Added chirality support to DeepChem graph featurizers
+  - New featurizers: `deepchem_convmol_chiral`, `deepchem_weave_chiral`, `deepchem_molgraphconv_chiral`
+  - Enhanced registration to support default_kwargs for graph featurizers
+  - Impact: Stereochemistry-aware graph representations for GNN models
+
+- **Chirality Test Suite** (2026-05-06)
+  - Added comprehensive test coverage for all chirality variants (33 tests)
+  - Test files: `test_rdkit_chiral.py`, `test_deepchem_chiral.py`, `test_deepchem_chiral.py`
+  - Tests verify enantiomer discrimination and registration
+  - Results: 32 passed, 1 skipped (DeepChem library limitation)
+  - Impact: Validates chirality encoding across all fingerprint types
 
 - **Excel and Parquet File Format Support** (2026-03-25)
   - Added `DataLoader.from_excel()` for loading `.xlsx/.xls` files
