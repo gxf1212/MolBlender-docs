@@ -40,7 +40,7 @@ verbose: 2
 ### 3. Run Screening with Config File
 
 ```python
-from molblender.api import universal_screen
+from molblender.models.api import universal_screen
 
 results = universal_screen(
     dataset=your_dataset,
@@ -257,7 +257,7 @@ export DATA_DIR=/mnt/storage/prod_data
 ## Complete Example
 
 ```python
-from molblender.api import universal_screen
+from molblender.models.api import universal_screen
 from molblender.data import MolecularDataset, InputType
 
 # Load dataset

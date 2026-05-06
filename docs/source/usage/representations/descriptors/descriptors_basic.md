@@ -133,7 +133,3 @@ print(f"Descriptors calculated with custom fill value")
 For complete details on all parameters and methods, see the API documentation:
 
 - {doc}`/api/representations/descriptors/descriptors_basic`
-
-TODO:
-
-- [] test `def test_descriptor_subset_valid(self)` failed

@@ -219,6 +219,34 @@ MolBlender will **fall back to CPU only when effective CPU cores ≥ 32**. If fe
 cores are available, the error is raised as usual. This keeps GPU failures from
 spamming logs on large CPU machines while preserving strict failure on smaller nodes.
 
+**Progressive Timeout Fallback** ⭐ **NEW**
+
+MolBlender implements a robust timeout control mechanism with progressive fallback. Timeout is automatically managed based on representation type and data size.
+
+**Adaptive Timeout System**:
+- **Auto-tuned**: Timeout is automatically adjusted based on representation complexity and dataset size
+- **Heavy models**: Longer timeouts for deep learning models (VAE, CNN, Transformer)
+- **Light models**: Shorter timeouts for traditional ML (RandomForest, XGBoost, SVM)
+
+**Fallback Chain** (tried in order):
+1. **Full Parameters**: `sample_weight + timeout` (try first)
+2. **Drop Sample Weight**: If timeout fails with sample_weight, retry without
+3. **Drop Timeout**: If still failing, retry with unlimited time
+4. **Plain Fit**: Final fallback to basic sklearn fit()
+
+**Timeout Behavior by Model Type**:
+
+| Model Type | Timeout Support | Sample Weight | Behavior |
+|------------|---------------|--------------|---------|
+| **Deep Learning** (VAE, CNN, Transformer) | ✅ Auto-adaptive | ✅ Via fallback chain | Epoch-level timeout |
+| **Traditional ML** (RF, XGBoost, SVM) | ❌ Gracefully ignored | ✅ Full support | Standard sklearn fit |
+
+**Why Progressive Fallback?**
+- Deep learning models need timeout to prevent hanging
+- Sample weights are important for imbalanced datasets
+- Fallback ensures both features work even if one fails
+- System automatically handles timeout configuration for all model types
+
 **Log Noise Suppression**
 
 Repeated CUDA/CV/XGBoost failures and near‑constant prediction warnings are deduplicated

@@ -476,6 +476,72 @@ Quick reference to implementation details:
 | **Metric Computation** | `evaluator.py` | 313-400 | Compute R², RMSE, MAE, etc. |
 | **Per-Repr Splitting** | `standard.py` | 84-90 | Each representation split independently |
 
+## Large Dataset Prediction
+
+MolBlender supports efficient prediction on large datasets with automatic batch processing and memory management:
+
+### Inference Batch Size Control
+
+Deep learning models (VAE, CNN, Transformer) use batch processing for inference to prevent GPU memory overflow:
+
+```python
+from molblender.models import universal_screen
+
+# Large dataset prediction
+results = universal_screen(
+    dataset=large_dataset,
+    target_column="activity",
+    cv_folds=3,           # Reduce CV folds
+    test_size=0.1,         # Smaller test set
+    enable_heavy_gpu_scheduler=True,  # Enable GPU scheduling
+    heavy_jobs_per_gpu=1,  # One heavy task per GPU for large datasets
+    train_timeout=600     # Longer timeout for large models
+)
+```
+
+**Batch Processing Note**:
+Deep learning models (VAE, CNN, Transformer) use batch processing internally with default batch sizes defined in the model catalog:
+
+| Model Type | Default Batch Size | Note |
+|-----------|-------------------|------|
+| VAE | 16-32 | Configurable in model catalog |
+| CNN | 16 | Smaller batches for matrix inputs |
+| Transformer | 16 | Configurable in model catalog |
+| Traditional ML | N/A | No batch processing needed |
+
+### GPU Memory Optimization
+
+The system automatically handles GPU memory constraints:
+
+**Memory Management Features**:
+- Automatic batch size adjustment on CUDA OOM
+- GPU memory cleanup after each batch
+- CPU fallback when GPU is unavailable
+
+For very large datasets, enable the GPU scheduler to prevent OOM errors:
+
+```python
+# Recommended settings for large datasets (10k+ molecules)
+results = universal_screen(
+    dataset=large_dataset,
+    target_column="activity",
+    cv_folds=3,           # Reduce CV folds
+    test_size=0.1,         # Smaller test set
+    enable_heavy_gpu_scheduler=True,  # Enable GPU scheduling
+    heavy_jobs_per_gpu=1,  # One heavy task per GPU for large datasets
+    train_timeout=600     # Longer timeout for large models
+)
+```
+
+**Dataset Size Guidelines**:
+
+| Dataset Size | Batch Size | CV Folds | Test Size |
+|-------------|-----------|----------|-----------|
+| < 1,000 | 256 (default) | 5 | 0.2 |
+| 1,000 - 10,000 | 256 | 5 | 0.2 |
+| 10,000 - 50,000 | 128-256 | 3 | 0.1 |
+| > 50,000 | 64-128 | 3 | 0.05-0.1 |
+
 ## Further Reading
 
 - {doc}`screening` - Complete API reference for screening functions

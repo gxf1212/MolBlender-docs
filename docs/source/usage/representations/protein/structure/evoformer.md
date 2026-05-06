@@ -1,12 +1,7 @@
-# Protein Structure Representations
+# Protein Structure Representations (Evoformer)
 
-(Content coming soon...)
+```{admonition} Coming Soon
+:class: seealso
 
-
-```{toctree}
-:maxdepth: 1
-:hidden:
-
+This section is under development. For structure-based protein representations, see {doc}`/api/representations/protein/index`.
 ```
-
-API: {doc}`/api/representations/protein/index`
