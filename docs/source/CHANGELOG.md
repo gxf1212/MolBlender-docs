@@ -48,6 +48,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Results: 32 passed, 1 skipped (DeepChem library limitation)
   - Impact: Validates chirality encoding across all fingerprint types
 
+- **Custom HPO Parameter Grids and Scoring** (2026-05-25)
+  - Added `custom_param_grids` config for user-defined parameter grids per model
+  - Added `estimator_params` config for fixed estimator parameters (e.g., max_iter, random_state)
+  - Added `hpo_scoring` config for custom HPO scoring metric (separate from evaluation metric)
+  - Updated `CoarseGridSearchOptimizer` to use custom grids when provided
+  - Impact: Users can now specify fine-grained parameter grids and use sklearn native scorers
+
+- **train_val_test Split Strategy with Val-Aware HPO** (2026-05-26)
+  - Added `val_indices`/`val_true_values` fields to ModelResult and database schema
+  - Fixed HPO for train_val_test strategy: uses val for tuning, test for final evaluation
+  - Extended structured split guard to maxmin/umap_clustering/splito_* advanced strategies
+  - Added Optuna CV metadata (validation_mode/score_source/n_splits) to results
+  - Full val passthrough through evaluation pipeline (evaluator → parallel → batch)
+  - Impact: Eliminates optimistic bias in HPO metrics, correct 3-way split validation
+
 - **Excel and Parquet File Format Support** (2026-03-25)
   - Added `DataLoader.from_excel()` for loading `.xlsx/.xls` files
   - Added `DataLoader.from_parquet()` for loading `.parquet` files (fast for large datasets)
@@ -67,6 +82,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Impact: Clearer module organization, better separation of concerns
 
 ### Fixed
+
+- **Sklearn Native Scorer Support** (2026-05-25)
+  - Fixed `get_sklearn_scoring()` to recognize sklearn native scorer strings (neg_mean_squared_error, neg_mean_absolute_error, neg_root_mean_squared_error)
+  - Fixed `get_scoring_function()` to return proper lambda functions for sklearn native scorers
+  - Fixed `NestedCVEvaluator._run_hpo_on_outer_fold()` to use correct field name (hpo_score, not hpo_cv_score)
+  - Fixed `CoarseGridSearchOptimizer` import to include ParameterGrid for custom grid validation
+  - Impact: MolBlender HPO now correctly uses sklearn scoring metrics and matches reference GridSearchCV behavior
 
 - **CNN and VAE GPU Memory Overflow** (2026-04-14)
   - Fixed GPU memory overflow in CNN (`TorchCNNWrapper.predict()`) and VAE (`MolecularFingerprintVAE.predict()`)

@@ -330,15 +330,29 @@ results_ultrafine = universal_screen(
   - Reduce to 3 for Stage 2 even if Stage 1 uses 5
 
 ```python
-# Stage 1 with 5-fold CV, Stage 2 with 3-fold CV
+# Standard train_test split: CV on training set
 universal_screen(
     dataset=dataset,
     target_column="activity",
+    split_strategy="train_test",
     cv_folds=5,          # Stage 1
     enable_hpo=True,
     hpo_cv_folds=3       # Stage 2 (faster)
 )
+
+# train_val_test split: Uses validation set for HPO
+universal_screen(
+    dataset=dataset,
+    target_column="activity",
+    split_strategy="train_val_test",
+    test_size=0.15,      # Held-out for final evaluation
+    val_size=0.15,       # Used for HPO tuning
+    enable_hpo=True,     # HPO will use val set, not CV
+    top_n_for_hpo=5
+)
 ```
+
+**Val-Aware HPO**: When using `split_strategy="train_val_test"`, HPO automatically uses the validation set for hyperparameter tuning instead of cross-validation, eliminating optimistic bias from test set contamination.
 
 ## Parameter Grids
 

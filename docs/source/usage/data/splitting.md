@@ -177,9 +177,36 @@ First split: (train+val) vs test
 
 #### Use Cases
 
-- **Hyperparameter optimization**: Use validation set to tune hyperparameters
+- **Hyperparameter optimization**: Use validation set to tune hyperparameters, test set for final evaluation
 - **Model selection**: Choose best model architecture on validation set
 - **Large datasets**: When you have enough data (>5000 samples) for three-way split
+
+#### HPO Integration (Val-Aware Optimization)
+
+When using `train_val_test` split with HPO (`enable_hpo=True`), MolBlender correctly separates the tuning and evaluation phases:
+
+- **Stage 1 (Default Parameters)**: Uses CV on training set for baseline evaluation
+- **Stage 2 (HPO Tuning)**: Uses validation set for hyperparameter optimization
+- **Final Evaluation**: Uses held-out test set for unbiased performance estimation
+
+```python
+# Val-aware HPO workflow
+results = universal_screen(
+    dataset=dataset,
+    target_column="activity",
+    split_strategy="train_val_test",
+    test_size=0.15,      # 15% test set (held-out for final evaluation)
+    val_size=0.15,       # 15% validation set (used for HPO tuning)
+    enable_hpo=True,     # HPO will use val set
+    top_n_for_hpo=5,
+    random_state=42
+)
+```
+
+**Key Benefits**:
+- Eliminates optimistic bias from using test data for hyperparameter tuning
+- Provides unbiased final performance estimate on unseen test data
+- Maintains proper separation: train → val (HPO) → test (final evaluation)
 
 #### Implementation
 
