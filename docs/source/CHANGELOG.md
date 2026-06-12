@@ -51,6 +51,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Optuna Per-Fold CV Scores** (2026-06-12)
+  - Optuna trials now store individual fold scores in `cv_fold_scores` and `split{i}_test_score` keys
+  - Matches GridSearch output format for uniform downstream processing
+
 - **Named Feature Importance with column_mask Alignment** (2026-06-11)
   - Added `feature_names` and `column_mask` fields to `ModelResult` dataclass
   - Implemented `_build_top_named_importance()` with column_mask application logic
