@@ -93,7 +93,7 @@ Three information cards summarizing your screening results.
 
 **Details:**
 - **CV Folds** - Cross-validation folds used
-- **Test Size** - Percentage held out for testing
+- **Test Size** - Percentage held out for testing (CV-only runs show `1/N` per fold instead of a percentage)
 - **Random State** - Seed for reproducibility
 - **Timestamp** - When screening was completed
 

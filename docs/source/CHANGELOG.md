@@ -7,7 +7,66 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Dashboard Modality Sunburst Fixes** (2026-06-12)
+  - Fixed colorbar size mismatch between Modality Breakdown and Model Distribution sunburst charts
+  - Fixed all-red color display caused by compressed color range from aggregated `best_performance` min/max
+  - Color range now uses raw metric values from all rows (2.99x wider range)
+  - Sunburst parent colors now correctly reflect best leaf performance
+  - "Modality Distribution" subheader renamed to "Results by Modality" for clarity
+
+- **Dashboard CV-only Test Size Display** (2026-06-12)
+  - Test Size card now shows `1/N (percentage%)` for CV-only evaluation modes (e.g., `1/5 (20.0%)`)
+  - Previously showed "N/A" which was misleading for cross-validation runs
+  - Falls back to "CV-only" for invalid fold counts
+
+- **Performance vs Training Time Chart** (2026-06-12)
+  - Removed redundant metric name from title (metric is already shown in the colorbar)
+  - Reduced marker size by ~50% for better visual density
+
+- **Removed Unused Facade Layers** (2026-06-12)
+  - Deleted `modality_components/facade.py` and `modality_components/modality_charts.py` (pure re-exports with no added value)
+  - Inlined orchestration logic directly in `pages.py`
+  - Preserved necessary architectural abstractions (no breaking changes)
+
 ### Added
+
+- **Named Feature Importance with column_mask Alignment** (2026-06-11)
+  - Added `feature_names` and `column_mask` fields to `ModelResult` dataclass
+  - Implemented `_build_top_named_importance()` with column_mask application logic
+  - ODDT residue-bit interpretation now produces semantic names (e.g., "ARG@2::salt_bridge" instead of "f_1")
+  - Complete flow: featurizer → data_handler → evaluator → result_processor
+  - Quality filter (column_mask) correctly applied to recover post-filter feature names
+  - Updated ODDTStructuralFingerprint docstring to clarify SIFP is AA-type projection, NOT residue-level IFP
+  - Test coverage: 4 new unit tests + 1 e2e slow test (85.9s) validating end-to-end with random_forest
+  - Code: `screening_engine/base.py`, `result_processor.py`, `data/preparation.py`, `evaluator.py`, `standard.py`, `standard_execution.py`
+  - Impact: Intertable feature importances for residue-bit fingerprints, better model insights
+
+- **Candidate Classification** (2026-06-11)
+  - Added `classify_candidates()` function for post-screening analysis
+  - Three classification categories: high_performance, stable, cost_effective
+  - Automatic metric direction detection (higher-is-better vs lower-is-better)
+  - Safe numeric coercion supporting JSON strings and string numbers
+  - Preferred key extraction from JSON metrics (e.g., `{"mae": 9, "rmse": 0.3}` → 0.3)
+  - Direction-aware threshold filtering for min/max primary metrics
+  - Lower-is-better quantile inversion (quantile=0.75 → 0.25 percentile for RMSE)
+  - Lower-is-better cost-effective efficiency (1/(error*time) for RMSE)
+  - Stable candidates exclude missing cv_std (requires valid stability info)
+  - Test coverage: 17/17 tests passing
+  - Code: `src/molblender/models/api/analysis/candidate_classifier.py`
+  - Impact: Automated candidate ranking for model-representation combinations
+
+- **Representation Truncation** (2026-06-11)
+  - Added configurable representation limits for resource budget management
+  - Config fields: `max_string_representations` (default=3), `max_matrix_representations` (default=2)
+  - Unified helper function: `_apply_representation_limit()` with explicit/zero/negative modes
+  - Explicit representations bypass truncation (user-specified sets take priority)
+  - Zero or negative limits disable truncation (use all available representations)
+  - Public API exposure via `CoreScreeningConfig` and legacy kwargs
+  - Production code integration: string.py and matrix.py use helper
+  - Test coverage: 18/18 tests passing (9 unit + 6 production + 3 API)
+  - Code: `src/molblender/models/api/multimodal/modality_handlers/_truncation_helper.py`
+  - Impact: Configurable representation selection balancing coverage and resource usage
 
 - **Morgan Hashed Count Fingerprints** (2026-05-01)
   - Added `MorganHashedCountFP` class using RDKit's official `GetCountFingerprintAsNumPy()` API
