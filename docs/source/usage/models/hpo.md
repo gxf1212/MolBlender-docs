@@ -229,11 +229,12 @@ When using `hpo_method="optuna"`, the following Optuna-specific parameters apply
 - **`optuna_warm_start`**: `bool`, default=`True`
   - Enable Bayesian warm-start from coarser grid results
   - **Stage selection**: Automatically chooses warm-start stage:
-    - `hpo_stage="ultrafine"` → runs `"fine"` grid first for priors
-    - `hpo_stage="fine"` → runs `"coarse"` grid first for priors
+    - `hpo_stage="ultrafine"` → loads `"fine"` grid priors; falls back to `"coarse"` if no fine results exist
+    - `hpo_stage="fine"` → loads `"coarse"` grid priors
     - `hpo_stage="coarse"` → uses Stage 1 defaults as priors (no extra grid run)
   - Coarse grid trials are **injected into Optuna study** with proper distributions
   - Base parameters are narrowed to ±50% around coarse best for focused search
+  - `warm_start_source` metadata is recorded in `grid_search_results` for audit
 
 ```python
 # Example: Fine-tuning with warm-start from coarse grid
@@ -265,11 +266,12 @@ results_ultrafine = universal_screen(
 
 **How Bayesian Warm-Start Works**:
 
-1. **Automatic stage selection**: When `optuna_warm_start=True`, MolBlender runs a coarser grid search before Optuna:
-   - For `hpo_stage="fine"`: runs `"coarse"` grid first (3-5 values per param)
-   - For `hpo_stage="ultrafine"`: runs `"fine"` grid first (5-10 values per param)
+1. **Automatic stage selection**: When `optuna_warm_start=True`, MolBlender loads prior results from DB:
+   - For `hpo_stage="fine"`: loads `"coarse"` results (any `hpo_method`)
+   - For `hpo_stage="ultrafine"`: loads `"fine"` results; falls back to `"coarse"` if none exist
+   - For `hpo_stage="coarse"`: uses Stage 1 defaults (no DB query)
 
-2. **Trial injection**: All coarse grid results are injected into the Optuna study as completed trials with:
+2. **Full trial injection**: All prior param combos from `grid_search_results` are injected as completed Optuna trials (not just `best_params`), giving TPE richer Bayesian priors
    - Proper parameter distributions (`IntDistribution`, `FloatDistribution`, `CategoricalDistribution`)
    - Actual CV scores as trial values
    - This allows TPE sampler to learn from coarse grid results

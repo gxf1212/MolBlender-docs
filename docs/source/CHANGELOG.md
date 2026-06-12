@@ -7,7 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Optuna Warm-Start Improvements** (2026-06-12)
+  - Removed `hpo_method='grid'` filter — warm-start now loads priors from any prior method (grid, random, optuna)
+  - Now reads `grid_search_results` JSON column for full param combos instead of only `best_params`
+  - Fixed `hpo_cv_score` → `hpo_score` column name mismatch in SQL query
+  - Added ultrafine→coarse cascade fallback when fine priors are unavailable in DB
+  - Added DB-free fallback using Stage 1 in-memory `grid_search_results`
+  - Added `warm_start_source` metadata field in `grid_search_results` for audit trail
+  - Default `optuna_warm_start` changed from `False` to `True` in `HPOConfig`
+
+- **XGBoost Optuna Crash Fix** (2026-06-12)
+  - Removed duplicate `subsample` parameter suggestion in Optuna search space that caused all xgboost trials to fail with `ValueError`
+
 ### Changed
+- **Expanded Fine/Ultrafine HPO Grids** (2026-06-12)
+  - Ridge ultrafine: expanded alpha range (1e-6 to 1e7), added `tol`, `max_iter`, `sparse_cg` solver
+  - SVM fine/ultrafine: wider C/gamma/epsilon ranges, added loss options for linear SVM
+  - KNN fine/ultrafine: more neighbor counts, added p=3 distance metric, expanded leaf_size
+  - MLP fine/ultrafine: added smaller (32,) and multi-layer architectures, wider learning rate and alpha ranges
+  - Decision tree ultrafine: expanded max_depth, min_samples_split, min_samples_leaf ranges
+
 - **Dashboard Modality Sunburst Fixes** (2026-06-12)
   - Fixed colorbar size mismatch between Modality Breakdown and Model Distribution sunburst charts
   - Fixed all-red color display caused by compressed color range from aggregated `best_performance` min/max
