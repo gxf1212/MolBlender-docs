@@ -43,7 +43,7 @@ results = universal_screen(
 
 ## Supported Splitting Strategies
 
-MolBlender supports 10 different splitting strategies, each suited for specific scenarios:
+MolBlender supports 16 different splitting strategies, each suited for specific scenarios:
 
 | Strategy | Use Case | Train/Val/Test | Best For |
 |----------|----------|----------------|----------|
@@ -56,6 +56,11 @@ MolBlender supports 10 different splitting strategies, each suited for specific 
 | `maxmin` | Diversity testing | MaxMin-based | Chemical space extrapolation |
 | `butina` | Cluster-based validation | Butina clustering | Similar molecule generalization |
 | `feature_clustering` | General clustering split | K-means/Hierarchical/DBSCAN | Custom representations (3D, embeddings) |
+| `umap_clustering` | UMAP-based clustering | UMAP + K-means | Modern molecular ML best practices |
+| `splito_perimeter` | Perimeter-based split | Perimeter clustering | Molecular boundary analysis |
+| `splito_molecular_weight` | MW-based split | MW-stratified | Size-based generalization testing |
+| `splito_max_dissimilarity` | Maximum dissimilarity | Dissimilarity-based | Maximum diversity selection |
+| `splito_scaffold` | Scaffold-aware split | Scaffold-balanced | Scaffold-based with parameter control |
 | `user_provided` | Custom splits | User-defined | Temporal, custom logic |
 
 ### 1. Train/Test Split (Default)
@@ -1027,7 +1032,74 @@ splits = feature_clustering_split(
 **6. Advanced Representations**: Ideal for 3D, language models, quantum features
 ```
 
-### 8. User-Provided Splits
+### 8. UMAP Clustering Split (Modern Best Practices)
+
+UMAP-based clustering split following 2024-2025 molecular ML research recommendations as a more rigorous alternative to scaffold splitting.
+
+```{admonition} New in Version 0.4.0
+:class: note
+
+UMAP clustering split with automatic n_components adjustment for small datasets and optional label support.
+```
+
+#### What is UMAP Clustering Split?
+
+UMAP clustering combines UMAP dimensionality reduction with K-means clustering to create train/test splits that respect molecular similarity while maintaining robustness:
+
+- **Modern approach**: Recommended by 2024-2025 molecular ML research
+- **UMAP dimensionality reduction**: Reduces high-dimensional fingerprints to meaningful lower-dimensional space
+- **K-means clustering**: Groups similar molecules in UMAP space
+- **Leave-cluster-out**: Entire clusters assigned to train or test sets
+- **Automatic n_components**: Prevents crash on small datasets (<52 samples)
+
+#### Configuration
+
+```python
+from molblender.models import universal_screen
+
+results = universal_screen(
+    dataset=dataset,
+    target_column="activity",
+    split_strategy="umap_clustering",
+    test_size=0.2,
+    # UMAP parameters (auto-adjusted for small datasets)
+    umap_n_components=50,        # Requested components (auto-clamped if needed)
+    umap_n_neighbors=15,         # UMAP neighbors parameter
+    umap_min_dist=0.1,           # UMAP minimum distance
+    # Clustering parameters
+    n_clusters=None,             # None for auto-selection
+    auto_select_k=True,          # Auto-select optimal k via Silhouette
+    k_range=(5, 20),             # K selection range
+    fingerprint_type='morgan',
+    fp_radius=2,
+    fp_nbits=2048,
+    random_state=42
+)
+
+# Check results
+print(f"Requested n_components: 50")
+print(f"Actual n_components: {results['split_info']['umap_n_components_actual']}")
+print(f"Optimal k: {results['split_info']['n_clusters']}")
+```
+
+#### Small Dataset Protection
+
+```{admonition} Automatic Adjustment
+:class: warning
+
+For datasets with <52 samples, n_components is automatically clamped to prevent UMAP spectral crash:
+- `effective_n_components = min(n_components, max(2, len(fps)-2))`
+- Check `split_info['umap_n_components_actual']` to see the actual value used
+```
+
+#### When to Use UMAP Clustering
+
+- **Virtual screening benchmarks**: More realistic performance estimation than scaffold split
+- **Modern ML best practices**: Follows 2024-2025 research recommendations
+- **Medium to large datasets**: Ideal for 50+ molecules (smaller datasets use automatic adjustment)
+- **Fingerprint-based methods**: Works best with ECFP4/Morgan fingerprints
+
+### 9. User-Provided Splits
 
 Custom splitting for specialized scenarios like scaffold or temporal splits.
 
@@ -1402,7 +1474,7 @@ Advanced splitting strategies address this by creating **realistic OOD scenarios
 | **MOOD** | Deployment-aware selection | Optimized for specific target space |
 | **Lead Optimization** | Test on similar molecule clusters | SAR exploration within chemical series |
 
-### 9. Perimeter Split (Extrapolation-Oriented)
+### 10. Perimeter Split (Extrapolation-Oriented)
 
 Places the most dissimilar molecule pairs in the test set, forcing the model to extrapolate to the perimeter of the chemical space.
 
@@ -1524,7 +1596,7 @@ results = universal_screen(
 - For datasets < 1000 molecules, use n_clusters = sqrt(n_samples)
 ```
 
-### 10. Molecular Weight Split
+### 11. Molecular Weight Split
 
 Splits molecules by molecular weight, testing generalization across different molecular sizes.
 
@@ -1612,7 +1684,7 @@ train, test = dataset.train_test_split(
 # Results reflect generalization from fragments to leads
 ```
 
-### 11. MOOD Split (Model-Optimized Out-of-Distribution)
+### 12. MOOD Split (Model-Optimized Out-of-Distribution)
 
 Automatically selects the best splitting strategy based on similarity to deployment data.
 
@@ -1727,7 +1799,7 @@ train, test = dataset.train_test_split(
 # → More realistic validation for deployment
 ```
 
-### 12. Lead Optimization Split (LoSplitter)
+### 13. Lead Optimization Split (LoSplitter)
 
 Creates test clusters of structurally similar molecules, ideal for SAR (Structure-Activity Relationship) exploration.
 
@@ -1894,7 +1966,7 @@ Benefits:
 - Guide medicinal chemistry decisions per series
 ```
 
-### 13. Custom User-Provided Split
+### 14. Custom User-Provided Split
 
 When you have predefined train/test assignments from external sources or need full control over the splitting process.
 

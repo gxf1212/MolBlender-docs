@@ -20,6 +20,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **XGBoost Optuna Crash Fix** (2026-06-12)
   - Removed duplicate `subsample` parameter suggestion in Optuna search space that caused all xgboost trials to fail with `ValueError`
 
+- **Data Split Strategy Parameter Exposure** (2026-06-12)
+  - Exposed 8 new split parameters: `scaffold_func`, `split_method`, `maxmin_mode`, `dnr_split_mode`, `dnr_threshold`, `high_dnr_in_test`, `similarity_threshold`, `property_diff_threshold`
+  - Added UMAP n_components auto-clamping for small datasets (`<52` samples) to prevent spectral crash
+  - Fixed UMAP optional labels handling to prevent KeyError on label-less datasets
+  - Fixed splito_scaffold hardcoded parameters to respect user-specified values
+
 ### Changed
 - **Expanded Fine/Ultrafine HPO Grids** (2026-06-12)
   - Ridge ultrafine: expanded alpha range (1e-6 to 1e7), added `tol`, `max_iter`, `sparse_cg` solver
