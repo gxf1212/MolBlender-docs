@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **MMELON multi-view representation adapter (`mmelon_fused`) with reproducible model provenance** (`representations/multi_view/`, `data/dataset/features.py`, `screening/engine/data/quality_flow.py`, `tests/representations/multi_view/`) (2026-09-12)
+  - `mmelon_fused` featurizer wraps `ibm/biomed.sm.mv-te-84m` (bmfm_sm, optional dependency in a dedicated env); snapshot resolution honors `revision`/`cache_dir`/offline gate directly via `snapshot_download`, `revision` pinned to a verified commit hash
+  - Cache identity = repo id + resolved revision + fusion strategy + adapter version; `snapshot_path` and fetch knobs (`cache_dir`, `allow_download`) are diagnostic-only and never enter the key
+  - Model provenance (provider, requested/canonical repo id, resolved revision, fusion strategy, embedding dim, adapter version) persists into representation-cache metadata, `dataset._feature_metadata`, and screening-DB `model_results.representation_config`, so Dashboard/export rows are queryable per checkpoint
+  - Contract tests: 26 cases covering cache-identity invariance (snapshot path change, runtime knobs) and the full featurizer→dataset→representation_config→SQLite JSON chain
+- **Dataclass default fixes for py3.11+ compatibility** (`data/dataset/splitting/strategy_registry.py`, `representations/descriptors/descriptors_basic.py`) (2026-09-12)
+  - `StrategySpec.alternative_inputs` moves `MappingProxyType({})` into a `default_factory` (mutable-default rejection on 3.11+); descriptors facade re-exports are guarded so a missing optional dep (e.g. `mordred`) no longer breaks registration
 - **HPO realtime persistence + deployment/external-evaluation persistence** (`persistence/deployment.py`, `persistence/result_updates.py`, `persistence/store/results_query.py`, `persistence/store/schema_bootstrap.py`, `persistence/contracts.py`, `persistence/__init__.py`, `persistence/session_write.py`, `screening/orchestration/processors/hpo/`) (2026-09-04)
   - `save_deployment_result()`: persist final full-fit predictions as `stage=3` `model_results` rows with `primary_metric=NaN`, `hpo_stage="stage3_deployment"`, no fabricated evaluation score
   - `finalize_deployment_session()`: mark deployment session complete without inventing `best_score`/`mean_score`/`std_score`
