@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **COATI2 sequence encoder representation (`coati2_smiles`) with cache-hit provenance restoration** (`representations/sequential/language_model/coati2.py`, `coati2_loader.py`, `coati2_registry.py`, `data/dataset/caching.py`, `data/dataset/features.py`, `screening/engine/data/quality_flow.py`, `config/settings.py`, `tests/representations/sequential/language_model/`) (2026-09-13)
+  - `coati2_smiles` featurizer wraps the official `coati` sequence encoder (`ibm/biomed.sm.coati2-84m`); SMILES canonicalization policy is fixed per checkpoint and never varies between runs
+  - Checkpoint resolution is fully reproducible: local mirror is SHA-256 verified against a pinned revision, remote download goes through `snapshot_download` gated by the new `get_allow_model_download()` runtime policy (re-reads `MOLBLENDER_ALLOW_MODEL_DOWNLOAD` at call time instead of an import-time snapshot)
+  - Checkpoint identity (URI, SHA-256 digest, coati version, canonicalization policy, inference/training modalities, architecture, `uses_image_at_inference`) persisted into representation-cache metadata and `model_results.representation_config`, so a cache-hit run writes the same audit row as a fresh run
+  - `load_cached_representation_with_fallback()` gains an `include_metadata=True` mode returning `(data, metadata)`: historical callers still get the bare array, but metadata (with `model_provenance`) survives the cache-hit path instead of being dropped on load
+  - Contract tests: cache-identity invariance across local/remote checkpoint resolution, cross-process temp-dir ownership with stale-PID reclamation, and the featurizer→dataset→representation_config→SQLite provenance chain
 - **MMELON multi-view representation adapter (`mmelon_fused`) with reproducible model provenance** (`representations/multi_view/`, `data/dataset/features.py`, `screening/engine/data/quality_flow.py`, `tests/representations/multi_view/`) (2026-09-12)
   - `mmelon_fused` featurizer wraps `ibm/biomed.sm.mv-te-84m` (bmfm_sm, optional dependency in a dedicated env); snapshot resolution honors `revision`/`cache_dir`/offline gate directly via `snapshot_download`, `revision` pinned to a verified commit hash
   - Cache identity = repo id + resolved revision + fusion strategy + adapter version; `snapshot_path` and fetch knobs (`cache_dir`, `allow_download`) are diagnostic-only and never enter the key
