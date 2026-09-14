@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **CLI `reprs` subcommand for featurizer listings** (`cli/commands/list_representations.py`, `cli/__main__.py`, `representations/registry/display.py`, `representations/registry/facade.py`) (2026-09-14)
+  - `molblender reprs` prints all registered featurizers as a hierarchical tree (small-molecule by default; `--protein` lists protein featurizers; `--flat` prints a flat per-category list instead of a tree)
+  - `print_available_featurizers_from_data` now honors the `hierarchical` flag and the registry facade passes it through — flat mode previously printed a tree regardless
 - **COATI2 sequence encoder representation (`coati2_smiles`) with cache-hit provenance restoration** (`representations/sequential/language_model/coati2.py`, `coati2_loader.py`, `coati2_registry.py`, `data/dataset/caching.py`, `data/dataset/features.py`, `screening/engine/data/quality_flow.py`, `config/settings.py`, `tests/representations/sequential/language_model/`) (2026-09-13)
   - `coati2_smiles` featurizer wraps the official `coati` sequence encoder (`ibm/biomed.sm.coati2-84m`); SMILES canonicalization policy is fixed per checkpoint and never varies between runs
   - Checkpoint resolution is fully reproducible: local mirror is SHA-256 verified against a pinned revision, remote download goes through `snapshot_download` gated by the new `get_allow_model_download()` runtime policy (re-reads `MOLBLENDER_ALLOW_MODEL_DOWNLOAD` at call time instead of an import-time snapshot)
@@ -192,6 +195,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `molblender.models.api.legacy_parameters` import path (2026-09-02) — aliases `molblender.infrastructure.resource_compat`; the legacy path keeps working with `MolBlenderDeprecationWarning` until v2.0
 
 ### Fixed
+- **Language-model category canonicalized to `language_model` with legacy alias** (`representations/sequential/language_model/coati2_registry.py`, `representations/registry/selection.py`, `screening/orchestration/config.py`, `tests/representations/sequential/language_model/test_coati2_contract.py`) (2026-09-14)
+  - `coati2_smiles` now registers under the canonical `language_model` category shared by all other LM featurizers, so it appears in the `language_model` group and is selected by screening's `LANGUAGE_MODEL` modality — previously it was only reachable via the legacy `sequential/language_model` path and silently skipped by `language_model`-based selection
+  - Category selection aliases the legacy `sequential/language_model` query to `language_model`, so a config written with either string resolves to the same 11 LM featurizers
+- **Explicit categories for DeepChem tokenizers and Boltz-2 embedders** (`representations/sequential/tokenizer/deepchem.py`, `representations/AI_fold/boltz2/embedder.py`) (2026-09-14)
+  - Five DeepChem tokenizers (`DeepChem-SmilesTokenizer`, `DeepChem-BasicSmilesTokenizer`, `DeepChem-GroverAtomTokenizer`, `DeepChem-GroverBondTokenizer`, `DeepChem-HuggingFaceFeaturizer`) and the four Boltz-2 embedder variants registered with no `category`, so the display dropped them into `other`; they now register under `sequential_text_lm` / `protein_ligand` respectively
+- **Molecule `id=` alias + dataset-backed session provenance** (`data/molecule/core.py`, `screening/orchestration/processors/database_session_ops.py`, `tests/data/test_molecule_io_contract.py`, `tests/models/api/test_multimodal_database_service_ops.py`) (2026-09-14)
+  - `Molecule(id=...)` is accepted as the legacy alias for `mol_id` instead of being swallowed into `**kwargs` (fixes a silent cohort-shift where `MolecularDataset.from_csv` rows fell back to random UUIDs)
+  - `create_screening_session` records `dataset_name` and split/input columns from dataset metadata, records a `user_provided` split as `user_provided` instead of faking `MaxDissimilaritySplit`, and persists protocol/cohort/split/CSV-SHA provenance into `session_info`
 - **Cross-session Stage-1 reuse fails fast on summary refresh** (`persistence/_stage1_reuse.py`, `persistence/session_write.py`, `tests/models/api/persistence/test_session_write.py`, `tests/models/api/persistence/test_stage1_results_queries.py`) (2026-08-31)
   - After importing compatible Stage-1 rows, the target session summary is rebuilt from the effective row view; a failed refresh now aborts the reuse with `PersistenceOperationalError` instead of silently proceeding to recompute; only legacy schemas missing the `updated_at` column keep a narrow compatibility path
 - **Untrusted multimodal cache rejects pickle; specialized formats read back via metadata sidecar** (`data/cache/core.py`, `data/cache/exceptions.py`, `data/cache/multimodal/`, `tests/data/test_multimodal_cache_security.py`) (2026-08-31)
