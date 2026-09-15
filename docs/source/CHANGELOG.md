@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Graph modality screening support** (`models/modality_models/graph/deepchem_gnn.py`, `screening/orchestration/modality_handlers/graph.py`, `graph_preparation.py`, `screening/engine/hpo/graph_guard.py`) (2026-09-16)
+  - Graph representations can now be screened end to end: DeepChem GNN models are available through the model registry, and a dedicated preparation step keeps every graph aligned to its original sample index instead of guessing positions
+  - HPO paths share one graph guard, so graph inputs consistently skip feature scaling and Phase-2 refinement
+- **More reliable UniMol featurization** (`representations/spatial/unimol/process_wrapper.py`, `output_contract.py`, `isolated_worker.py`) (2026-09-16)
+  - Featurization runs in an isolated subprocess and validates results against a single shared output contract (spawn recursion in script callers is avoided)
+  - Systemic failures (model init, CUDA, batch timeout, unreadable output) now fail loudly instead of silently producing all-empty columns
+- **Unified evaluation-status vocabulary** (`result_status_contract.py`, `screening/engine/result_contracts.py`, `persistence/result_reuse.py`) (2026-09-16)
+  - Status strings are defined once and re-exported by both the screening engine and persistence, so a failed/error result can no longer satisfy a resume or skip-existing lookup differently across layers
 - **CLI `reprs` subcommand for featurizer listings** (`cli/commands/list_representations.py`, `cli/__main__.py`, `representations/registry/display.py`, `representations/registry/facade.py`) (2026-09-14)
   - `molblender reprs` prints all registered featurizers as a hierarchical tree (small-molecule by default; `--protein` lists protein featurizers; `--flat` prints a flat per-category list instead of a tree)
   - `print_available_featurizers_from_data` now honors the `hierarchical` flag and the registry facade passes it through — flat mode previously printed a tree regardless
