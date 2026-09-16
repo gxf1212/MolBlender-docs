@@ -8,6 +8,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Explicit metric scope (`{scope}_*` keys) in `all_metrics`, schema v2** (`screening/engine/evaluation/metrics.py`, `cross_validation.py`, `nested_cv_evaluator.py`, `evaluation_requests.py`, `evaluator.py`, `orchestration/processors/hpo/results.py`, `dashboard/data/loaders/session_loader.py`, `dashboard/data/processors.py`, `scripts/migrate_metric_scope.py`, `tests/screening/engine/evaluation/test_metric_scope_contract.py`, `test_ranking_test_read_guard.py`, `test_classification_metrics_regression.py`) (2026-09-17)
+  - No-prefix performance keys are projected into an explicit namespace by `evaluation_mode`: holdout/standard rows → `test_*`, `cv_only` → `cv_*`, `hpo_cv_only` → `hpo_*`, `nested_cv` → `outer_cv_*`; legacy no-prefix keys stay in place for old readers and `get_scoped_metric()` is the single accessor
+  - Scope is structural, not textual: `PERFORMANCE_METRIC_KEYS` derives from the metric-name map so provenance, split fingerprints, `selection_source` and the new scope metadata can never be misread as a Test or CV score; `train_*` / `val_*` are never double-prefixed
+  - `metric_scope`, `primary_metric_scope` and `metric_schema_version=2` persist per row so Dashboard and export readers know what a no-prefix key meant without re-deriving it
+  - Cross-seed configuration selection ranks on validation only — a static AST guard pins that ranking code never reaches for a `test_*` key
+  - `scripts/migrate_metric_scope.py DB [DB ...]` backfills scoped keys onto already-persisted rows: idempotent, never overwrites an existing explicit scope key, recomputes nothing, and online-backs up each DB to `<db>.pre_metric_scope.bak` before writing
+- **Run-scoped `ResourceBudget` — one owner for Stage-1 scheduling math** (`screening/runtime/resource_budget.py`, `runtime/evaluation.py`, `runtime/stage1.py`, `data/dataset/representation_availability.py`, `tests/screening/runtime/test_resource_budget_and_phases.py`) (2026-09-17)
+  - One budget object per run feeds all four scheduling consumers — outer representation slots, the representation pool, the nested light-model pool and the heavy GPU rotation — so they can no longer disagree on the same CPU budget; the legacy helpers delegate to `resolve_light_model_workers` / `resolve_rep_slots`
+  - Scheduling decisions emit a single `_emit_scheduling_event` trace, so a run's actual parallelism is observable instead of inferred from logs
+  - GPU configuration is fingerprinted on the process-wide manager; asking for a different `gpu_devices` / `heavy_jobs_per_gpu` mid-run raises `ResourceConfigurationConflictError` instead of orphaning in-flight allocations or silently returning a stale manager
+  - `assess_feature_series` now coerces object-dtype rows (variable-length matrix features, UniMol atomic reprs, rows mixed with `None`) to float64 instead of crashing on `np.isfinite`, and records non-numeric rows as structural `OUTPUT_VALIDATION` failures
+- **Representation-parallel Stage-1 with deferred single-writer persistence** (`screening/runtime/stage1.py`, `runtime/deferred_results.py`, `standard.py`, `tests/screening/runtime/test_rep_parallel_gate.py`, `test_resource_budget_and_phases.py`) (2026-09-17)
+  - Stage-1 can now evaluate a group of representations with bounded outer parallelism; the memory gate moved from a hard cap on the whole group's feature bytes to the per-slot peak (the largest arrays held concurrently, bounded by the worker count), so wide-but-shallow groups are admitted while one oversized representation still fails closed
+  - Worker threads enqueue results into a locked `DeferredResultBuffer` and never touch SQLite; the main thread commits per representation in FIFO order once that representation succeeded, and `abort_representation` / `abort_all` guarantee a failure path never persists partial work
+  - Sequential mode keeps a single-writer `RLock` around the callback/SQLite boundary so concurrent representation completion can no longer interleave writes while model fitting stays parallel
+- **Light-worker GPU isolation + heavy-model GPU path survives Pipeline wrapping** (`screening/runtime/evaluation.py`, `models/modality_models/vae/fingerprint_vae.py`, `models/modality_models/string_models/transformer.py`, `models/runtime/gpu/`, `tests/screening/engine/evaluation/test_parallel_gpu_isolate.py`, `test_heavy_pipeline_gpu_path.py`, `tests/models/api/test_gpu_canonical_scheduling.py`) (2026-09-17)
+  - Loky light workers import torch transitively and each allocate an idle ~300 MiB CUDA context; `_isolate_worker_from_gpu` now masks CUDA for the light pool only, while the heavy/VAE call site keeps `isolate_from_gpu=False` so real GPU models are untouched
+  - `prepare_evaluation_estimator` wraps VAE/transformer estimators in a scaling Pipeline, so `is_heavy_workload` (which read `model.__class__`) saw `Pipeline` and treated the fit as light; heavy detection now unwraps the Pipeline
+  - Device assignment now reaches the inner model instead of the wrapper, and worker processes detect GPUs from the configured list rather than torch probing (skipped under loky), so `acquire_gpu_slot` reserves instead of raising — VAE fits run on the intended GPU and no longer create misleading idle contexts on `cuda:0`
+  - `joblib>=1.4` pinned in `pyproject.toml`: `initializer=` forwarding to worker pools needs it
+- **Graph GNN combos get a deterministic round-robin GPU** (`screening/orchestration/modality_handlers/graph.py`, `screening/runtime/evaluation.py`, `tests/screening/engine/evaluation/test_heavy_pipeline_gpu_path.py`) (2026-09-17)
+  - The CV-only graph entry passes a per-combo preferred GPU from the run budget (`combo_idx % len(gpu_devices)`), so folds of one combo stay on one card and combos spread across the configured GPUs instead of all landing on `cuda:0`; `None` keeps auto-allocation when no GPU is configured
+
+### Changed
+- **Capability-aware Optuna search spaces** (`screening/engine/hpo/optuna_search_space.py`, `optuna_optimizer.py`, `optuna_study.py`, `optuna_trial_execution.py`, `grid_search.py`, `parallel_policy.py`, `tests/screening/engine/hpo/`) (2026-09-17)
+  - Optuna no longer offers parameters the configured estimator cannot accept: a capability filter resolves each estimator's real supported params (following Pipeline final steps and `base_estimator` wrappers) and returns placeholders for the rest, so unsupported keys never poison `trial.params`, `best_params`, the coarse→fine prior, or the search-space fingerprint
+  - Classifier vs regressor branching is per-estimator, so `LinearSVC` / `LinearSVR` / `SVC` / `SVR` each get their own parameter set and an unsupported `epsilon` in a classifier prior is dropped rather than passed to a `C-only` model
+  - Search-space fingerprints are computed against the resolved capability, so resume/reuse keys stay stable for one configuration and shift when the estimator actually changes
+  - Grid search's sample-weight wrapper continues to hand GridSearchCV `base_estimator__`-prefixed keys but strips them back for the final refit and for user-facing `best_params`
+- **Graph representations route to their canonical registry names** (`screening/orchestration/modality_handlers/graph.py`, `orchestration/modality_handlers/base.py`, `orchestration/processors/hpo/`) (2026-09-17)
+  - GNN routing looked up `convmol`, which is not a registered name (`deepchem_convmol` / `_chiral` / `_vector` are), so graph GNN combos failed at featurizer lookup instead of running; routing now resolves to the canonical registered names
+  - HPO graph candidates share the same guard, so graph inputs consistently skip feature scaling and Phase-2 refinement on the HPO path as well
+
+### Fixed
+- **Dashboard drops rows when `all_metrics` is still a JSON string** (`dashboard/data/loaders/session_loader.py`, `dashboard/data/processors.py`, `data/dataset/representation_availability.py`) (2026-09-17)
+  - Session loading kept `all_metrics` as the raw DB string whenever the metric-recognition check failed (e.g. an exotic metric set), so the dict-mutating helpers raised `'str' object has no attribute`, and the outer `except` silently dropped the whole row — it is now parsed to a dict (empty dict on decode error) before any helper touches it
+  - The recognition check also missed classification DBs: only regression keys (`pearson_r` / `r2_score` / `mae` / `rmse`) counted, so a complete classification blob (`roc_auc` / `accuracy` / `f1`) was needlessly recomputed on every load
+- **Metric-scope migration is lossless and idempotent** (`scripts/migrate_metric_scope.py`, `tests/screening/engine/evaluation/test_metric_scope_contract.py`) (2026-09-17)
+  - Only no-prefix performance keys are projected, and never into a scope they do not belong to: a `cv_only` row's no-prefix keys cannot appear as `test_*`, so migrated rows carry no fabricated external-Test score
+  - Re-running the migration on a migrated DB leaves existing explicit scope keys untouched and only refreshes the metadata stamps
+
+### Added
 - **Graph modality screening support** (`models/modality_models/graph/deepchem_gnn.py`, `screening/orchestration/modality_handlers/graph.py`, `graph_preparation.py`, `screening/engine/hpo/graph_guard.py`) (2026-09-16)
   - Graph representations can now be screened end to end: DeepChem GNN models are available through the model registry, and a dedicated preparation step keeps every graph aligned to its original sample index instead of guessing positions
   - HPO paths share one graph guard, so graph inputs consistently skip feature scaling and Phase-2 refinement
