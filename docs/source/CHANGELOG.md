@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Scope-aware split comparison panel** (`dashboard/metrics/scope.py`, `components/summary.py`, `components/tables.py`, `components/charts/`) (2026-09-18)
+  - New `metrics/scope.py` resolves `train`/`val`/`test`/`cv`/`hpo`/`outer_cv` scopes per row so the split-comparison panel reads metrics through one contract instead of ad-hoc prefix parsing
+  - Screening excludes sequential string representations from MolecularFingerprintVAE (meaningless latent objective); a hard-stop watchdog force-exits a SIGTERM'd run that does not finish graceful shutdown
+  - `TorchCNNWrapper` accepts `random_state` and seeds NumPy/PyTorch, the train/val split and the DataLoader shuffle so CNN runs are reproducible
+  - Partial-failure featurization results are no longer cached, and CDK fingerprints gain batch dispatch
 - **Explicit metric scope (`{scope}_*` keys) in `all_metrics`, schema v2** (`screening/engine/evaluation/metrics.py`, `cross_validation.py`, `nested_cv_evaluator.py`, `evaluation_requests.py`, `evaluator.py`, `orchestration/processors/hpo/results.py`, `dashboard/data/loaders/session_loader.py`, `dashboard/data/processors.py`, `scripts/migrate_metric_scope.py`, `tests/screening/engine/evaluation/test_metric_scope_contract.py`, `test_ranking_test_read_guard.py`, `test_classification_metrics_regression.py`) (2026-09-17)
   - No-prefix performance keys are projected into an explicit namespace by `evaluation_mode`: holdout/standard rows → `test_*`, `cv_only` → `cv_*`, `hpo_cv_only` → `hpo_*`, `nested_cv` → `outer_cv_*`; legacy no-prefix keys stay in place for old readers and `get_scoped_metric()` is the single accessor
   - Scope is structural, not textual: `PERFORMANCE_METRIC_KEYS` derives from the metric-name map so provenance, split fingerprints, `selection_source` and the new scope metadata can never be misread as a Test or CV score; `train_*` / `val_*` are never double-prefixed
