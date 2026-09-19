@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Opt-in task-level `(representation, model)` parallel evaluation pool** (`screening/runtime/task_pool.py`, `screening/engine/evaluation/single_runner.py`, `screening/runtime/resource_budget.py`, `screening/runtime/bounded.py`) (2026-09-20)
+  - New task pool flattens screening work into `(representation, model)` tasks behind one loky pool bounded by the CPU slot budget, persisting each finished task immediately so an interruption keeps completed rows on disk
+  - A shared single-model runner is used by both the per-representation and task pools so evaluation semantics cannot drift between the two paths
+  - `task_parallel` is an opt-in `ScreeningConfig` flag; the rep-parallel gate and run-scoped resource budget now apply to both schedulers
 - **Scope-aware split comparison panel** (`dashboard/metrics/scope.py`, `components/summary.py`, `components/tables.py`, `components/charts/`) (2026-09-18)
   - New `metrics/scope.py` resolves `train`/`val`/`test`/`cv`/`hpo`/`outer_cv` scopes per row so the split-comparison panel reads metrics through one contract instead of ad-hoc prefix parsing
   - Screening excludes sequential string representations from MolecularFingerprintVAE (meaningless latent objective); a hard-stop watchdog force-exits a SIGTERM'd run that does not finish graceful shutdown
