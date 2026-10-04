@@ -13,6 +13,27 @@ The Performance Analysis tab is your first stop for understanding screening resu
 
 **Best For:** Initial exploration, identifying top performers, comparing model families
 
+### Comparing evaluation scopes
+
+The **Evaluation scope** selector sits directly under the metric selector at the
+top of this page. It resolves the selected metric on the cohort you pick, and
+every chart in the Modality, Model and Efficiency sub-tabs follows that choice —
+no separate comparison page is needed.
+
+- The default is `Primary (as reported)`, so existing workflows see exactly what
+  they saw before.
+- Only cohorts with numeric values for the selected metric are offered; when
+  available, `train`, `val` and `test` can be viewed one cohort at a time.
+- `cv`, `hpo` and `outer_cv` use the same control for their own evaluation modes
+  and are never mixed into a holdout comparison.
+
+The Dashboard does not infer missing values: a missing validation or test key
+stays missing, and a caption reports how many rows lack the chosen cohort.
+Generalization gaps are displayed only for comparable cohorts and are
+direction-aware, so for error metrics such as RMSE and MAE a positive gap still
+means the earlier cohort did better. When split provenance is missing or marks
+the cohorts incomparable, the gaps are hidden and the reason is stated instead.
+
 ## Tab Location
 
 **Navigation:** Dashboard → Performance Analysis (Tab 1)

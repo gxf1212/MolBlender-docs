@@ -14,3 +14,6 @@ rule.  New ADRs should follow the same format (context → decision → conseque
 | 0002 | Unique screening result type | ✅ Accepted |
 | 0003 | Runtime dependency direction | ✅ Accepted |
 | 0004 | Single screening config source of truth | ✅ Accepted |
+| 0005 | Unified metric scope and result schema | ✅ Accepted |
+| 0006 | Dashboard uses a scope selector, not per-split pages | ✅ Accepted |
+| 0007 | Legacy metric-key and SQLite compatibility | ✅ Accepted |

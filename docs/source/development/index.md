@@ -56,6 +56,13 @@ style
 testing
 adding_features/index
 release
+metrics_semantics
+contracts/metrics-and-results
+contracts/configuration
+contracts/database-schema
+compatibility
+dashboard-smoke
+audit_baseline_failures
 ```
 
 ## For New Contributors

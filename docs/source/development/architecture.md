@@ -67,6 +67,91 @@ interoperability, not a separate MolBlender runtime layer.
 For tooling or CI diagnostics, the package inventory is documented in this
 guide; there is no separate CLI command for an architecture snapshot.
 
+## Architecture Diagrams
+
+The three diagrams below are the C4 first two levels plus one data-flow view.
+They only show components that exist in the code; there is no separate service,
+HTTP API, or message broker in MolBlender.
+
+### System context
+
+```{mermaid}
+graph LR
+    user[User script / notebook] --> api[molblender.api]
+    user --> cli[molblender.cli]
+    cli --> api
+    cli --> view[cli: view command]
+    api --> screen[molblender.screening]
+    view --> dash[molblender.dashboard]
+    screen --> db[(SQLite screening_results.db)]
+    dash --> db
+    screen --> deps[Optional dependencies:<br/>RDKit, DeepChem, scikit-learn,<br/>PyTorch, Optuna]
+    dash --> ui[Optional dependencies:<br/>Streamlit, Plotly, PyArrow]
+```
+
+Entry points that really exist:
+
+- `molblender.api` — `create_screener`, `screen_models`, `get_featurizer`,
+  `list_featurizers`, `get_featurizer_info`, `load_results`,
+  `load_dashboard_data`, `run_dashboard`.
+- `molblender.cli` — `view`, `export`, `info`, `list_representations`,
+  `merge_databases`, `merge_session`, `model_doctor`, `calculate_metrics`.
+- `molblender.dashboard` — the Streamlit UI, launched through
+  `molblender.api.run_dashboard()` or the `view` command.
+
+### Container responsibilities
+
+```{mermaid}
+graph TD
+    api[molblender.api] --> screen[molblender.screening]
+    screen --> engine[screening.engine]
+    screen --> orch[screening.orchestration]
+    screen --> runtime[screening.runtime]
+    orch --> repr[molblender.representations]
+    orch --> data[molblender.data]
+    orch --> pers[molblender.persistence]
+    orch --> metrics[molblender.metrics]
+    runtime --> infra[molblender.infrastructure]
+    data --> cache[data.cache]
+    dash[molblender.dashboard] --> pers
+    dash --> metrics
+    dash --> data
+```
+
+| Container | Responsibility |
+| --- | --- |
+| `molblender.data` | Datasets, molecules, proteins, IO typing, quality diagnostics, cache |
+| `molblender.representations` | Featurizer registry and modality-specific representations |
+| `molblender.screening` | Workflow facade (`orchestration`), engine internals (`engine`), execution (`runtime`) |
+| `molblender.persistence` | SQLite sessions, model results, dataset payloads, HPO trials |
+| `molblender.metrics` | Metric catalog and task-aware metric validation |
+| `molblender.infrastructure` | Resource policy, GPU scheduling, execution context |
+| `molblender.dashboard` | Result exploration UI; reads persistence and metrics, and never writes screening results. One exception exists: `dashboard/data/loaders/migrations.py` runs legacy schema compatibility updates on an old database it opens for reading (additive `ALTER TABLE`, column renames, and backfills of `primary_metric` / `primary_metric_name`), so opening an old database from the Dashboard is not strictly read-only |
+
+### Screening data flow
+
+```{mermaid}
+graph LR
+    ds[dataset] --> split[split / cohort<br/>data.dataset.splitting]
+    split --> repr[representation<br/>featurizer + cache]
+    repr --> eval[evaluation and HPO<br/>screening.engine.evaluation]
+    eval --> proc[result processor<br/>screening.orchestration.processors]
+    proc --> am[all_metrics<br/>+ split_comparability<br/>+ split_fingerprint]
+    proc --> store[(SQLite / all_results)]
+    store --> dash[Dashboard loaders]
+    dash --> sel[scope selector<br/>train / val / test / cv / hpo / outer_cv]
+    sel --> gaps[add_split_gap_columns<br/>direction-aware gaps]
+```
+
+Two rules anchor the right-hand side of this flow:
+
+- `all_metrics` is the authoritative per-row payload; `split_comparability`
+  records whether the cohorts behind a row are comparable.
+- The Dashboard never recomputes provenance. `add_split_gap_columns()` derives
+  `{train,val,test}_{metric}` columns and the two gaps, and a gap is produced
+  only for rows that actually carry both sides of the pair and report
+  `comparable` provenance. See {doc}`contracts/metrics-and-results`.
+
 ## Core Components
 
 ### 1. Representations System

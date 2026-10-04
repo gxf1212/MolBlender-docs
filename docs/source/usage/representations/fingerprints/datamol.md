@@ -1,16 +1,16 @@
 # Datamol Fingerprint
 
-This guide explains how to use the Datamol/Molfeat fingerprint featurizers implemented in MolBlender. These featurizers wrap the `molfeat.calc.FPCalculator` class and provide consistent access to a range of popular molecular fingerprints.
+This guide explains how to use the Datamol/Molfeat fingerprint featurizers implemented in MolBlender. Historical `datamol_*` names are retained for compatibility. FCFP names are now backed directly by RDKit's feature-Morgan generator; the other names wrap `molfeat.calc.FPCalculator`.
 
 ## Background
 
-`molfeat.calc.FPCalculator` is a unified interface to compute molecular fingerprints from SMILES strings or RDKit `Mol` objects. MolBlender integrates this through `BaseDatamolFPCalculator`, enabling standardized use and registry-based loading of featurizers.
+`molfeat.calc.FPCalculator` is a unified interface to compute most molecular fingerprints from SMILES strings or RDKit `Mol` objects. RDKit's `MorganFeatureAtomInvGen` is used for FCFP because it explicitly supplies functional-class atom invariants. MolBlender exposes both paths through `BaseDatamolFPCalculator`, enabling standardized registry-based loading.
 
 Each featurizer is registered under a specific name (e.g., `datamol_maccs`, `datamol_ecfp4_2048`), making it easy to plug into existing workflows using the featurizer registry.
 
 ## Installation Requirements
 
-To use this module, you must have `molfeat` installed:
+For non-FCFP Datamol fingerprints, install `molfeat`:
 
 ```bash
 pip install molfeat
@@ -21,22 +21,22 @@ For certain fingerprint types, additional dependencies may be required:
 
 ## Available Fingerprints
 
-The following fingerprints are registered and usable if `molfeat` is available:
+The following fingerprints are registered. Non-FCFP Datamol entries require `molfeat`; FCFP entries require RDKit only:
 
 | Fingerprint Name | Description | Bit Size |
 |------------------|-------------|----------|
 | `datamol_maccs` | MACCS Keys | 167 |
 | `datamol_erg` | Extended Reduced Graph | 315 |
 | `datamol_estate` | EState | 79 |
-| `datamol_ecfp4_2048` | Morgan ECFP4 | 2048 |
-| `datamol_ecfp6_2048` | Morgan ECFP6 | 2048 |
-| `datamol_fcfp4_2048` | Morgan FCFP4 | 2048 |
+| `datamol_ecfp4` | Morgan ECFP4 | 2048 |
+| `datamol_ecfp6` | Morgan ECFP6 | 2048 |
+| `datamol_fcfp4` | RDKit feature-Morgan FCFP4 | 2048 |
 | `datamol_topological` | Path-Based Topological | 2048 |
 | `datamol_atompair` | Atom Pair | 2048 |
 | `datamol_rdkit` | RDKit Topological | 2048 |
 | `datamol_avalon` | Avalon | 512 |
 | `datamol_ecfp4_count` | Morgan ECFP4 Count | Variable |
-| `datamol_fcfp4_count` | Morgan FCFP4 Count | Variable |
+| `datamol_fcfp4_count` | RDKit feature-Morgan FCFP4 Count | 2048 |
 | `datamol_atompair_count` | Atom Pair Count | Variable |
 | `datamol_secfp` | SMILES Extended Connectivity | 2048 |
 | `datamol_map4` | MAP4 (Requires map4-ojmb) | 1024 |

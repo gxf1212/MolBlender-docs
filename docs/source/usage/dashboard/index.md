@@ -419,6 +419,10 @@ advanced
 workflows
 ```
 
+Metric selection uses a base metric name together with the scopes present in
+the loaded result set. See {doc}`metrics` for metric meaning and
+{doc}`performance` for scope-aware comparisons.
+
 ## Next Steps
 
 - **Install and launch**: {doc}`quickstart` - Get started in 5 minutes

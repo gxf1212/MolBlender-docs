@@ -26,6 +26,36 @@ The MolBlender dashboard supports **42 performance metrics** across regression, 
 
 **All charts update when you select a new metric** - no page reload needed.
 
+### Evaluation scope
+
+The metric selector uses the base metric name, such as `roc_auc` or `rmse`. The
+**Evaluation scope** selector next to it decides which cohort that metric is
+read from: `train_*`, `val_*`, `test_*`, `cv_*`, `hpo_*`, and `outer_cv_*` keys
+are resolved per row.
+
+The selector appears at the top of the Overview, Performance Analysis and
+Detailed Results pages, and applies to every chart on that page. Its rules:
+
+- **Default is `Primary (as reported)`** — the value as the run reported it,
+  which keeps the pre-scope behaviour unchanged.
+- **Only cohorts that actually carry numeric values for the selected metric**
+  are listed. A cohort present for another metric is not offered, so a chosen
+  cohort always renders data for the metric being viewed. A cohort is never
+  invented, and a row missing that cohort stays empty instead of being filled
+  from another split. A caption reports how many rows are affected.
+- **Old results still work.** A bare key is interpreted as the row's canonical
+  scope and is never copied into a missing train, validation or test value.
+- **`cv`, `hpo` and `outer_cv`** use the same control for their own evaluation
+  modes and are never mixed into a holdout gap.
+
+For split comparisons, the Detailed Results table shows the `train`, `val` and
+`test` columns plus an overfitting gap (train-val) and a generalization gap
+(val-test). Higher-is-better and lower-is-better metrics use different
+subtraction directions, so a positive gap always means the earlier cohort
+performed better. Gaps appear only when split provenance says the cohorts are
+comparable; otherwise they are hidden and the page states the reason, for
+example that the split provenance was not audited.
+
 ## Regression Metrics
 
 For predicting continuous molecular properties (logP, solubility, binding affinity, etc.)
