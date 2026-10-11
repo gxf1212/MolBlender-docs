@@ -29,7 +29,7 @@ To build the docs, run: `make html`
 - clear and simple for users to understand. the first principle is user-friendly. users read this and quickly write their own application
 - use $ around equations
 - keep the title concise since they appear in the doctree! just the keyword.
-- put dependency installation after introduction (if any; no need for required dependencies like rdkit and deepchem). a single bash code block is enough
+- put dependency installation after introduction (if any; no need for required dependencies like rdkit). deepchem/mordred/cdk/molfeat are optional extras; a single bash code block is enough
 - no unrelated usages, just all possible fundamental usage about this file
 - add links to original software packages (related doc/repo) for reference in the end
 - do not use markers like {py:func} in inside a table
