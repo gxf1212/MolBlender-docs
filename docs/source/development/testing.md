@@ -21,8 +21,8 @@ tests/
 ## Running Tests
 
 ```bash
-# Run all tests
-pytest
+# Run the default CPU/offline suite used by CI
+pytest -m "not network and not gpu and not large_model and not model_smoke and not real_screen and not torch_heavy"
 
 # Run specific file
 pytest tests/test_representations/test_fingerprints.py
@@ -136,7 +136,7 @@ verification in this pass actually used.
 | Layer | Marker | Purpose | How to run it in practice | Dependencies |
 | --- | --- | --- | --- | --- |
 | Unit | `unit` | Fast isolated behaviour of one module | `pytest -m unit` selects only tests already decorated with `@pytest.mark.unit`; otherwise run the file or directory directly | core install |
-| Contract | `contract` | Public interfaces, API boundaries, import rules, documentation contracts | `pytest -m contract` currently selects nothing, because no test in the repository carries `@pytest.mark.contract`. Run the contract tests by path, plus `python tests/ci/check_layer_dependencies.py` | core install |
+| Contract | `contract` | Public interfaces, API boundaries, import rules, documentation contracts | Run contract files by path, then `python tests/ci/check_layer_dependencies.py` and `python tests/ci/check_deprecated_api_usage.py` | core install |
 | Integration | `integration` | Several components working together | `pytest -m integration` for decorated tests; otherwise run the owning directory | often `dependency` / `asset` |
 | Real screen | `real_screen` | Executes a real screening run end to end | `pytest -m real_screen --run-real-screen` | opt in; ≥ 8 GB headroom by default |
 | GPU / heavy torch | `gpu`, `torch_heavy` | GPU scheduling and heavyweight torch paths | `pytest -m gpu`, `pytest -m torch_heavy --run-heavy-torch` | GPU node; ≥ 4 GB headroom by default |
@@ -166,7 +166,8 @@ python -m pytest tests/dashboard/test_scope_selector.py \
     tests/dashboard/test_render_results_table.py \
     tests/dashboard/test_scope_end_to_end.py -q
 
-# Group A + B together: 76 passed in this pass (needs the dashboard extra)
+# Full Dashboard suite verified on 2026-10-09 (Python 3.9): 561 passed, 8 skipped
+python -m pytest tests/dashboard -q
 
 # Documentation contract tests (this pass: 27 passed)
 python -m pytest tests/screening/test_configuration_doc_contract.py \
@@ -184,14 +185,16 @@ python -m ruff check src/molblender/dashboard/metrics/scope.py \
 cd docs && python -m sphinx -b html source build/html
 ```
 
-### Not verified in this pass
+### Verification boundary
 
 The following are **declared** but were **not executed** in the pass that
 produced this page. Do not cite them as passing results:
 
-- the full Dashboard test suite (`pytest tests/dashboard`);
-- any re-validation against a real benchmark database;
-- Python 3.10 and 3.11 runs — verification for this pass used Python 3.9 only.
+- Python 3.10 and 3.11 were not rerun against this worktree; CI owns that matrix.
+- Network, GPU, large-model and real-screen layers remain opt-in and are not
+  implied by the default CPU/offline result.
+- Dashboard loading was checked read-only against 3.6 GB and 3.2 GB benchmark
+  databases; this validates data access, not model execution.
 
 Result-shape risks in this pass were covered by small synthetic fixtures that
 exercise the same code paths. A synthetic fixture is not a benchmark-scale
