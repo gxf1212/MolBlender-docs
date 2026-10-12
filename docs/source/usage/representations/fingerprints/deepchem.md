@@ -11,14 +11,16 @@ DeepChem is a powerful library for deep learning in drug discovery, materials sc
 To use DeepChem fingerprints, you need:
 
 ```bash
-# Core requirement
-pip install deepchem
+# Core requirement (DeepChem wrapper + the featurizer registry)
+pip install molblender[deepchem]
 
 # For PubChem fingerprints
 pip install pubchempy
 
-# For Mol2Vec fingerprints
-pip install mol2vec
+# For Mol2Vec fingerprints (DeepChem wrapper + mol2vec backend)
+pip install molblender[deepchem] molblender[mol2vec]
+# ...or install every representation backend at once:
+pip install molblender[representations]
 ```
 
 Mol2Vec uses a pre-trained model. MolBlender will **auto-download and cache** it on first use
@@ -152,7 +154,7 @@ custom_morgan = get_featurizer("deepchem_morgan_r2_2048",
 |:--------|:---------------|:---------|
 | `ModuleNotFoundError: No module named 'deepchem'` | DeepChem not installed | Install with `pip install deepchem` |
 | `DependencyNotFoundError: PubChemPy is required...` | Missing PubChemPy | Install with `pip install pubchempy` |
-| `DependencyNotFoundError: mol2vec is required...` | Missing mol2vec | Install with `pip install mol2vec` |
+| `DependencyNotFoundError: mol2vec is required...` | Missing mol2vec | Install with `pip install molblender[mol2vec]` |
 | `Mol2Vec model download failed` | No network / blocked download | Manually download `model_300dim.pkl` and pass `pretrain_model_path` |
 | `ValueError: This class requires RDKit to be installed...` | RDKit missing | Install RDKit with `pip install rdkit` or via conda |
 | PubChem fingerprints unavailable | No network or PubChem blocked | Ensure connectivity or skip `deepchem_pubchem` |

@@ -198,10 +198,10 @@ The following table lists the main optional groups and the key functionalities t
 | :--------------------------------------- | :---------------------------------------------------- | :--------------------------------------------------------- |
 | `pip install molblender[models]`        | `scikit-learn`, `xgboost`, `lightgbm`, `catboost`       | Standard and gradient-boosted models for QSAR/ML tasks.    |
 | `pip install molblender[protein]`       | `biopython`, `fair-esm`, `transformers`, `tokenizers` | Protein featurizers (PLMs) and structural biology tools.   |
-| `pip install molblender[cheminformatics_ml]` | `chemprop`, `mol2vec`                            | Advanced ML models like Chemprop and Mol2Vec embeddings.   |
+| `pip install molblender[cheminformatics_ml]` | `chemprop`                                        | Chemprop graph neural network models.                      |
+| `pip install molblender[mol2vec]`       | `mol2vec`                                            | Mol2Vec word-vector embeddings (used by `deepchem_mol2vec`). |
 | `pip install molblender[deepchem]`      | `deepchem`                                            | Featurizers and models from the DeepChem library.          |
 | `pip install molblender[spatial]`       | `unimol-tools`, `dscribe`, `ase`, `mordred`           | 3D spatial representations (Coulomb Matrices, Uni-Mol) and Mordred 2D/3D descriptors. |
-| `pip install molblender[cheminformatics_ml]` | `chemprop`, `mol2vec`                             | Advanced ML models like Chemprop and Mol2Vec embeddings.   |
 | `pip install molblender[md]`            | `mdanalysis`                                          | Analysis of molecular dynamics trajectories.               |
 | `pip install molblender[drawing]`       | `matplotlib`, `seaborn`                               | Molecule and data visualization utilities.                 |
 | `pip install molblender[openbabel]`     | `openbabel-wheel`                                     | Support for Open Babel via Pybel.                          |

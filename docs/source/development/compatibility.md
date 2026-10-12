@@ -35,15 +35,24 @@ Two consequences follow from the 3.9 floor:
 
 ## Optional dependency matrix
 
-Optional features are installed through extras. The core install already
-includes DeepChem-backed features, so the `deepchem` extra is a compatibility
-alias with no additional packages.
+Optional features are installed through extras. The core install
+(`pip install molblender`) carries only `numpy`, `pandas`, `rdkit`,
+`packaging` and `loguru`; representation backends live in extras. A minimal
+install stays lean, and backend featurizers stay registered — constructing one
+whose extra is missing raises `DependencyNotFoundError` with an install hint,
+so capability errors are explicit rather than silent gaps. `molblender[representations]`
+installs all five built-in backends at once.
 
 | Extra | Purpose | Notable pins |
 | --- | --- | --- |
-| `deepchem` | Compatibility alias; DeepChem features are in the core install | — |
+| `deepchem` | DeepChem fingerprints and graph featurizers | `deepchem>=2.7.1` |
+| `mordred` | Mordred 2D/3D descriptors | `mordred>=1.2.0` |
+| `cdk` | CDK fingerprints (Java bridge) | `CDK-pywrapper` |
+| `molfeat` | MolFeat-backed `datamol_*` fingerprints | `molfeat` |
+| `mol2vec` | Mol2Vec embeddings (`deepchem_mol2vec` backend) | `mol2vec` |
+| `representations` | Aggregate of `deepchem` + `mordred` + `cdk` + `molfeat` + `mol2vec` | — |
 | `io` | Excel and Parquet file support | `pyarrow>=10.0.0,<15.0.0` |
-| `cheminformatics_ml` | `chemprop`, `mol2vec` | — |
+| `cheminformatics_ml` | Chemprop graph models | `chemprop` |
 | `openbabel` | Molecular file conversion, requires `MOLBLENDER_USE_OPENBABEL=true` | — |
 | `additional_representations` | `pubchempy`, `selfies`, `schnetpack` | — |
 | `protein` | Protein sequence and structure models | `biopython>=1.79`, `transformers>=4.0.0` |
