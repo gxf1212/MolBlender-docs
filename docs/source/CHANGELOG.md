@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Model input validation, public `__version__` and CI SBOM** (`models/modality_models/string_models/base.py`, `models/modality_models/vae/base.py`, `api/__init__.py`, `.github/workflows/dependencies.yml`, `pyproject.toml`) (2026-10-13)
+  - `StringModalityModel` / `VectorModalityModel` gain a `_validate_input` hook that rejects empty / non-string / non-numeric inputs and logs the reason instead of raising deep in the compute path
+  - `molblender.__version__` is now exported from the public API surface (`api/__init__.py`)
+  - CI emits a CycloneDX SBOM (`sbom.json`) and `pip-audit` runs with `--skip-editable` so the editable checkout root is not audited while its full dependency set still is
 - **Declared/runnable capability model for featurizers with fail-closed screening routing** (`representations/registry/availability.py`, `config/dependencies`, `screening/orchestration/*`) (2026-10-12)
   - Registry queries resolve a featurizer's runtime availability (`get_featurizer_availability` / `filter_runnable`) without instantiating it, using cheap `find_spec` probes for heavy backends (deepchem/mordred/cdk/molfeat/mol2vec) so the no-heavy-import guarantee holds; availability has three probe depths (installed/importable/usable) that separate "not installed" from "broken wheel"
   - Featurizers register unconditionally and stay queryable; an explicitly requested but unrunnable representation fails fast with a `pip install molblender[<extra>]` hint, while default screening candidates keep only runnable entries
@@ -125,6 +129,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The CV-only graph entry passes a per-combo preferred GPU from the run budget (`combo_idx % len(gpu_devices)`), so folds of one combo stay on one card and combos spread across the configured GPUs instead of all landing on `cuda:0`; `None` keeps auto-allocation when no GPU is configured
 
 ### Changed
+- **Tuned screening-engine default deep-learning epochs** (`screening/engine/base.py`) (2026-10-13)
+  - Fast preset: vae 15→10, transformer/cnn 10→5; standard preset: vae 50→20, transformer/cnn 30→15
 - **Capability-aware Optuna search spaces** (`screening/engine/hpo/optuna_search_space.py`, `optuna_optimizer.py`, `optuna_study.py`, `optuna_trial_execution.py`, `grid_search.py`, `parallel_policy.py`, `tests/screening/engine/hpo/`) (2026-09-17)
   - Optuna no longer offers parameters the configured estimator cannot accept: a capability filter resolves each estimator's real supported params (following Pipeline final steps and `base_estimator` wrappers) and returns placeholders for the rest, so unsupported keys never poison `trial.params`, `best_params`, the coarse→fine prior, or the search-space fingerprint
   - Classifier vs regressor branching is per-estimator, so `LinearSVC` / `LinearSVR` / `SVC` / `SVR` each get their own parameter set and an unsupported `epsilon` in a classifier prior is dropped rather than passed to a `C-only` model
@@ -135,6 +141,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - HPO graph candidates share the same guard, so graph inputs consistently skip feature scaling and Phase-2 refinement on the HPO path as well
 
 ### Fixed
+- **Truthful graph capability resolution and atomic `database migrate`** (`screening/engine/models/eligibility.py`, `cli/commands/database.py`) (2026-10-13)
+  - `resolve_graph_capability` evaluates the static contract (unknown model, unsupported representation, unsupported task) before probing the DeepChem/DGL backend, so a host without the optional graph backends still reports unknown / incompatible models truthfully instead of short-circuiting on the backend check
+  - `molblender database migrate` wraps the compatibility and schema steps in a single `BEGIN IMMEDIATE` transaction and prints the retained backup path on failure, so a crash mid-migration cannot leave a half-migrated database
+- **Cross-session Stage-1 identity, partial-cache alignment, UniMol shard cache and Dashboard row-drop fixes** (`persistence/_stage1_identity.py`, `persistence/stage1_results.py`, `persistence/_stage1_reuse.py`, `data/dataset/{partial_cache,caching,features}.py`, `representations/spatial/unimol/{process_wrapper,isolated_worker}.py`, `dashboard/data/loaders/session_loader.py`) (2026-10-13)
+  - Stage-1 cohort identity has a single owner: `build_stage1_result_signature` / `plan_stage1_result_compatibility` derive the ordered cohort through `derive_stage1_cohort_ids` (canonical SMILES, falling back to the dataset index) instead of switching algorithms on whether `cohort_stable_ids` was passed, so the same molecules mint the same compatibility key however the dataset was loaded; the dataset-name/csv-path fallback that produced a second, incompatible key family is gone, and callers fail closed when no stable cohort can be derived
+  - Partial-cache reuse threads the caller's molecule-parse options (`mol_parser_kwargs`) into the recompute path, so missing rows are featurized from the same input the full `add_features` compute path uses
+  - The persistent UniMol shard cache is hardened (`process_wrapper` / `isolated_worker`) so shard read/write failures fail closed instead of surfacing a partial or corrupt batch
+  - The Dashboard result loader logs a dropped row (`logger.exception`) before returning `None`, so an unexpected per-row error leaves a trace instead of vanishing silently
 - **Dashboard drops rows when `all_metrics` is still a JSON string** (`dashboard/data/loaders/session_loader.py`, `dashboard/data/processors.py`, `data/dataset/representation_availability.py`) (2026-09-17)
   - Session loading kept `all_metrics` as the raw DB string whenever the metric-recognition check failed (e.g. an exotic metric set), so the dict-mutating helpers raised `'str' object has no attribute`, and the outer `except` silently dropped the whole row — it is now parsed to a dict (empty dict on decode error) before any helper touches it
   - The recognition check also missed classification DBs: only regression keys (`pearson_r` / `r2_score` / `mae` / `rmse`) counted, so a complete classification blob (`roc_auc` / `accuracy` / `f1`) was needlessly recomputed on every load
