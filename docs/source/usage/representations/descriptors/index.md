@@ -68,6 +68,33 @@ print(f"Batch shape: {len(batch_descriptors)} molecules")
 | `rdkit_essential_descriptors` | 20 | Core physicochemical properties |
 | `rdkit_lipinski_descriptors` | 8 | Lipinski rule-of-five descriptors |
 | `rdkit_admet_descriptors` | 15 | ADMET-relevant properties |
+| `rdkit_fragment_counts` | 85 | Interpretable RDKit `fr_*` functional-group counts |
+
+### Functional-Group Representations
+
+MolBlender exposes RDKit's fixed `fr_*` schema in two forms. Use
+`rdkit_fragment_counts` when repeated occurrences matter and
+`rdkit_fragment_bits` when only presence or absence should be represented.
+Both contain the same 85 named features; these features are also a subset of
+`rdkit_all_descriptors`, so use the dedicated representations for compactness
+and interpretability rather than additional information.
+
+```python
+counts = mbl.get_featurizer("rdkit_fragment_counts")
+bits = mbl.get_featurizer("rdkit_fragment_bits")
+
+count_vector = counts.featurize("CC(=O)OCCN")
+bit_vector = bits.featurize("CC(=O)OCCN")
+feature_names = counts.get_feature_names()
+```
+
+An optional `checkmol_functional_group_bits` representation provides the
+external Checkmol 204-bit functional-group fingerprint. MolBlender does not
+bundle the GPL-licensed executable. Install Checkmol separately and expose it
+on `PATH`, or set `MOLBLENDER_CHECKMOL_PATH=/absolute/path/to/checkmol`.
+Unavailable Checkmol is excluded from automatic screening and an explicit
+request fails with a capability error. The executable path and SHA256 digest
+are included in provenance and cache identity.
 
 ### Essential Descriptors
 

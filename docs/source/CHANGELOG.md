@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Interpretable functional-group representations** (`representations/functional_groups`, `representations/registry/availability.py`, `data/dataset/feature_planning.py`) (2026-10-16)
+  - `rdkit_fragment_counts` and `rdkit_fragment_bits` expose the same stable, named 85-feature RDKit `fr_*` schema as compact count and presence representations; feature names propagate through screening for aligned importance reporting
+  - Optional `checkmol_functional_group_bits` wraps the external 204-bit Checkmol fingerprint with bounded subprocess execution, strict output validation and fail-closed capability discovery; MolBlender does not bundle the GPL executable
+  - Static schema identity, RDKit version and external-executable SHA256 participate in cache keys, preventing reuse after a schema, backend or Checkmol binary change
 - **Model input validation, public `__version__` and CI SBOM** (`models/modality_models/string_models/base.py`, `models/modality_models/vae/base.py`, `api/__init__.py`, `.github/workflows/dependencies.yml`, `pyproject.toml`) (2026-10-13)
   - `StringModalityModel` / `VectorModalityModel` gain a `_validate_input` hook that rejects empty / non-string / non-numeric inputs and logs the reason instead of raising deep in the compute path
   - `molblender.__version__` is now exported from the public API surface (`api/__init__.py`)
@@ -141,6 +145,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - HPO graph candidates share the same guard, so graph inputs consistently skip feature scaling and Phase-2 refinement on the HPO path as well
 
 ### Fixed
+- **Feature-layout provenance and schema-version cache identity for functional-group representations** (`screening/engine/data/quality_flow.py`, `data/dataset/feature_execution.py`, `data/dataset/feature_planning.py`) (2026-10-16)
+  - Persisted `feature_names` were being dropped by the screening provenance whitelist, which would have silently misaligned feature-importance names for fixed-schema representations; they are now carried through, and only accepted when every entry is a string
+  - A featurizer's live schema version is reconciled against the registered cache identity, so bumping the feature layout invalidates previously written caches instead of silently reusing vectors whose columns no longer line up
 - **Truthful graph capability resolution and atomic `database migrate`** (`screening/engine/models/eligibility.py`, `cli/commands/database.py`) (2026-10-13)
   - `resolve_graph_capability` evaluates the static contract (unknown model, unsupported representation, unsupported task) before probing the DeepChem/DGL backend, so a host without the optional graph backends still reports unknown / incompatible models truthfully instead of short-circuiting on the backend check
   - `molblender database migrate` wraps the compatibility and schema steps in a single `BEGIN IMMEDIATE` transaction and prints the retained backup path on failure, so a crash mid-migration cannot leave a half-migrated database
