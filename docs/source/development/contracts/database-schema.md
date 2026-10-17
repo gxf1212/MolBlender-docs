@@ -134,6 +134,10 @@ intermediate progress without reading `optuna_storage.db`.
 | `overfit_gap` | TEXT | `NULL` | JSON per-fold train-validation gaps |
 | `overfit_gap_mean`, `overfit_gap_std` | REAL | `NULL` | Gap summary |
 | `fold_train_sizes`, `fold_validation_sizes` | TEXT | `NULL` | JSON fold sizes |
+| `search_run_id` | TEXT | — | Unique identity of one optimizer invocation |
+| `metric_name` | TEXT | `NULL` | Objective metric used by the search |
+| `error_type`, `error_message` | TEXT | `NULL` | Failure provenance for failed attempts |
+| `source_session_id`, `source_db_path`, `source_trial_number` | TEXT/TEXT/INTEGER | `NULL` | Provenance retained by database merge |
 | `created_at` | TIMESTAMP | `CURRENT_TIMESTAMP` | Row timestamp |
 
 ### `stage1_result_links`
@@ -165,8 +169,9 @@ Cross-session Stage 1 reuse links.
 | `idx_stage1_links_target` | `stage1_result_links` | `target_session_id` | index |
 | `idx_stage1_links_source` | `stage1_result_links` | `source_result_id` | index |
 | `idx_stage1_links_target_source` | `stage1_result_links` | `target_session_id, source_result_id` | index |
-| `idx_hpo_trials_trial_identity` | `hpo_trials` | `session_id, model_name, representation_name, hpo_stage, hpo_method, trial_number, split_fingerprint` | unique |
+| `idx_hpo_trials_trial_identity` | `hpo_trials` | `search_run_id, trial_number` | unique |
 | `idx_hpo_trials_lookup` | `hpo_trials` | `session_id, model_name, representation_name, hpo_stage, hpo_method, split_fingerprint` | index |
+| `idx_hpo_trials_search_run` | `hpo_trials` | `search_run_id, trial_number` | index |
 
 The partial unique index on `result_identity_key` is deliberate: it is limited to
 non-NULL values so legacy rows without an identity digest can still be read and
@@ -177,12 +182,13 @@ upgraded lazily instead of being rejected on write.
 - `model_results.session_id` and `dataset_info.session_id` reference
   `screening_sessions(session_id)`; `hpo_trials.session_id` does the same.
 - `stage1_result_links` cascades on delete from both sides.
-- `hpo_trials` enforces a seven-column trial identity so `INSERT OR REPLACE`
-  cannot degenerate into a plain insert.
-- Nullable key columns in the `hpo_trials` identity are normalized to `''`
-  before writing. `NULL = NULL` is unknown under a `UNIQUE` constraint, so
-  writing raw `NULL` would make the copied row invisible to later identity
-  matching.
+- `hpo_trials` enforces `UNIQUE (search_run_id, trial_number)`. Optimizer trial
+  numbers are local to one invocation, so rerunning the same model, split, and
+  search method creates a new `search_run_id` and appends a second complete
+  history instead of overwriting trial numbers `0..N` from the earlier run.
+- Updating a live trial within one invocation retains its row identity. Best
+  trial marking is scoped to the same `search_run_id`; it cannot clear the
+  winner from another invocation.
 
 ## Migration and version policy
 
@@ -198,22 +204,23 @@ additive steps, all of which are safe to run repeatedly:
 4. Backfill `primary_metric` from the legacy `score` column when it is `NULL`,
    and default `primary_metric_name` to `pearson_r` when it is `NULL`.
 5. Add the `hpo_trials` fold-diagnostic columns by `ALTER TABLE`.
-6. Rebuild `hpo_trials` when the seven-column `UNIQUE` constraint is missing.
+6. Rebuild legacy `hpo_trials` tables whose unique identity is not
+   `(search_run_id, trial_number)`, preserving every available audit column.
 
 Two ordering rules are load-bearing:
 
-- The `hpo_trials` deduplication migration must run **before**
+- The `hpo_trials` identity migration must run **before**
   `idx_hpo_trials_trial_identity` is created. Creating the unique index on a
-  legacy table that still contains duplicate rows raises `IntegrityError` and
-  would brick the bootstrap.
+  legacy table first would impose the new contract before rows have a
+  `search_run_id`.
 - The legacy `idx_hpo_trials_session` four-column index is dropped before the
   rebuild because it conflicts with the new identity key.
 
-The `hpo_trials` rebuild keeps exactly one row per identity key. It partitions by
-`COALESCE(column, '')` over the seven key columns, orders by `created_at`
-descending with `id DESC` as a tie-break, and uses a window function rather than
-`MAX(created_at)` so that two rows written in the same second cannot both
-survive and violate the new constraint.
+For legacy rows that predate `search_run_id`, the rebuild derives a stable run
+identity from the available session/model/representation/stage/method/split
+columns. Existing `search_run_id` values are retained. Later invocations always
+receive a fresh UUID at the orchestration boundary, while imported histories
+receive source-aware run identities so distinct source searches remain distinct.
 
 ## Serialization conventions
 

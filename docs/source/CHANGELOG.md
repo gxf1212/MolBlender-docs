@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Lossless HPO trial-history ledger** (`persistence/trial_history.py`, `persistence/hpo_trial_ops.py`, `screening/orchestration/processors/hpo`, Dashboard/reporting/session merge) (2026-10-18)
+  - Every Grid, Random, and Optuna candidate is persisted as a separate `hpo_trials` row, including complete, pruned, and failed attempts with parameters, fold diagnostics, timing, metric, and error provenance; a post-search completeness guard fails closed when optimizer output and persisted history differ
+  - Trial identity is `(search_run_id, trial_number)`, so repeated searches in one screening session append complete histories instead of overwriting reused optimizer-local trial numbers; best-trial marking is scoped to one search invocation
+  - Public results, Dashboard charts, CSV sidecars, and database merges consume the canonical trial ledger separately from `model_results`, preserving model counts while retaining all trial attempts and source provenance
+  - Existing databases are migrated in place without discarding available trial rows; interrupted sessions containing only trial history remain inspectable
 - **Interpretable functional-group representations** (`representations/functional_groups`, `representations/registry/availability.py`, `data/dataset/feature_planning.py`) (2026-10-16)
   - `rdkit_fragment_counts` and `rdkit_fragment_bits` expose the same stable, named 85-feature RDKit `fr_*` schema as compact count and presence representations; feature names propagate through screening for aligned importance reporting
   - Optional `checkmol_functional_group_bits` wraps the external 204-bit Checkmol fingerprint with bounded subprocess execution, strict output validation and fail-closed capability discovery; MolBlender does not bundle the GPL executable
