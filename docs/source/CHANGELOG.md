@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Result-evidence seam and typed validation-mode provenance** (`contracts/result_evidence.py`, `screening/engine/result_contracts.py`, `screening/engine/evaluation/nested_cv_evaluator.py`, `dashboard/components/model_inspection/prediction_projection.py`, `persistence/*`, `reporting/*`) (2026-10-18)
+  - `contracts/result_evidence.py` is the single source of truth for reading persisted prediction evidence (holdout / train-val-test / plain CV / nested CV); a missing field returns `None` so a missing pooled OOF is never silently replaced by a fold mean, and `cv_fold_mean` / `pooled_oof` stay under distinct keys
+  - `model_results.result_metadata` (feature names, column mask, timing, coverage, failures) and `hpo_trials.validation_mode` / `outer_fold` are persisted and surfaced through exports, Dashboard and database merge
+  - Typed nested-CV contracts and an HPO execution round-trip guard keep repeated searches and interrupted sessions inspectable; reporting and Dashboard charts project through the evidence seam
 - **Lossless HPO trial-history ledger** (`persistence/trial_history.py`, `persistence/hpo_trial_ops.py`, `screening/orchestration/processors/hpo`, Dashboard/reporting/session merge) (2026-10-18)
   - Every Grid, Random, and Optuna candidate is persisted as a separate `hpo_trials` row, including complete, pruned, and failed attempts with parameters, fold diagnostics, timing, metric, and error provenance; a post-search completeness guard fails closed when optimizer output and persisted history differ
   - Trial identity is `(search_run_id, trial_number)`, so repeated searches in one screening session append complete histories instead of overwriting reused optimizer-local trial numbers; best-trial marking is scoped to one search invocation

@@ -81,6 +81,7 @@ One row per evaluated model/representation combination.
 | `primary_metric_name` | TEXT | `NULL` | Metric name behind `primary_metric` |
 | `train_indices`, `test_indices`, `val_indices` | TEXT | `NULL` | JSON index arrays |
 | `all_metrics` | TEXT | `NULL` | JSON mapping of every metric, including scoped keys |
+| `result_metadata` | TEXT | `NULL` | JSON non-metric audit data: feature names, column mask, timing, coverage and failures |
 | `grid_search_results` | TEXT | `NULL` | JSON search history; migrated from the legacy `all_cv_results` |
 | `result_identity_key` | TEXT | `NULL` | Identity digest for reuse and deduplication |
 | `evaluation_status` | TEXT | `NULL` | Outcome marker |
@@ -135,6 +136,8 @@ intermediate progress without reading `optuna_storage.db`.
 | `overfit_gap_mean`, `overfit_gap_std` | REAL | `NULL` | Gap summary |
 | `fold_train_sizes`, `fold_validation_sizes` | TEXT | `NULL` | JSON fold sizes |
 | `search_run_id` | TEXT | — | Unique identity of one optimizer invocation |
+| `validation_mode` | TEXT | `NULL` | `cross_validation`, `holdout`, or `nested_inner_cv` |
+| `outer_fold` | INTEGER | `NULL` | Nested-CV outer fold; absent for non-nested searches |
 | `metric_name` | TEXT | `NULL` | Objective metric used by the search |
 | `error_type`, `error_message` | TEXT | `NULL` | Failure provenance for failed attempts |
 | `source_session_id`, `source_db_path`, `source_trial_number` | TEXT/TEXT/INTEGER | `NULL` | Provenance retained by database merge |
