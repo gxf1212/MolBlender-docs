@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Bounded-window parallel screening scheduler with resource-budget phases and loky CV workers** (`screening/runtime/scheduling.py`, `bounded.py`, `task_pool.py`, `evaluation.py`, `resource_budget.py`, `stage1.py`, `standard.py`, `screening/engine/hpo/*`) (2026-10-18)
+  - Representations now run inside a memory-bounded window: a `BoundedWindow` releases capacity only after a representation's results are finalized, so committed memory stays under `CommitLimit` instead of growing with the representation count
+  - Resource budgeting is split into light / heavy CPU, GPU and memory phases with explicit process slots; materialized CV folds evaluate on loky workers so per-fold predictions are pooled correctly off the main thread
+  - Cross-window worker saves route through a main-thread persistence queue (`_MainThreadPersistenceRequest`, `begin_main_thread_persistence`) that preserves save order without cross-thread lock contention
+  - HPO grid / Optuna execution shares typed param plumbing (`model_param_plumbing.py`) and a typed fingerprint path, and results serialize through the unified result-serialization contract; reporting reflects the new provenance
 - **GRADE and X-GRADE protein-ligand complex descriptors** (`representations/protein_ligand/interaction_fingerprints/grade.py`) (2026-10-18)
   - `grade_3d` (35 dimensions) and `xgrade_3d` (177 dimensions) wrap CDPKit's public GRAIL API with the official 21-angstrom receptor-environment preprocessing protocol
   - Inputs require an aligned ligand 3D pose plus either a fixed receptor PDB or a per-row `protein_pdb_column`; missing or conflicting structures fail closed without generated conformers or zero-vector fallback
