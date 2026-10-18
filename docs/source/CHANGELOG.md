@@ -142,6 +142,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The CV-only graph entry passes a per-combo preferred GPU from the run budget (`combo_idx % len(gpu_devices)`), so folds of one combo stay on one card and combos spread across the configured GPUs instead of all landing on `cuda:0`; `None` keeps auto-allocation when no GPU is configured
 
 ### Changed
+- **HPO always evaluates the estimator-default baseline and enforces one winner per search** (`screening/engine/hpo/grid_planning.py`, `grid_search.py`, `optuna_study.py`, `search_space_common.py`, `persistence/store/schema_bootstrap.py`, `screening/orchestration/config_contracts.py`, `candidate_preparation.py`) (2026-10-18)
+  - Grid / Random / Optuna searches now always evaluate the estimator's default hyperparameters as a baseline candidate (grid appends, random prepends into one budget slot); `count_combinations` / resume / execution share one candidate list so counts, resume and execution stay in sync, and `SKLEARN_DEFAULTS["svm"]` gains `epsilon` so the SVR default key is complete
+  - `mark_best_hpo_trial` is fail-closed (only flips the winner when the requested complete trial exists in the same search run) and `schema_bootstrap` adds a partial unique index `idx_hpo_trials_one_best_per_search (search_run_id) WHERE is_best=1` plus a one-shot legacy cleanup that keeps `MAX(id)` per `search_run_id`, so a search run has at most one winner at the database level
+  - The `"all"` selection scope optimizes every valid Stage-1 candidate (`_select_candidates` sorts without truncating); invalid scopes raise `ValueError`
 - **Tuned screening-engine default deep-learning epochs** (`screening/engine/base.py`) (2026-10-13)
   - Fast preset: vae 15→10, transformer/cnn 10→5; standard preset: vae 50→20, transformer/cnn 30→15
 - **Capability-aware Optuna search spaces** (`screening/engine/hpo/optuna_search_space.py`, `optuna_optimizer.py`, `optuna_study.py`, `optuna_trial_execution.py`, `grid_search.py`, `parallel_policy.py`, `tests/screening/engine/hpo/`) (2026-09-17)

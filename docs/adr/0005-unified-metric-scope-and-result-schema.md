@@ -46,6 +46,10 @@ reach a chart selector.
 6. `metric_schema_version` (currently `2`) is a marker written by producers. It
    is not read anywhere and carries no migration semantics; schema evolution is
    handled by the compatibility rules in ADR-0007.
+7. **One persisted result row owns one coherent evaluation.** Session merging
+   may select the best duplicate row, but it must not concatenate fold scores,
+   predictions, timings, or metrics from separate evaluations. Duplicate count
+   and merge policy belong in `result_metadata`.
 
 ## Consequences
 

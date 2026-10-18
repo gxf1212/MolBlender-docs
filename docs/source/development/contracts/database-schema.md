@@ -115,6 +115,10 @@ metrics, `hpo_trials` stores lightweight cross-validation-only trial records, so
 a search can resume from the main screening database and a dashboard can show
 intermediate progress without reading `optuna_storage.db`.
 
+Winner updates are fail-closed: `mark_best_hpo_trial` changes the winner only
+when the requested complete trial exists in the same search run. A missing,
+failed, or pruned candidate leaves the previous winner unchanged.
+
 | Column | Type | Default | Notes |
 | --- | --- | --- | --- |
 | `id` | INTEGER | autoincrement | Primary key |
