@@ -60,6 +60,13 @@ Binned distance interactions (protein reuse)
 Full atomic resolution distance matrix
 :::
 
+:::{grid-item-card} **GRADE / X-GRADE**
+:link: grade
+:link-type: doc
+
+Continuous 35/177-dimensional complex interaction descriptors
+:::
+
 ::::
 
 ## Quick Start
@@ -134,6 +141,14 @@ print(np.array_equal(fp_mol, fp_rdkit))  # True
   - Float
   - 6000
   - Full atomic resolution distance matrix (30×200)
+* - `grade_3d`
+  - Float
+  - 35
+  - GRADE ligand and geometric interaction descriptor
+* - `xgrade_3d`
+  - Float
+  - 177
+  - Extended GRADE interaction descriptor
 :::
 
 ```{tip}
@@ -225,5 +240,6 @@ splif_enhanced
 qsar_3d_fields
 distance_matrix
 ligand_residue_matrix
+grade
 ```
 

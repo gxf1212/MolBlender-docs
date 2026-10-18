@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **GRADE and X-GRADE protein-ligand complex descriptors** (`representations/protein_ligand/interaction_fingerprints/grade.py`) (2026-10-18)
+  - `grade_3d` (35 dimensions) and `xgrade_3d` (177 dimensions) wrap CDPKit's public GRAIL API with the official 21-angstrom receptor-environment preprocessing protocol
+  - Inputs require an aligned ligand 3D pose plus either a fixed receptor PDB or a per-row `protein_pdb_column`; missing or conflicting structures fail closed without generated conformers or zero-vector fallback
+  - CDPKit is an optional `molblender[grade]` dependency, and descriptor schema, backend version, preprocessing settings and receptor identity propagate through cache and screening provenance
 - **Result-evidence seam and typed validation-mode provenance** (`contracts/result_evidence.py`, `screening/engine/result_contracts.py`, `screening/engine/evaluation/nested_cv_evaluator.py`, `dashboard/components/model_inspection/prediction_projection.py`, `persistence/*`, `reporting/*`) (2026-10-18)
   - `contracts/result_evidence.py` is the single source of truth for reading persisted prediction evidence (holdout / train-val-test / plain CV / nested CV); a missing field returns `None` so a missing pooled OOF is never silently replaced by a fold mean, and `cv_fold_mean` / `pooled_oof` stay under distinct keys
   - `model_results.result_metadata` (feature names, column mask, timing, coverage, failures) and `hpo_trials.validation_mode` / `outer_fold` are persisted and surfaced through exports, Dashboard and database merge
