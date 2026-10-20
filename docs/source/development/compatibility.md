@@ -41,7 +41,7 @@ Optional features are installed through extras. The core install
 install stays lean, and backend featurizers stay registered — constructing one
 whose extra is missing raises `DependencyNotFoundError` with an install hint,
 so capability errors are explicit rather than silent gaps. `molblender[representations]`
-installs all five built-in backends at once.
+installs all seven built-in backends at once.
 
 | Extra | Purpose | Notable pins |
 | --- | --- | --- |
@@ -50,14 +50,15 @@ installs all five built-in backends at once.
 | `cdk` | CDK fingerprints (Java bridge) | `CDK-pywrapper` |
 | `molfeat` | MolFeat-backed `datamol_*` fingerprints | `molfeat` |
 | `mol2vec` | Mol2Vec embeddings (`deepchem_mol2vec` backend) | `mol2vec` |
-| `representations` | Aggregate of `deepchem` + `mordred` + `cdk` + `molfeat` + `mol2vec` | — |
+| `representations` | Aggregate of `deepchem` + `mordred` + `cdk` + `molfeat` + `mol2vec` + `grade` + `language_models` | — |
 | `io` | Excel and Parquet file support | `pyarrow>=10.0.0,<15.0.0` |
 | `cheminformatics_ml` | Chemprop graph models | `chemprop` |
 | `openbabel` | Molecular file conversion, requires `MOLBLENDER_USE_OPENBABEL=true` | — |
 | `additional_representations` | `pubchempy`, `selfies`, `schnetpack` | — |
 | `protein` | Protein sequence and structure models | `biopython>=1.79`, `transformers>=4.0.0` |
 | `spatial` | 3D featurizers | `unimol-tools`, `dscribe`, `ase` |
-| `gnn` | PyTorch-based graph networks | `torch>=2.0.0,<2.5.0`, `dgl>=1.0.0,<2.0.0`, `torch-geometric>=2.3.0,<2.6.0` |
+| `gnn` | PyTorch-based graph networks | `torch>=2.6,<3.0`, `dgl>=1.0.0,<2.0.0`, `torch-geometric>=2.3.0,<2.6.0` |
+| `language_models` | Frozen molecular language-model embeddings | `torch>=2.6,<3.0`, `transformers>=4.46,<5.0` |
 | `md` | Molecular dynamics trajectory analysis | `mdanalysis` |
 | `ifp` | Protein-ligand interaction fingerprints | `prolif`, `MDAnalysis` |
 | `drawing` | Plotting utilities | `scipy>=1.6,<1.13` |
@@ -70,7 +71,9 @@ installs all five built-in backends at once.
 Two pin families are deliberate rather than incidental:
 
 - `scipy<1.13` and `pyarrow<15` — compatibility with `numpy<2.0`.
-- `torch<2.5` and `dgl<2.0` — the GNN compatibility matrix; newer Torch majors
+- `torch>=2.6,<3.0` and `dgl<2.0` — the GNN compatibility matrix; Torch 2.6 is
+  also the minimum accepted by pretrained model loaders because older versions
+  are blocked by the package security gate. Newer Torch majors
   are evaluated separately before being widened.
 
 `joblib>=1.4` is required because the parallel paths forward `initializer=`.

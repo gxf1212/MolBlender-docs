@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Pinned ChemBERTa-2, ChemBERTa 100M and c3-MoLFormer frozen SMILES embeddings** (`representations/sequential/language_model/frozen_hf.py`) (2026-10-20)
+  - Six ChemBERTa-2 5M/10M/77M MLM and MTR checkpoints provide distinct 384-dimensional representations; `chemberta-100m-mlm-mean` and `molformer-c3-1.1b-mean` provide 768-dimensional embeddings
+  - All variants use masked-mean pooling, bounded batch inference, finite-output validation and explicit truncation accounting; corpus size, pretraining objective and embedding dimension participate in cache and result provenance
+  - Model, tokenizer and remote-code revisions are immutable defaults and participate in cache identity; complete provenance propagates through the representation cache and screening result configuration
+  - Downloads remain opt-in, and c3-MoLFormer retains the explicit remote-code authorization gate while pinning a Transformers-compatible IBM implementation revision
 - **Bounded-window parallel screening scheduler with resource-budget phases and loky CV workers** (`screening/runtime/scheduling.py`, `bounded.py`, `task_pool.py`, `evaluation.py`, `resource_budget.py`, `stage1.py`, `standard.py`, `screening/engine/hpo/*`) (2026-10-18)
   - Representations now run inside a memory-bounded window: a `BoundedWindow` releases capacity only after a representation's results are finalized, so committed memory stays under `CommitLimit` instead of growing with the representation count
   - Resource budgeting is split into light / heavy CPU, GPU and memory phases with explicit process slots; materialized CV folds evaluate on loky workers so per-fold predictions are pooled correctly off the main thread

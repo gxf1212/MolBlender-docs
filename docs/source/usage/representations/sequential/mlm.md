@@ -55,6 +55,13 @@ print(f"Processed {len(embeddings)} molecules")
 | Key | Model | HF Model Name | Embedding Dim | Parameters | Description |
 |-----|-------|---------------|---------------|------------|-------------|
 | `chemberta` | ChemBERTa v1 | seyonec/ChemBERTa-zinc-base-v1 | 768 | 85M | Original ChemBERTa trained on 250K ZINC |
+| `chemberta-5m-mlm-mean` | ChemBERTa-2 5M MLM | DeepChem/ChemBERTa-5M-MLM | 384 | 3.4M | Frozen MLM encoder trained on 5M molecules |
+| `chemberta-5m-mtr-mean` | ChemBERTa-2 5M MTR | DeepChem/ChemBERTa-5M-MTR | 384 | 3.4M | Frozen multitask-regression encoder trained on 5M molecules |
+| `chemberta-10m-mlm-mean` | ChemBERTa-2 10M MLM | DeepChem/ChemBERTa-10M-MLM | 384 | 3.4M | Frozen MLM encoder trained on 10M molecules |
+| `chemberta-10m-mtr-mean` | ChemBERTa-2 10M MTR | DeepChem/ChemBERTa-10M-MTR | 384 | 3.4M | Frozen multitask-regression encoder trained on 10M molecules |
+| `chemberta-77m-mlm-mean` | ChemBERTa-2 77M MLM | DeepChem/ChemBERTa-77M-MLM | 384 | 3.4M | Frozen MLM encoder trained on 77M molecules |
+| `chemberta-77m-mtr-mean` | ChemBERTa-2 77M MTR | DeepChem/ChemBERTa-77M-MTR | 384 | 3.4M | Frozen multitask-regression encoder trained on 77M molecules |
+| `chemberta-100m-mlm-mean` | ChemBERTa 100M MLM | DeepChem/ChemBERTa-100M-MLM | 768 | 92.1M | Revision-pinned frozen encoder with masked mean pooling |
 | `chemberta-zinc250k` | ChemBERTa v1 Large | seyonec/ChemBERTa-zinc250k-v1 | 768 | 85M | ChemBERTa on extended ZINC250K dataset |
 | `chemberta-pubchem10m` | ChemBERTa PubChem | seyonec/PubChem10M_SMILES_BPE_450k | 768 | 85M | ChemBERTa trained on 10M PubChem molecules |
 | `smilesbert` | SMILES-BERT | unikei/bert-base-smiles | 768 | 110M | BERT model trained on SMILES strings |
@@ -62,12 +69,24 @@ print(f"Processed {len(embeddings)} molecules")
 | `chembert` | ChemBERT | jonghyunlee/ChemBERT_ChEMBL_pretrained | 256 | 85M | BERT trained on ChEMBL v33 database |
 | `molbert` | MolBERT | BenevolentAI/MolBERT | 512 | 85M | Multi-task model (may require access) |
 | `molformer` | MolFormer-XL | ibm/MoLFormer-XL-both-10pct | 768 | 47M | IBM's efficient transformer on 1.1B molecules |
+| `molformer-c3-1.1b-mean` | c3-MoLFormer 1.1B | DeepChem/MoLFormer-c3-1.1B | 768 | 46.8M | Revision-pinned frozen encoder with masked mean pooling |
 | `selformer` | SELFormer | HUBioDataLab/SELFormer | 768 | 86M | Model with local attention mechanism |
 
 ````
 
 :::{important}
 **Security Notice**: Due to CVE-2025-32434, all models require PyTorch >= 2.6. Models will not load with older torch versions.
+
+The revision-pinned `*-mean` representations exclude padding and special tokens from pooling,
+process molecules in bounded batches, and persist the model revision, pooling,
+maximum sequence length, and truncation rate with screening provenance. They are
+frozen embeddings for MolBlender downstream models; published fine-tuning scores
+for the source models are not directly comparable. For ChemBERTa-2, 5M, 10M and
+77M denote pretraining-corpus molecule counts, not parameter counts; MLM and MTR
+are distinct checkpoints and therefore distinct representations. Model downloads require
+`MOLBLENDER_ALLOW_MODEL_DOWNLOAD=1`. The c3-MoLFormer adapter also requires
+`MOLBLENDER_ALLOW_REMOTE_CODE=1` because its pinned IBM implementation executes
+custom Hugging Face repository code.
 :::
 
 ## Installation
@@ -311,4 +330,3 @@ featurizer = mbl.get_featurizer('chemberta')  # Similar performance
 - [MolFormer GitHub](https://github.com/IBM/molformer)
 - [SELFormer GitHub](https://github.com/HUBioDataLab/SELFormer)
 - [HuggingFace Models Hub](https://huggingface.co/models)
-- 

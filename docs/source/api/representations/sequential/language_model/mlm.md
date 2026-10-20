@@ -40,6 +40,28 @@ not historical pretraining-only MLM helper classes.
    :show-inheritance:
 ```
 
+### ChemBERTa100MFeaturizer
+
+```{eval-rst}
+.. autoclass:: molblender.representations.sequential.language_model.ChemBERTa100MFeaturizer
+   :members:
+   :no-index:
+   :show-inheritance:
+```
+
+### ChemBERTaCorpusFeaturizer
+
+Shared revision-pinned adapter for the 5M, 10M and 77M ChemBERTa-2 MLM/MTR
+checkpoints. Registered checkpoint names select the immutable model revision,
+pretraining objective and corpus size.
+
+```{eval-rst}
+.. autoclass:: molblender.representations.sequential.language_model.ChemBERTaCorpusFeaturizer
+   :members:
+   :no-index:
+   :show-inheritance:
+```
+
 ### MolBERTFeaturizer
 
 ```{eval-rst}
@@ -64,6 +86,15 @@ not historical pretraining-only MLM helper classes.
 
 ```{eval-rst}
 .. autoclass:: molblender.representations.sequential.language_model.MolFormerFeaturizer
+   :members:
+   :no-index:
+   :show-inheritance:
+```
+
+### MoLFormerC3Featurizer
+
+```{eval-rst}
+.. autoclass:: molblender.representations.sequential.language_model.MoLFormerC3Featurizer
    :members:
    :no-index:
    :show-inheritance:
