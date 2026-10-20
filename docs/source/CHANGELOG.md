@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Compact protein-ligand interaction-fingerprint V2 variants and a strict single-item featurization entry point** (`representations/protein_ligand/interaction_fingerprints/distance_matrix.py`, `qsar_fields.py`, `residue_ifp.py`, `splif.py`, `topology.py`, `representations/utils/base_featurizer.py`) (2026-10-21)
+  - `protein_ligand_distance_matrix_v2` (`ProteinLigandDistanceMatrixV2`) drops the legacy 100-column zero-padding block for a compact 100-column layout, and rejects custom atom types or distance bins so the shape contract stays fixed
+  - `qsar3d_fields_v2` (`QSAR3DFieldsV2`) reimplements 3D-QSAR electrostatic / steric / hydrophobic fields as a standalone featurizer on a fixed grid around the ligand centroid with a configurable field radius, replacing the inheritance-coupled layout
+  - `BaseFeaturizer.featurize_strict` is a single-item entry point that preserves typed failures instead of converting them to `None`, so infrastructure code can distinguish a missing optional dependency from malformed input or a backend failure; the high-throughput `featurize` path is unchanged
+  - Residue-IFP, SPLIF and topology fingerprints, the shared protein-ligand base and their regression tests are updated alongside
 - **Pinned ChemBERTa-2, ChemBERTa 100M and c3-MoLFormer frozen SMILES embeddings** (`representations/sequential/language_model/frozen_hf.py`) (2026-10-20)
   - Six ChemBERTa-2 5M/10M/77M MLM and MTR checkpoints provide distinct 384-dimensional representations; `chemberta-100m-mlm-mean` and `molformer-c3-1.1b-mean` provide 768-dimensional embeddings
   - All variants use masked-mean pooling, bounded batch inference, finite-output validation and explicit truncation accounting; corpus size, pretraining objective and embedding dimension participate in cache and result provenance
