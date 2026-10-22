@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **HPO-only screening route that reuses a verified Stage-1 source session** (`screening/orchestration/api.py`, `universal_execution.py`, `screening_hpo.py`, `persistence/session_ops.py`, `screening/orchestration/processors/hpo/*`) (2026-10-22)
+  - `universal_screen(..., hpo_only=True, hpo_source_session_id=...)` runs the HPO stage only: it reads verified Stage-1 results from the source session without re-running the Stage-1 screening loop, loading representations or building modality summaries, and the HPO trials land in the fresh target session
+  - The target session is marked `session_kind='hpo_only'` with `stage1_source_session_id` recorded in its persisted metadata, so the provenance "this session produced no Stage-1 rows of its own" is explicit; legacy schemas without the column degrade gracefully
+  - A resumed run that computes no new Stage-1 rows recovers the linked candidates from the database instead of skipping HPO, and the HPO-only route fails closed (no silent skip) when HPO is disabled or no reusable Stage-1 candidates exist
+  - Holdout-mode HPO keeps the typed execution contract list-shaped when no CV folds are materialized
 - **Jazzy physicochemical descriptors and MAP4C MinHash chiral fingerprint with a dedicated Jaccard-KNN model** (`representations/descriptors/jazzy.py`, `representations/fingerprints/mapchiral.py`, `screening/engine/models/minhash_knn.py`, `screening/engine/models/eligibility.py`) (2026-10-21)
   - `jazzy_2d` and `jazzy_3d_mmff94` register as ordinary continuous descriptors (six hydrogen-bond / hydration values, QSARtuna ordering); the 3D mode pins a conformer-generation seed so it participates in cache identity, and the two modes never share a cache entry
   - `map4c_r2_2048` registers with `feature_semantics="minhash_signature"`; the routing semantics pass in `eligibility.py` (`GENERIC_CONSUMABLE_SEMANTICS`) restricts it to models that explicitly declare `accepted_feature_semantics`, so a `uint64` signature can never be cast to float or fed to a Euclidean-distance model
