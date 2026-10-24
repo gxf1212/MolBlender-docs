@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Stage-2 winner selection now ranks by the HPO score used to pick the hyperparameters** (`screening/engine/evaluation/ranking.py`) (2026-10-24)
+  - `selection_score` prefers the stored `hpo_score` for Stage-2+ rows instead of a metric recomputed while the winner is materialized; the final estimator is refit on the winning params, so the recomputed metric could differ and flip the ranking. Stage-1 rows and legacy Stage-2 rows without `hpo_score` keep the existing `val_*` fallback
+  - Added `tests/screening/engine/test_metric_direction_ranking.py` covering the metric-direction-consistent selection
+
+### Changed
+- **HPO orchestration split into canonical evidence, execution-context and representation-preparation modules** (`screening/orchestration/processors/hpo/evidence.py`, `execution_context.py`, `representation_preparation.py`, `winner_reuse.py`, `plan.py`, `preflight.py`, `processor.py`, `result_building.py`, `results.py`, `resume_state.py`, `candidate_materialization.py`, `cv_result_building.py`, `screening/engine/hpo/contracts.py`, `grid_execution.py`, `grid_search.py`, `screening/engine/evaluation/ranking.py`, `orchestration/universal_execution.py`, `processors/database_write_ops.py`) (2026-10-24)
+  - `evidence.py` is now the only module that interprets the parameter-history portion of `grid_search_results`, exposing an immutable `GridEvidence` with a fail-closed `CoverageStatus` and a single `expected_param_keys_from_optimizer` boundary; planning, resume diagnostics and winner reuse consume these projections instead of independently deciding what a completed search means
+  - `execution_context.py` introduces `HPOExecutionContext`, a frozen run-scoped policy snapshot (HPO settings, model execution settings, resource budget) frozen from one config, so optimizer, execution and materialization share identical policy
+  - `representation_preparation.py` extracts `prepare_hpo_representations` (fusion detection, parallel-worker resolution) out of the processor path
+  - `winner_reuse` reuses the canonical `GridEvidence` contracts; `OptimizationRequest.resume_prior_trials` semantics are clarified (Optuna injects into the study; holdout Grid merges with newly evaluated missing params before winner selection)
+  - No change to the user-facing screening API; the refactor strengthens fail-closed cross-session winner reuse and planning correctness
+
 ### Added
 - **CatBoost gradient boosting and block-structured Gaussian-process regressors in the screening catalog** (`screening/engine/models/catalog.py`, `screening/engine/models/gp_kernels.py`, `screening/engine/model_registry.py`, `factory.py`, `screening/engine/base.py`, `evaluation/cross_validation.py`) (2026-10-23)
   - `catboost` enters the catalog with `CatBoostRegressor` defaults and a coarse HPO grid, covering regression, binary and multiclass classification on numeric representations
